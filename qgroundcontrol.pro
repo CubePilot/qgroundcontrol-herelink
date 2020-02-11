@@ -698,6 +698,7 @@ contains (DEFINES, QGC_ENABLE_PAIRING) {
 AndroidBuild {
 HEADERS += \
     src/Joystick/JoystickAndroid.h \
+    src/AndroidInterface.h \
 }
 
 DebugBuild {
@@ -761,6 +762,7 @@ iOSBuild {
 AndroidBuild {
     SOURCES += src/MobileScreenMgr.cc \
     src/Joystick/JoystickAndroid.cc \
+    src/AndroidInterface.cc \
 }
 
 SOURCES += \
@@ -1316,12 +1318,14 @@ HEADERS += \
     src/VideoStreaming/VideoReceiver.h \
     src/VideoStreaming/VideoStreaming.h \
     src/VideoStreaming/SubtitleWriter.h \
+    src/VideoStreaming/VideoStreamControl.h \
     src/VideoStreaming/VideoManager.h
 
 SOURCES += \
     src/VideoStreaming/VideoReceiver.cc \
     src/VideoStreaming/VideoStreaming.cc \
     src/VideoStreaming/SubtitleWriter.cc \
+    src/VideoStreaming/VideoStreamControl.cc \
     src/VideoStreaming/VideoManager.cc
 
 contains (CONFIG, DISABLE_VIDEOSTREAMING) {

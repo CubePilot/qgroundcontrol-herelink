@@ -38,6 +38,8 @@ import java.util.concurrent.Executors;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -57,6 +59,9 @@ import android.app.PendingIntent;
 import android.view.WindowManager;
 import android.os.Bundle;
 import android.bluetooth.BluetoothDevice;
+import android.os.storage.StorageManager;
+import android.os.storage.StorageVolume;
+import android.media.MediaScannerConnection;
 
 import com.hoho.android.usbserial.driver.*;
 import org.qtproject.qt5.android.bindings.QtActivity;
@@ -371,6 +376,39 @@ public class QGCActivity extends QtActivity
         }
 
         return rgDeviceInfo;
+    }
+
+    public static String getSdcardPath() {
+        StorageManager storageManager = (StorageManager)_instance.getSystemService(Activity.STORAGE_SERVICE);
+        List<StorageVolume> volumes = storageManager.getStorageVolumes();
+        Method mMethodGetPath;
+        String path = "";
+        for (StorageVolume vol : volumes) {
+            try {
+                mMethodGetPath = vol.getClass().getMethod("getPath");
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+                continue;
+            }
+            try {
+                path = (String) mMethodGetPath.invoke(vol);
+            } catch (Exception e) {
+                e.printStackTrace();
+                continue;
+            }
+
+            if (vol.isRemovable() == true) {
+                Log.i(TAG, "removable sd card mounted " + path);
+                return path;
+            } else {
+                Log.i(TAG, "storage mounted " + path);
+            }
+        }
+        return "";
+    }
+
+    public static void triggerMediaScannerScanFile(String path) {
+        MediaScannerConnection.scanFile(_instance, new String[] { path }, null, null);
     }
 
     /// Open the specified device

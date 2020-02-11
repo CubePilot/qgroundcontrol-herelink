@@ -1555,10 +1555,10 @@ QGCCameraControl::handleCaptureStatus(const mavlink_camera_capture_status_t& cap
 void
 QGCCameraControl::handleVideoInfo(const mavlink_video_stream_information_t* vi)
 {
-    qCDebug(CameraControlLog) << "handleVideoInfo:" << vi->stream_id << vi->uri;
-    _expectedCount = vi->count;
+    qCDebug(CameraControlLog) << "handleVideoInfo:" << vi->camera_id << vi->uri;
+    _expectedCount = 2;
     if(!_findStream(vi->stream_id, false)) {
-        qCDebug(CameraControlLog) << "Create stream handler for stream ID:" << vi->stream_id;
+        qCDebug(CameraControlLog) << "Create stream handler for stream ID:" << vi->camera_id;
         QGCVideoStreamInfo* pStream = new QGCVideoStreamInfo(this, vi);
         QQmlEngine::setObjectOwnership(pStream, QQmlEngine::CppOwnership);
         _streams.append(pStream);
@@ -2155,14 +2155,6 @@ bool
 QGCVideoStreamInfo::update(const mavlink_video_stream_status_t* vs)
 {
     bool changed = false;
-    if(_streamInfo.hfov != vs->hfov) {
-        changed = true;
-        _streamInfo.hfov = vs->hfov;
-    }
-    if(_streamInfo.flags != vs->flags) {
-        changed = true;
-        _streamInfo.flags = vs->flags;
-    }
     if(_streamInfo.bitrate != vs->bitrate) {
         changed = true;
         _streamInfo.bitrate = vs->bitrate;
@@ -2170,10 +2162,6 @@ QGCVideoStreamInfo::update(const mavlink_video_stream_status_t* vs)
     if(_streamInfo.rotation != vs->rotation) {
         changed = true;
         _streamInfo.rotation = vs->rotation;
-    }
-    if(_streamInfo.framerate != vs->framerate) {
-        changed = true;
-        _streamInfo.framerate = vs->framerate;
     }
     if(_streamInfo.resolution_h != vs->resolution_h) {
         changed = true;

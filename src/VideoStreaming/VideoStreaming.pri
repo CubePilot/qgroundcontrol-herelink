@@ -75,7 +75,7 @@ LinuxBuild {
         CONFIG          += VideoEnabled
 
         # We want to link these plugins statically
-        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0 \
+        LIBS += -L$$GST_ROOT/lib/gstreamer-1.0/static \
             -lgstvideo-1.0 \
             -lgstcoreelements \
             -lgstplayback \
@@ -87,6 +87,7 @@ LinuxBuild {
             -lgstsdpelem \
             -lgstvideoparsersbad \
             -lgstrtpmanager \
+            -lgstrmdemux \
             -lgstisomp4 \
             -lgstmatroska \
             -lgstmpegtsdemux \
@@ -102,7 +103,7 @@ LinuxBuild {
             -lgstphotography-1.0 -lgstgl-1.0 -lEGL \
             -lgstaudio-1.0 -lgstcodecparsers-1.0 -lgstbase-1.0 \
             -lgstreamer-1.0 -lgstrtp-1.0 -lgstpbutils-1.0 -lgstrtsp-1.0 -lgsttag-1.0 \
-            -lgstvideo-1.0 -lavformat -lavcodec -lavutil -lx264 -lavfilter -lswresample \
+            -lgstvideo-1.0 -lavformat -lavcodec -lavutil -lx264 -lavresample \
             -lgstriff-1.0 -lgstcontroller-1.0 -lgstapp-1.0 \
             -lgstsdp-1.0 -lbz2 -lgobject-2.0 -lgstmpegts-1.0 \
             -Wl,--export-dynamic -lgmodule-2.0 -pthread -lglib-2.0 -lorc-0.4 -liconv -lffi -lintl \

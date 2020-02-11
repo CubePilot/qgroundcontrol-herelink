@@ -565,7 +565,7 @@ void Joystick::_handleAxis()
             _rgAxisValues[axisIndex] = newAxisValue;
             emit rawAxisValueChanged(axisIndex, newAxisValue);
         }
-        if (_activeVehicle->joystickEnabled() && !_calibrationMode && _calibrated) {
+        if (true) {
             int     axis = _rgFunctionAxis[rollFunction];
             float   roll = _adjustRange(_rgAxisValues[axis],    _rgCalibration[axis], _deadband);
 
@@ -959,7 +959,7 @@ void Joystick::setCalibrationMode(bool calibrating)
 
 void Joystick::_executeButtonAction(const QString& action, bool buttonDown)
 {
-    if (!_activeVehicle || !_activeVehicle->joystickEnabled() || action == _buttonActionNone) {
+    if (!_activeVehicle || action == _buttonActionNone) {
         return;
     }
     if (action == _buttonActionArm) {

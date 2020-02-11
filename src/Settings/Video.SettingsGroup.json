@@ -102,7 +102,7 @@
     "type":             "uint32",
     "min":              1,
     "units":            "s",
-    "defaultValue":     2
+    "defaultValue":     60
 },
 {
     "name":             "streamEnabled",
@@ -119,9 +119,25 @@
     "defaultValue":     false
 },
 {
-    "name":             "lowLatencyMode",
-    "shortDescription": "Tweaks video for lower latency",
-    "longDescription":  "If this option is enabled, the rtpjitterbuffer is removed and the video sink is set to assynchronous mode, reducing the latency by about 200 ms.",
+    "name":             "videoResolution",
+    "shortDescription": "Video stream resolution",
+    "longDescription":  "Video stream resolution.",
+    "type":             "uint32",
+    "enumStrings":      "undefined,720p,1080p",
+    "enumValues":       "0,1,2",
+    "defaultValue":     0
+},
+{
+    "name":             "cameraId",
+    "shortDescription": "Camera ID",
+    "longDescription":  "Camera ID used for video streaming.",
+    "type":             "uint32",
+    "defaultValue":     0
+},
+{
+    "name":             "saveSdCardEnable",
+    "shortDescription": "Save Video to SD card",
+    "longDescription":  "Enable video to be saved to SD card.",
     "type":             "bool",
     "defaultValue":     false
 }

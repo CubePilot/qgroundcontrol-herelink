@@ -101,8 +101,10 @@ QMap<QString, Joystick*> JoystickAndroid::discover(MultiVehicleManager* _multiVe
     for (int i = 0; i < sz; ++i) {
         QAndroidJniObject inputDevice = QAndroidJniObject::callStaticObjectMethod("android/view/InputDevice", "getDevice", "(I)Landroid/view/InputDevice;", buff[i]);
         int sources = inputDevice.callMethod<jint>("getSources", "()I");
-        if (((sources & SOURCE_GAMEPAD) != SOURCE_GAMEPAD) //check if the input device is interesting to us
-                && ((sources & SOURCE_JOYSTICK) != SOURCE_JOYSTICK)) continue;
+        if (((sources & SOURCE_GAMEPAD) != SOURCE_GAMEPAD)) { //check if the input device is interesting to us
+//                && ((sources & SOURCE_JOYSTICK) != SOURCE_JOYSTICK))
+            continue;
+        }
 
         // get id and name
         QString id = inputDevice.callObjectMethod("getDescriptor", "()Ljava/lang/String;").toString();
