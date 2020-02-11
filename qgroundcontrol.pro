@@ -631,6 +631,7 @@ HEADERS += \
 AndroidBuild {
 HEADERS += \
     src/Joystick/JoystickAndroid.h \
+    src/AndroidInterface.h \
 }
 
 DebugBuild {
@@ -718,6 +719,7 @@ iOSBuild {
 AndroidBuild {
     SOURCES += src/MobileScreenMgr.cc \
     src/Joystick/JoystickAndroid.cc \
+    src/AndroidInterface.cc \
 }
 
 SOURCES += \
@@ -1234,6 +1236,7 @@ HEADERS += \
     src/VideoStreaming/VideoItem.h \
     src/VideoStreaming/VideoReceiver.h \
     src/VideoStreaming/VideoStreaming.h \
+    src/VideoStreaming/VideoStreamControl.h \
     src/VideoStreaming/VideoSurface.h \
     src/VideoStreaming/VideoSurface_p.h \
 
@@ -1242,6 +1245,7 @@ SOURCES += \
     src/VideoStreaming/VideoReceiver.cc \
     src/VideoStreaming/VideoStreaming.cc \
     src/VideoStreaming/VideoSurface.cc \
+    src/VideoStreaming/VideoStreamControl.cc \
 
 contains (CONFIG, DISABLE_VIDEOSTREAMING) {
     message("Skipping support for video streaming (manual override from command line)")

@@ -269,10 +269,10 @@ Rectangle {
             SubMenuButton {
                 id:                 joystickButton
                 setupIndicator:     true
-                setupComplete:      joystickManager.activeJoystick ? joystickManager.activeJoystick.calibrated : false
+                setupComplete:      true
                 exclusiveGroup:     setupButtonGroup
                 visible:            _fullParameterVehicleAvailable && joystickManager.joysticks.length !== 0
-                text:               qsTr("Joystick")
+                text:               qsTr("Buttons")
                 Layout.fillWidth:   true
 
                 onClicked: showJoystickPanel()

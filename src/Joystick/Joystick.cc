@@ -460,7 +460,7 @@ void Joystick::run(void)
             }
         }
 
-        if (_activeVehicle->joystickEnabled() && !_calibrationMode && _calibrated) {
+        if (true) {
             int     axis = _rgFunctionAxis[rollFunction];
             float   roll = _adjustRange(_rgAxisValues[axis], _rgCalibration[axis], _deadband);
 
@@ -641,7 +641,6 @@ void Joystick::setFunctionAxis(AxisFunction_t function, int axis)
         qCWarning(JoystickLog) << "Invalid axis index" << axis;
         return;
     }
-
     _calibrated = true;
     _rgFunctionAxis[function] = axis;
 
@@ -667,8 +666,8 @@ QStringList Joystick::actions(void)
     }
     list << _buttonActionVTOLFixedWing << _buttonActionVTOLMultiRotor;
     list << _buttonActionZoomIn << _buttonActionZoomOut;
-    list << _buttonActionNextStream << _buttonActionPreviousStream;
-    list << _buttonActionNextCamera << _buttonActionPreviousCamera;
+//    list << _buttonActionNextStream << _buttonActionPreviousStream;
+//    list << _buttonActionNextCamera << _buttonActionPreviousCamera;
     return list;
 }
 
@@ -826,7 +825,7 @@ void Joystick::setCalibrationMode(bool calibrating)
 
 void Joystick::_buttonAction(const QString& action)
 {
-    if (!_activeVehicle || !_activeVehicle->joystickEnabled()) {
+    if (!_activeVehicle) {
         return;
     }
 

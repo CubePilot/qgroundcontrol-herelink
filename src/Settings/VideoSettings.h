@@ -34,6 +34,9 @@ public:
     DEFINE_SETTINGFACT(rtspTimeout)
     DEFINE_SETTINGFACT(streamEnabled)
     DEFINE_SETTINGFACT(disableWhenDisarmed)
+    DEFINE_SETTINGFACT(videoResolution)
+    DEFINE_SETTINGFACT(cameraId)
+    DEFINE_SETTINGFACT(saveSdCardEnable)
 
     Q_PROPERTY(bool     streamConfigured        READ streamConfigured       NOTIFY streamConfiguredChanged)
     Q_PROPERTY(QString  rtspVideoSource         READ rtspVideoSource        CONSTANT)
@@ -41,6 +44,9 @@ public:
     Q_PROPERTY(QString  tcpVideoSource          READ tcpVideoSource         CONSTANT)
     Q_PROPERTY(QString  mpegtsVideoSource       READ mpegtsVideoSource      CONSTANT)
     Q_PROPERTY(QString  disabledVideoSource     READ disabledVideoSource      CONSTANT)
+    Q_PROPERTY(Fact* videoResolution        READ videoResolution        CONSTANT)
+    Q_PROPERTY(Fact* cameraId               READ cameraId               CONSTANT)
+    Q_PROPERTY(Fact* saveSdCardEnable       READ saveSdCardEnable       CONSTANT)
 
     bool     streamConfigured       ();
     QString  rtspVideoSource        () { return videoSourceRTSP; }
@@ -55,7 +61,7 @@ public:
     static const char* videoSourceRTSP;
     static const char* videoSourceTCP;
     static const char* videoSourceMPEGTS;
-
+    static const char* videoSourceAuto;
 signals:
     void streamConfiguredChanged    ();
 

@@ -62,8 +62,12 @@ VideoManager::setToolbox(QGCToolbox *toolbox)
    connect(_videoSettings->rtspUrl(),       &Fact::rawValueChanged, this, &VideoManager::_rtspUrlChanged);
    connect(_videoSettings->tcpUrl(),        &Fact::rawValueChanged, this, &VideoManager::_tcpUrlChanged);
    connect(_videoSettings->aspectRatio(),   &Fact::rawValueChanged, this, &VideoManager::_aspectRatioChanged);
+
    MultiVehicleManager *pVehicleMgr = qgcApp()->toolbox()->multiVehicleManager();
    connect(pVehicleMgr, &MultiVehicleManager::activeVehicleChanged, this, &VideoManager::_setActiveVehicle);
+
+   _videoStreamControl = new VideoStreamControl();
+   connect(_videoStreamControl, &VideoStreamControl::videoStreamUrlChanged, this, &VideoManager::_videoStreamUrlChanged);
 
 #if defined(QGC_GST_STREAMING)
 #ifndef QGC_DISABLE_UVC
@@ -152,6 +156,11 @@ VideoManager::_rtspUrlChanged()
     _restartVideo();
 }
 
+void VideoManager::_videoStreamUrlChanged(void)
+{
+    _restartVideo();
+}
+
 //-----------------------------------------------------------------------------
 void
 VideoManager::_tcpUrlChanged()
@@ -181,6 +190,7 @@ VideoManager::isGStreamer()
         videoSource == VideoSettings::videoSourceRTSP ||
         videoSource == VideoSettings::videoSourceTCP ||
         videoSource == VideoSettings::videoSourceMPEGTS ||
+        videoSource == VideoSettings::videoSourceAuto ||
         autoStreamConfigured();
 #else
     return false;
@@ -227,12 +237,12 @@ VideoManager::_updateSettings()
     QString source = _videoSettings->videoSource()->rawValue().toString();
     if (source == VideoSettings::videoSourceUDP)
         _videoReceiver->setUri(QStringLiteral("udp://0.0.0.0:%1").arg(_videoSettings->udpPort()->rawValue().toInt()));
-    else if (source == VideoSettings::videoSourceMPEGTS)
-        _videoReceiver->setUri(QStringLiteral("mpegts://0.0.0.0:%1").arg(_videoSettings->udpPort()->rawValue().toInt()));
     else if (source == VideoSettings::videoSourceRTSP)
         _videoReceiver->setUri(_videoSettings->rtspUrl()->rawValue().toString());
     else if (source == VideoSettings::videoSourceTCP)
         _videoReceiver->setUri(QStringLiteral("tcp://%1").arg(_videoSettings->tcpUrl()->rawValue().toString()));
+    else if (_videoSettings->videoSource()->rawValue().toString() == VideoSettings::videoSourceAuto)
+        _videoReceiver->setUri(_videoStreamControl->videoStreamUrl());
 }
 
 //-----------------------------------------------------------------------------

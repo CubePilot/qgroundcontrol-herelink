@@ -93,6 +93,7 @@ protected slots:
     virtual void _handleError               ();
     virtual void _handleEOS                 ();
     virtual void _handleStateChanged        ();
+    void _handleRecordingChanged    ();
 #endif
 
 protected:
@@ -136,6 +137,7 @@ protected:
     QTimer          _timer;
     QTcpSocket*     _socket;
     bool            _serverPresent;
+    time_t          _startTime;
     int             _rtspTestInterval_ms;
 
     //-- RTSP UDP reconnect timeout

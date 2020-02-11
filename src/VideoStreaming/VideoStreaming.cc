@@ -47,6 +47,7 @@
     GST_PLUGIN_STATIC_DECLARE(rtpmanager);
     GST_PLUGIN_STATIC_DECLARE(isomp4);
     GST_PLUGIN_STATIC_DECLARE(matroska);
+    GST_PLUGIN_STATIC_DECLARE(androidmedia);
 #endif
     G_END_DECLS
 #endif
@@ -159,6 +160,7 @@ void initializeVideoStreaming(int &argc, char* argv[], char* logpath, char* debu
         GST_PLUGIN_STATIC_REGISTER(rtpmanager);
         GST_PLUGIN_STATIC_REGISTER(isomp4);
         GST_PLUGIN_STATIC_REGISTER(matroska);
+        GST_PLUGIN_STATIC_REGISTER(androidmedia);
     #endif
 #else
     Q_UNUSED(argc);

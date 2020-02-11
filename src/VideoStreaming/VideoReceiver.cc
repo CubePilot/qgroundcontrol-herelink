@@ -26,6 +26,7 @@
 #include <QDir>
 #include <QDateTime>
 #include <QSysInfo>
+#include <AndroidInterface.h>
 
 QGC_LOGGING_CATEGORY(VideoReceiverLog, "VideoReceiverLog")
 
@@ -65,6 +66,7 @@ VideoReceiver::VideoReceiver(QObject* parent)
     , _videoSink(nullptr)
     , _socket(nullptr)
     , _serverPresent(false)
+    , _startTime(0)
     , _rtspTestInterval_ms(5000)
     , _udpReconnect_us(5000000)
 #endif
@@ -83,6 +85,7 @@ VideoReceiver::VideoReceiver(QObject* parent)
     connect(this, &VideoReceiver::msgEOSReceived, this, &VideoReceiver::_handleEOS);
     connect(this, &VideoReceiver::msgStateChangedReceived, this, &VideoReceiver::_handleStateChanged);
     connect(&_frameTimer, &QTimer::timeout, this, &VideoReceiver::_updateTimer);
+    connect(this, &VideoReceiver::recordingChanged, this, &VideoReceiver::_handleRecordingChanged);
     _frameTimer.start(1000);
 #endif
 }
@@ -314,7 +317,7 @@ VideoReceiver::start()
             QUrl url(_uri);
             g_object_set(static_cast<gpointer>(dataSource), "port", url.port(), nullptr);
         } else {
-            g_object_set(static_cast<gpointer>(dataSource), "location", qPrintable(_uri), "latency", 17, "udp-reconnect", 1, "timeout", _udpReconnect_us, NULL);
+            g_object_set(G_OBJECT(dataSource), "location", qPrintable(_uri), "latency", 41, "udp-reconnect", 1, "timeout", static_cast<guint64>(0), "do-retransmission", false, NULL);
         }
 
         if (isTCP || isMPEGTS) {
@@ -348,9 +351,13 @@ VideoReceiver::start()
             break;
         }
 
-        if ((decoder = gst_element_factory_make("avdec_h264", "h264-decoder")) == nullptr) {
-            qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('avdec_h264')";
-            break;
+        if ((decoder = gst_element_factory_make("amcviddec-omxarmvideov5xxdecoder", "amcviddec-omxarmvideov5xxdecoder")) == NULL) {
+            qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('amcviddec-omxarmvideov5xxdecoder')";
+            //fallback to sw decoder
+            if ((decoder = gst_element_factory_make("avdec_h264", "h264-decoder")) == NULL) {
+                qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('avdec_h264')";
+                break;
+            }
         }
 
         if ((queue1 = gst_element_factory_make("queue", nullptr)) == nullptr) {
@@ -363,6 +370,8 @@ VideoReceiver::start()
         } else {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
         }
+        gst_bin_add_many(GST_BIN(_pipeline), dataSource, demux, _tee, queue, parser, decoder, queue1, _videoSink, NULL);
+
         pipelineUp = true;
 
         if(isUdp) {
@@ -389,7 +398,7 @@ VideoReceiver::start()
             g_signal_connect(demux, "pad-added", G_CALLBACK(newPadCB), parser);
         } else {
             g_signal_connect(dataSource, "pad-added", G_CALLBACK(newPadCB), demux);
-            if(!gst_element_link_many(demux, parser, _tee, queue, decoder, _videoSink, nullptr)) {
+            if(!gst_element_link_many(demux, _tee, queue, parser, decoder, _videoSink, NULL)) {
                 qCritical() << "Unable to link RTSP elements.";
                 break;
             }
@@ -462,6 +471,7 @@ VideoReceiver::start()
     } else {
         GST_DEBUG_BIN_TO_DOT_FILE(GST_BIN(_pipeline), GST_DEBUG_GRAPH_SHOW_ALL, "pipeline-playing");
         _running = true;
+        _startTime = time(0);
         qCDebug(VideoReceiverLog) << "Running";
     }
     _starting = false;
@@ -568,6 +578,16 @@ VideoReceiver::_handleStateChanged() {
     if(_pipeline) {
         _streaming = GST_STATE(_pipeline) == GST_STATE_PLAYING;
         qCDebug(VideoReceiverLog) << "State changed, _streaming:" << _streaming;
+    }
+}
+#endif
+
+//-----------------------------------------------------------------------------
+#if defined(QGC_GST_STREAMING)
+void
+VideoReceiver::_handleRecordingChanged() {
+    if(!_recording && !_videoFile.isEmpty()) {
+        AndroidInterface::triggerMediaScannerScanFile(_videoFile);
     }
 }
 #endif
@@ -693,7 +713,26 @@ VideoReceiver::startRecording(const QString &videoFile)
     }
 
     if(videoFile.isEmpty()) {
-        QString savePath = qgcApp()->toolbox()->settingsManager()->appSettings()->videoSavePath();
+        QString savePath;
+        if (_videoSettings->saveSdCardEnable()->rawValue().toBool()) {
+            savePath = AndroidInterface::getSdcardPath();
+            if (!savePath.isEmpty()) {
+                savePath = savePath + "/QGroundControl/Video";
+                QDir savePathDir(savePath);
+                if (!savePathDir.exists()) {
+                    QDir().mkpath(savePathDir.absolutePath());
+                    if (!savePathDir.exists()) {
+                        qgcApp()->showMessage(tr("Video will be saved to internal memory."));
+                        savePath = "";
+                    }
+                }
+            } else {
+                qgcApp()->showMessage(tr("SD card is not available. Video will be saved to internal memory."));
+            }
+        }
+        if (savePath.isEmpty()) {
+            savePath = qgcApp()->toolbox()->settingsManager()->appSettings()->videoSavePath();
+        }
         if(savePath.isEmpty()) {
             qgcApp()->showMessage(tr("Unabled to record video. Video save path must be specified in Settings."));
             return;
@@ -904,24 +943,35 @@ VideoReceiver::_updateTimer()
                 emit videoRunningChanged();
             }
         }
+
+        uint32_t timeout = 1;
+        if(qgcApp()->toolbox() && qgcApp()->toolbox()->settingsManager()) {
+            timeout = _videoSettings->rtspTimeout()->rawValue().toUInt();
+        }
+
         if(_videoRunning) {
-            uint32_t timeout = 1;
-            if(qgcApp()->toolbox() && qgcApp()->toolbox()->settingsManager()) {
-                timeout = _videoSettings->rtspTimeout()->rawValue().toUInt();
-            }
+
             time_t elapsed = 0;
             time_t lastFrame = _videoSurface->lastFrame();
             if(lastFrame != 0) {
-                elapsed = time(nullptr) - _videoSurface->lastFrame();
+                elapsed = time(0) - _videoSurface->lastFrame();
             }
-            if(elapsed > static_cast<time_t>(timeout) && _videoSurface) {
+
+            if(elapsed > (time_t)timeout && _videoSurface) {
+                qCritical() << "VideoReceiver::_updateTimer, elapsed time is " << elapsed;
+                qCritical() << "VideoReceiver::_updateTimer, current timeout is " << timeout;
                 stop();
-                // We want to start it back again with _updateTimer
-                _stop = false;
             }
         } else {
-            if(!_stop && !running() && !_uri.isEmpty() && _videoSettings->streamEnabled()->rawValue().toBool()) {
+            time_t elapsed = time(0) - _startTime;
+
+            //we start the stream over 30s, but still haven't received the data, so stop the stream, and waiting for the next connect
+            if(running() && elapsed > (time_t)timeout) {
+                qCritical() << "VideoReceiver::_updateTimer, stop stream ";
+                stop();
+            } else if(!running() && !_uri.isEmpty() && _videoSettings->streamEnabled()->rawValue().toBool()) {
                 start();
+                qCritical() << "VideoReceiver::_updateTimer, start stream ";
             }
         }
     }

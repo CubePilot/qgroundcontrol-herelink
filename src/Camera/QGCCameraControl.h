@@ -33,10 +33,10 @@ public:
 
     QString uri             () { return QString(_streamInfo.uri); }
     qreal   aspectRatio     ();
-    qreal   hfov            () { return _streamInfo.hfov; }
-    int     type            () { return _streamInfo.type; }
-    int     streamID        () { return _streamInfo.stream_id; }
-    bool    isThermal       () { return _streamInfo.flags & VIDEO_STREAM_STATUS_FLAGS_THERMAL; }
+    qreal   hfov            () { return 180; }
+    int     type            () { return VIDEO_STREAM_TYPE_RTSP; }
+    int     streamID        () { return _streamInfo.camera_id; }
+    bool    isThermal       () { return false; }
 
     bool    update          (const mavlink_video_stream_status_t* vs);
 
