@@ -55,7 +55,6 @@ thirdParty/qserialport/bin/
 thirdParty/qserialport/lib/
 libs/thirdParty/libxbee/lib/
 GeneratedFiles/
-gstreamer-1.0-android*
 src/Airmap/Airmap_api_key.h
 
 *.autosave
