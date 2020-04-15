@@ -24,4 +24,4 @@ To build this repository for Herelink Android System, use following tools:
 * [Qt 5.11.0](https://qt.io)
 * [Android NDK, Revision 15c (July 2017)](https://developer.android.com/ndk/downloads/older_releases)
 
-**Note**: *Qt 5.11.0 is available under archive repository when using online installer for qt installation. It is critical that you use combination above as its tested working. Also ensure that you select armeabi-v7a build of QgroundControl. This repository. Please post your issues at https://docs.cubepilot.org if you are facing issues building this repository.*
+**Note**: *Qt 5.11.0 is available under archive repository when using online installer for qt installation. It is critical that you use combination above as its tested working. Also ensure that you select armeabi-v7a build of QgroundControl. Please post your issues at https://docs.cubepilot.org if you are facing issues building this repository.*
