@@ -1,11 +1,4 @@
-# QGroundControl Ground Control Station
-
-[![Releases](https://img.shields.io/github/release/mavlink/QGroundControl.svg)](https://github.com/mavlink/QGroundControl/releases)
-[![Travis Build Status](https://travis-ci.org/mavlink/qgroundcontrol.svg?branch=master)](https://travis-ci.org/mavlink/qgroundcontrol)
-[![Appveyor Build Status](https://ci.appveyor.com/api/projects/status/crxcm4qayejuvh6c/branch/master?svg=true)](https://ci.appveyor.com/project/mavlink/qgroundcontrol)
-
-[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/mavlink/qgroundcontrol?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
+# Herelink QGroundControl Ground Control Station
 
 *QGroundControl* (QGC) is an intuitive and powerful ground control station (GCS) for UAVs.
 
@@ -23,3 +16,12 @@ Key Links:
 * [Discussion/Support](https://docs.qgroundcontrol.com/en/Support/Support.html)
 * [Contributing](https://dev.qgroundcontrol.com/en/contribute/)
 * [License](https://github.com/mavlink/qgroundcontrol/blob/master/COPYING.md)
+
+**Build on Herelink:**
+
+To build this repository for Herelink Android System, use following tools:
+* [QtCreator](https://www.qt.io/product)
+* [Qt 5.11.0](https://qt.io)
+* [Android NDK, Revision 15c (July 2017)](https://developer.android.com/ndk/downloads/older_releases)
+
+**Note**: *Qt 5.11.0 is available under archive repository when using online installer for qt installation. It is critical that you use combination above as its tested working. Also ensure that you select armeabi-v7a build of QgroundControl. This repository. Please post your issues at https://docs.cubepilot.org if you are facing issues building this repository.*
