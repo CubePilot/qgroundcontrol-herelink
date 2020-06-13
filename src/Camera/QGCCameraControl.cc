@@ -1557,14 +1557,13 @@ QGCCameraControl::handleVideoInfo(const mavlink_video_stream_information_t* vi)
 {
     qCDebug(CameraControlLog) << "handleVideoInfo:" << vi->camera_id << vi->uri;
     _expectedCount = 2;
-    if(!_findStream(vi->stream_id, false)) {
+    if(!_findStream(vi->camera_id, false)) {
         qCDebug(CameraControlLog) << "Create stream handler for stream ID:" << vi->camera_id;
         QGCVideoStreamInfo* pStream = new QGCVideoStreamInfo(this, vi);
         QQmlEngine::setObjectOwnership(pStream, QQmlEngine::CppOwnership);
         _streams.append(pStream);
         //-- Thermal is handled separately and not listed
         if(!pStream->isThermal()) {
-            _streamLabels.append(pStream->name());
             emit streamsChanged();
             emit streamLabelsChanged();
         } else {
@@ -1750,16 +1749,16 @@ QGCCameraControl::_findStream(uint8_t id, bool report)
 QGCVideoStreamInfo*
 QGCCameraControl::_findStream(const QString name)
 {
-    for(int i = 0; i < _streams.count(); i++) {
-        if(_streams[i]) {
-            QGCVideoStreamInfo* pStream = qobject_cast<QGCVideoStreamInfo*>(_streams[i]);
-            if(pStream) {
-                if(pStream->name() == name) {
-                    return pStream;
-                }
-            }
-        }
-    }
+//    for(int i = 0; i < _streams.count(); i++) {
+//        if(_streams[i]) {
+//            QGCVideoStreamInfo* pStream = qobject_cast<QGCVideoStreamInfo*>(_streams[i]);
+//            if(pStream) {
+//                if(pStream->name() == name) {
+//                    return pStream;
+//                }
+//            }
+//        }
+//    }
     return nullptr;
 }
 

@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+ *   (c) 2009-2016 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
  * QGroundControl is licensed according to the terms in the file
  * COPYING.md in the root of the source code directory.
@@ -8,10 +8,9 @@
  ****************************************************************************/
 
 
-import QtQuick                      2.11
-import QtQuick.Controls             2.4
-import QtQuick.Dialogs              1.3
-import QtQuick.Layouts              1.11
+import QtQuick          2.3
+import QtQuick.Controls 1.2
+import QtQuick.Dialogs  1.2
 
 import QGroundControl               1.0
 import QGroundControl.Palette       1.0
@@ -28,13 +27,12 @@ SetupPage {
     pageName:           qsTr("Buttons")
     pageDescription:    qsTr("Setup button actions.")
 
-    readonly property real  _maxButtons:         64
-    readonly property real  _attitudeLabelWidth: ScreenTools.defaultFontPixelWidth * 12
+    readonly property real _maxButtons: 16
 
     Connections {
         target: joystickManager
         onAvailableJoysticksChanged: {
-            if(joystickManager.joysticks.length === 0) {
+            if( joystickManager.joysticks.length == 0 ) {
                 summaryButton.checked = true
                 setupView.showSummaryPanel()
             }
@@ -43,26 +41,127 @@ SetupPage {
 
     Component {
         id: pageComponent
+
         Item {
             width:  availableWidth
-            height: bar.height + joyLoader.height
+            height: Math.max(leftColumn.height, rightColumn.height)
 
-            readonly property real  labelToMonitorMargin:   ScreenTools.defaultFontPixelWidth * 3
-            property var            _activeJoystick:        joystickManager.activeJoystick
+            property bool controllerCompleted:      false
+            property bool controllerAndViewReady:   false
 
-            function setupPageCompleted() {
-                controller.start()
-            }
+            readonly property real labelToMonitorMargin: defaultTextWidth * 3
+
+            property var _activeVehicle:    QGroundControl.multiVehicleManager.activeVehicle
+            property var _activeJoystick:   joystickManager.activeJoystick
 
             JoystickConfigController {
                 id:             controller
+                factPanel:      joystickPage.viewPanel
+                statusText:     statusText
+                cancelButton:   cancelButton
+                nextButton:     nextButton
+                skipButton:     skipButton
+
+                Component.onCompleted: {
+                    controllerCompleted = true
+                    if (joystickPage.completedSignalled) {
+                        controllerAndViewReady = true
+                        controller.start()
+                    }
+                }
             }
 
-            QGCTabBar {
-                id:             bar
-                width:          parent.width
-                Component.onCompleted: {
-                    currentIndex = _activeJoystick && _activeJoystick.calibrated ? 0 : 2
+            Component.onCompleted: {
+                if (controllerCompleted) {
+                    controllerAndViewReady = true
+                    controller.start()
+                }
+            }
+
+            // Live axis monitor control component
+            Component {
+                id: axisMonitorDisplayComponent
+
+                Item {
+                    property int axisValue: 0
+                    property int deadbandValue: 0
+                    property bool narrowIndicator: false
+                    property color deadbandColor: "#8c161a"
+
+                    property color          __barColor:             qgcPal.windowShade
+
+                    // Bar
+                    Rectangle {
+                        id:                     bar
+                        anchors.verticalCenter: parent.verticalCenter
+                        width:                  parent.width
+                        height:                 parent.height / 2
+                        color:                  __barColor
+                    }
+
+                    // Deadband
+                    Rectangle {
+                        id:                     deadbandBar
+                        anchors.verticalCenter: parent.verticalCenter
+                        x:                      _deadbandPosition
+                        width:                  _deadbandWidth
+                        height:                 parent.height / 2
+                        color:                  deadbandColor
+                        visible:                controller.deadbandToggle
+
+                        property real _percentDeadband:    ((2 * deadbandValue) / (32768.0 * 2))
+                        property real _deadbandWidth:   parent.width * _percentDeadband
+                        property real _deadbandPosition:   (parent.width - _deadbandWidth) / 2
+                    }
+
+                    // Center point
+                    Rectangle {
+                        anchors.horizontalCenter:   parent.horizontalCenter
+                        width:                      defaultTextWidth / 2
+                        height:                     parent.height
+                        color:                      qgcPal.window
+                    }
+
+                    // Indicator
+                    Rectangle {
+                        anchors.verticalCenter: parent.verticalCenter
+                        width:                  parent.narrowIndicator ?  height/6 : height
+                        height:                 parent.height * 0.75
+                        x:                      (reversed ? (parent.width - _indicatorPosition) : _indicatorPosition) - (width / 2)
+                        radius:                 width / 2
+                        color:                  qgcPal.text
+                        visible:                mapped
+
+                        property real _percentAxisValue:    ((axisValue + 32768.0) / (32768.0 * 2))
+                        property real _indicatorPosition:   parent.width * _percentAxisValue
+                    }
+
+                    QGCLabel {
+                        anchors.fill:           parent
+                        horizontalAlignment:    Text.AlignHCenter
+                        verticalAlignment:      Text.AlignVCenter
+                        text:                   qsTr("Not Mapped")
+                        visible:                !mapped
+                    }
+
+                    ColorAnimation {
+                        id:         barAnimation
+                        target:     bar
+                        property:   "color"
+                        from:       "yellow"
+                        to:         __barColor
+                        duration:   1500
+                    }
+
+
+                    // Axis value debugger
+                    /*
+                    QGCLabel {
+                        anchors.fill: parent
+                        text: axisValue
+                    }
+                    */
+
                 }
             } // Component - axisMonitorDisplayComponent
 
@@ -238,8 +337,12 @@ SetupPage {
                     width:      parent.width
                     wrapMode:   Text.WordWrap
                 }
-                QGCTabButton {
-                    text:       qsTr("Button Assigment")
+
+                Rectangle {
+                    width:          parent.width
+                    height:         1
+                    border.color:   qgcPal.text
+                    border.width:   1
                 }
 
                 // Settings
@@ -426,14 +529,19 @@ SetupPage {
 
                                 property bool pressed
 
-            Loader {
-                id:             joyLoader
-                source:         pages[bar.currentIndex]
-                width:          parent.width
-                anchors.top:    bar.bottom
-            }
-        }
-    }
-}
-
+                                QGCLabel {
+                                    anchors.fill:           parent
+                                    color:                  pressed ? qgcPal.buttonHighlightText : qgcPal.buttonText
+                                    horizontalAlignment:    Text.AlignHCenter
+                                    verticalAlignment:      Text.AlignVCenter
+                                    text:                   modelData
+                                }
+                            }
+                        } // Repeater
+                    } // Row
+                } // Column - Axis Monitor
+            } // Column - Right Column
+        } // Item
+    } // Component - pageComponent
+} // SetupPage
 

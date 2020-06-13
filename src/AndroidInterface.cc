@@ -23,7 +23,7 @@ QString AndroidInterface::getSdcardPath()
 void AndroidInterface::triggerMediaScannerScanFile(QString& file_path)
 {
     QAndroidJniObject path = QAndroidJniObject::fromString(file_path);
-    QAndroidJniObject::callStaticMethod<void>("org/mavlink/qgroundcontrol/QGCActivity", "triggerMediaScannerScanFile",
+     QAndroidJniObject::callStaticObjectMethod("org/mavlink/qgroundcontrol/QGCActivity", "triggerMediaScannerScanFile",
                                                "(Ljava/lang/String;)V",
                                                path.object<jstring>());
 }

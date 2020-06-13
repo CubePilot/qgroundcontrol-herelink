@@ -21,7 +21,7 @@
 #include "VideoReceiver.h"
 #include "QGCToolbox.h"
 #include "SubtitleWriter.h"
-
+#include "VideoStreamControl.h"
 Q_DECLARE_LOGGING_CATEGORY(VideoManagerLog)
 
 class VideoSettings;
@@ -50,6 +50,7 @@ public:
     Q_PROPERTY(double           thermalHfov             READ    thermalHfov                                 NOTIFY aspectRatioChanged)
     Q_PROPERTY(bool             autoStreamConfigured    READ    autoStreamConfigured                        NOTIFY autoStreamConfiguredChanged)
     Q_PROPERTY(bool             hasThermal              READ    hasThermal                                  NOTIFY aspectRatioChanged)
+    Q_PROPERTY(VideoStreamControl* videoStreamControl READ  videoStreamControl                          CONSTANT)
 
     virtual bool        hasVideo            ();
     virtual bool        isGStreamer         ();
@@ -66,6 +67,7 @@ public:
 
     virtual VideoReceiver*  videoReceiver           () { return _videoReceiver; }
     virtual VideoReceiver*  thermalVideoReceiver    () { return _thermalVideoReceiver; }
+    VideoStreamControl* videoStreamControl () { return _videoStreamControl; }
 
 #if defined(QGC_DISABLE_UVC)
     virtual bool        uvcEnabled          () { return false; }
@@ -96,6 +98,7 @@ protected slots:
     void _videoSourceChanged        ();
     void _udpPortChanged            ();
     void _rtspUrlChanged            ();
+    void _videoStreamUrlChanged     ();
     void _tcpUrlChanged             ();
     void _lowLatencyModeChanged     ();
     void _updateUVC                 ();
@@ -116,6 +119,7 @@ protected:
     SubtitleWriter  _subtitleWriter;
     bool            _isTaisync              = false;
     VideoReceiver*  _videoReceiver          = nullptr;
+    VideoStreamControl* _videoStreamControl = nullptr;
     VideoReceiver*  _thermalVideoReceiver   = nullptr;
     VideoSettings*  _videoSettings          = nullptr;
     QString         _videoSourceID;

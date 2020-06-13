@@ -31,7 +31,6 @@ public:
     QGCVideoStreamInfo(QObject* parent, const mavlink_video_stream_information_t* si);
 
     Q_PROPERTY(QString      uri                 READ uri                NOTIFY infoChanged)
-    Q_PROPERTY(QString      name                READ name               NOTIFY infoChanged)
     Q_PROPERTY(int          streamID            READ streamID           NOTIFY infoChanged)
     Q_PROPERTY(int          type                READ type               NOTIFY infoChanged)
     Q_PROPERTY(qreal        aspectRatio         READ aspectRatio        NOTIFY infoChanged)
@@ -39,7 +38,6 @@ public:
     Q_PROPERTY(bool         isThermal           READ isThermal          NOTIFY infoChanged)
 
     QString uri             () { return QString(_streamInfo.uri);  }
-    QString name            () { return QString(_streamInfo.name); }
     qreal   aspectRatio     ();
     qreal   hfov            () { return 180; }
     int     type            () { return VIDEO_STREAM_TYPE_RTSP; }

@@ -60,9 +60,10 @@ VideoManager::setToolbox(QGCToolbox *toolbox)
    connect(_videoSettings->rtspUrl(),       &Fact::rawValueChanged, this, &VideoManager::_rtspUrlChanged);
    connect(_videoSettings->tcpUrl(),        &Fact::rawValueChanged, this, &VideoManager::_tcpUrlChanged);
    connect(_videoSettings->aspectRatio(),   &Fact::rawValueChanged, this, &VideoManager::_aspectRatioChanged);
-   connect(_videoSettings->lowLatencyMode(),&Fact::rawValueChanged, this, &VideoManager::_lowLatencyModeChanged);
    MultiVehicleManager *pVehicleMgr = qgcApp()->toolbox()->multiVehicleManager();
    connect(pVehicleMgr, &MultiVehicleManager::activeVehicleChanged, this, &VideoManager::_setActiveVehicle);
+   _videoStreamControl = new VideoStreamControl();
+   connect(_videoStreamControl, &VideoStreamControl::videoStreamUrlChanged, this, &VideoManager::_videoStreamUrlChanged);
 
 #if defined(QGC_GST_STREAMING)
 #ifndef QGC_DISABLE_UVC
@@ -222,6 +223,10 @@ VideoManager::_rtspUrlChanged()
     restartVideo();
 }
 
+void VideoManager::_videoStreamUrlChanged(void)
+{
+    restartVideo();
+}
 //-----------------------------------------------------------------------------
 void
 VideoManager::_tcpUrlChanged()
@@ -258,6 +263,7 @@ VideoManager::isGStreamer()
         videoSource == VideoSettings::videoSourceUDPH265 ||
         videoSource == VideoSettings::videoSourceRTSP ||
         videoSource == VideoSettings::videoSourceTCP ||
+        videoSource == VideoSettings::videoSourceAuto ||
         videoSource == VideoSettings::videoSourceMPEGTS ||
         autoStreamConfigured();
 #else
@@ -401,6 +407,8 @@ VideoManager::_updateSettings()
         _videoReceiver->setUri(_videoSettings->rtspUrl()->rawValue().toString());
     else if (source == VideoSettings::videoSourceTCP)
         _videoReceiver->setUri(QStringLiteral("tcp://%1").arg(_videoSettings->tcpUrl()->rawValue().toString()));
+    else if (_videoSettings->videoSource()->rawValue().toString() == VideoSettings::videoSourceAuto)
+        _videoReceiver->setUri(_videoStreamControl->videoStreamUrl());
 }
 
 //-----------------------------------------------------------------------------
@@ -409,13 +417,13 @@ VideoManager::restartVideo()
 {
 #if defined(QGC_GST_STREAMING)
     qCDebug(VideoManagerLog) << "Restart video streaming";
-    stopVideo();
+    if(!_videoReceiver)
+        return;
+    _videoReceiver->stop();
     _updateSettings();
-    startVideo();
-    emit aspectRatioChanged();
+    _videoReceiver->start();
 #endif
 }
-
 //----------------------------------------------------------------------------------------
 void
 VideoManager::_setActiveVehicle(Vehicle* vehicle)
