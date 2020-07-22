@@ -123,10 +123,10 @@ public:
 
     //-- Storage Status
     enum StorageStatus {
-        STORAGE_EMPTY = STORAGE_STATUS_EMPTY,
-        STORAGE_UNFORMATTED = STORAGE_STATUS_UNFORMATTED,
-        STORAGE_READY = STORAGE_STATUS_READY,
-        STORAGE_NOT_SUPPORTED = STORAGE_STATUS_NOT_SUPPORTED
+        STORAGE_EMPTY = 0,
+        STORAGE_UNFORMATTED = 1,
+        STORAGE_READY = 2,
+        STORAGE_NOT_SUPPORTED = 3
     };
 
     enum ThermalViewMode {

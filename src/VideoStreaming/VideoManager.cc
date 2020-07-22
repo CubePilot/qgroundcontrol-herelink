@@ -72,7 +72,8 @@ VideoManager::setToolbox(QGCToolbox *toolbox)
 #endif
 
     emit isGStreamerChanged();
-    qCDebug(VideoManagerLog) << "New Video Source:" << videoSource;
+
+    qDebug() << "New Video Source:" << videoSource;
     _videoReceiver = toolbox->corePlugin()->createVideoReceiver(this);
     _thermalVideoReceiver = toolbox->corePlugin()->createVideoReceiver(this);
     _updateSettings();
@@ -83,6 +84,8 @@ VideoManager::setToolbox(QGCToolbox *toolbox)
         stopVideo();
     }
 
+#else
+#error "Support not included"
 #endif
 }
 

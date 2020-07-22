@@ -216,6 +216,7 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
 
     for (int position = 0; position < b.size(); position++) {
         if (mavlink_parse_char(mavlinkChannel, static_cast<uint8_t>(b[position]), &_message, &_status)) {
+//            qDebug() << "Received: " << _message.msgid;
             // Got a valid message
             if (!link->decodedFirstMavlinkPacket()) {
                 link->setDecodedFirstMavlinkPacket(true);
@@ -227,7 +228,6 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                     setVersion(200);
                 }
             }
-
             //-----------------------------------------------------------------
             // MAVLink Status
             uint8_t lastSeq = lastIndex[_message.sysid][_message.compid];
@@ -375,6 +375,21 @@ void MAVLinkProtocol::receiveBytes(LinkInterface* link, QByteArray b)
                 }
             }
         }
+//        qDebug() << "Parsing: " << _message.msgid <<
+//                    "\nck: " << QString("%1").arg(_message.ck[0], 0, 16) << QString("%1").arg(_message.ck[1], 0, 16) <<
+//                    "\nChecksum: " << QString("%1").arg(_message.checksum, 0, 16) <<
+//                    "\nParse State: " <<
+//                    "\nmsg_received           " << _status.msg_received <<
+//                    "\nbuffer_overrun         " << _status.buffer_overrun <<
+//                    "\nparse_error            " << _status.parse_error <<
+//                    "\nparse_state            " << _status.parse_state <<
+//                    "\npacket_idx             " << _status.packet_idx <<
+//                    "\ncurrent_rx_seq         " << _status.current_rx_seq <<
+//                    "\ncurrent_tx_seq         " << _status.current_tx_seq <<
+//                    "\npacket_rx_success_count" << _status.packet_rx_success_count <<
+//                    "\npacket_rx_drop_count   " << _status.packet_rx_drop_count <<
+//                    "\nflags                  " << _status.flags <<
+//                    "\nsignature_wait         " << _status.signature_wait;
     }
 }
 

@@ -1480,7 +1480,7 @@ void
 QGCCameraControl::handleStorageInfo(const mavlink_storage_information_t& st)
 {
     qCDebug(CameraControlLog) << "handleStorageInfo:" << st.available_capacity << st.status << st.storage_count << st.storage_id << st.total_capacity << st.used_capacity;
-    if(st.status == STORAGE_STATUS_READY) {
+    if(st.status == 0) {
         uint32_t t = static_cast<uint32_t>(st.total_capacity);
         if(_storageTotal != t) {
             _storageTotal = t;

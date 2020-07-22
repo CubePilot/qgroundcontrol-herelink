@@ -224,7 +224,7 @@ void VideoStreamControl::_requestVideoStreamInfo()
 
     int len = mavlink_msg_to_send_buffer(buffer, &msg);
     _linkInterface->writeBytesSafe((const char*)buffer, len);
-    qCDebug(VideoStreamControlLog) << "Request video stream info is sent";
+    qCDebug(VideoStreamControlLog) << "Request video stream info is sent" << _systemId;
 }
 
 void VideoStreamControl::_checkCameraId()
@@ -262,6 +262,7 @@ void VideoStreamControl::_startVideoStreaming() {
     if (_linkInterface == NULL) {
         return;
     }
+    qCDebug(VideoStreamControlLog) << "Start Video Stream" << _systemId;
     mavlink_message_t msg;
     mavlink_msg_command_long_pack(_mavlinkProtocol->getSystemId(), _mavlinkProtocol->getComponentId(), &msg,
                                       _systemId, MAV_COMP_ID_CAMERA,

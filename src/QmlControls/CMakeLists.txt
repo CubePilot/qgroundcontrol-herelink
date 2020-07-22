@@ -66,6 +66,7 @@ add_custom_target(QmlControlsQml
 	QGCMovableItem.qml
 	QGCPipable.qml
 	QGCRadioButton.qml
+        QGCRadioButtonOld.qml
 	QGCSlider.qml
 	QGCSwitch.qml
 	QGCTabBar.qml

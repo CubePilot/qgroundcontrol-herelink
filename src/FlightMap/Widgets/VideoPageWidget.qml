@@ -7,7 +7,7 @@
  *
  ****************************************************************************/
 
-import QtQuick                  2.4
+import QtQuick                  2.3
 import QtPositioning            5.2
 import QtQuick.Layouts          1.2
 import QtQuick.Controls         1.4
@@ -26,8 +26,7 @@ import QGroundControl.FactControls      1.0
 /// Video streaming page for Instrument Panel PageView
 Column {
     width:              pageWidth
-    height:             videoGrid.height + ScreenTools.defaultFontPixelWidth * 2 +
-                        (cameraIdRow.visible ? cameraIdRow.height : 0)
+    height:             videoGrid.height + ScreenTools.defaultFontPixelWidth * 2
     anchors.margins:    ScreenTools.defaultFontPixelWidth * 2
     anchors.centerIn:   parent
 
@@ -44,27 +43,6 @@ Column {
 
     QGCPalette { id:qgcPal; colorGroupEnabled: true }
 
-    Row {
-        id:                       cameraIdRow
-        visible:                  QGroundControl.videoManager.videoStreamControl.cameraCount > 1
-        anchors.horizontalCenter: parent.horizontalCenter
-        spacing:                  ScreenTools.defaultFontPixelWidth
-        ExclusiveGroup { id:cameraIdGroup }
-        QGCRadioButton {
-            exclusiveGroup: cameraIdGroup
-            text:           "Stream 1"
-            checked:        QGroundControl.settingsManager.videoSettings.cameraId.rawValue === 0
-            enabled:        !QGroundControl.videoManager.videoStreamControl.settingInProgress
-            onClicked:      QGroundControl.settingsManager.videoSettings.cameraId.rawValue = 0
-        }
-        QGCRadioButton {
-            exclusiveGroup: cameraIdGroup
-            text:           "Stream 2"
-            checked:        QGroundControl.settingsManager.videoSettings.cameraId.rawValue === 1
-            enabled:        !QGroundControl.videoManager.videoStreamControl.settingInProgress
-            onClicked:      QGroundControl.settingsManager.videoSettings.cameraId.rawValue = 1
-        }
-    }
     Item { width: 1; height: ScreenTools.defaultFontPixelHeight}
     GridLayout {
         id:                 videoGrid
@@ -83,6 +61,22 @@ Column {
             onRawValueChanged: {
                 enableSwitch.checked = QGroundControl.settingsManager.videoSettings.streamEnabled.rawValue
             }
+        }
+        ExclusiveGroup { id:cameraIdGroup }
+
+        QGCRadioButtonOld {
+            exclusiveGroup: cameraIdGroup
+            text:           "Stream 1"
+            checked:        QGroundControl.settingsManager.videoSettings.cameraId.rawValue === 0
+            enabled:        !QGroundControl.videoManager.videoStreamControl.settingInProgress
+            onClicked:      QGroundControl.settingsManager.videoSettings.cameraId.rawValue = 0
+        }
+        QGCRadioButtonOld {
+            exclusiveGroup: cameraIdGroup
+            text:           "Stream 2"
+            checked:        QGroundControl.settingsManager.videoSettings.cameraId.rawValue === 1
+            enabled:        !QGroundControl.videoManager.videoStreamControl.settingInProgress
+            onClicked:      QGroundControl.settingsManager.videoSettings.cameraId.rawValue = 1
         }
         // Enable/Disable Video Streaming
         QGCLabel {

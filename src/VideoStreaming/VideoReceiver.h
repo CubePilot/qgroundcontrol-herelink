@@ -1,16 +1,17 @@
 /****************************************************************************
  *
- * (c) 2009-2020 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
+ *   (c) 2009-2018 QGROUNDCONTROL PROJECT <http://www.qgroundcontrol.org>
  *
  * QGroundControl is licensed according to the terms in the file
  * COPYING.md in the root of the source code directory.
  *
  ****************************************************************************/
 
+
 /**
  * @file
  *   @brief QGC Video Receiver
- *   @author Gus Grubba <gus@auterion.com>
+ *   @author Gus Grubba <mavlink@grubba.com>
  */
 
 #pragma once
@@ -32,7 +33,6 @@ class VideoReceiver : public QObject
 {
     Q_OBJECT
 public:
-
 #if defined(QGC_GST_STREAMING)
     Q_PROPERTY(bool             recording           READ    recording           NOTIFY recordingChanged)
 #endif
@@ -45,7 +45,11 @@ public:
     ~VideoReceiver();
 
 #if defined(QGC_GST_STREAMING)
+    virtual bool            running         () { return _running;   }
     virtual bool            recording       () { return _recording; }
+    virtual bool            streaming       () { return _streaming; }
+    virtual bool            starting        () { return _starting;  }
+    virtual bool            stopping        () { return _stopping;  }
 #endif
 
     virtual bool            videoRunning    () { return _videoRunning; }
@@ -56,11 +60,9 @@ public:
     virtual void            grabImage       (QString imageFile);
 
     virtual void        setShowFullScreen   (bool show) { _showFullScreen = show; emit showFullScreenChanged(); }
-
 #if defined(QGC_GST_STREAMING)
-    void                  setVideoSink      (GstElement* videoSink);
+    void                setVideoSink           (GstElement* sink);
 #endif
-
 signals:
     void videoRunningChanged                ();
     void imageFileChanged                   ();
@@ -84,10 +86,7 @@ public slots:
 protected slots:
     virtual void _updateTimer               ();
 #if defined(QGC_GST_STREAMING)
-    GstElement*  _makeSource                (const QString& uri);
-    GstElement*  _makeFileSink              (const QString& videoFile, unsigned format);
-    virtual void _restart_timeout           ();
-    virtual void _tcp_timeout               ();
+    virtual void _timeout                   ();
     virtual void _connected                 ();
     virtual void _socketError               (QAbstractSocket::SocketError socketError);
     virtual void _handleError               ();
@@ -103,7 +102,9 @@ protected:
     {
         GstPad*         teepad;
         GstElement*     queue;
+        GstElement*     mux;
         GstElement*     filesink;
+        GstElement*     parse;
         gboolean        removing;
     } Sink;
 
@@ -123,29 +124,28 @@ protected:
     static GstPadProbeReturn    _videoSinkProbe         (GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
     static GstPadProbeReturn    _keyframeWatch          (GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
 
-    virtual void                _unlinkRecordingBranch  (GstPadProbeInfo* info);
+    virtual void                _detachRecordingBranch  (GstPadProbeInfo* info);
     virtual void                _shutdownRecordingBranch();
     virtual void                _shutdownPipeline       ();
     virtual void                _cleanupOldVideos       ();
 
     GstElement*     _pipeline;
+    GstElement*     _pipelineStopRec;
     GstElement*     _videoSink;
     guint64         _lastFrameId;
     qint64          _lastFrameTime;
 
     //-- Wait for Video Server to show up before starting
     QTimer          _frameTimer;
-    QTimer          _restart_timer;
-    int             _restart_time_ms;
-    QTimer          _tcp_timer;
+    QTimer          _timer;
     QTcpSocket*     _socket;
     bool            _serverPresent;
-    int             _tcpTestInterval_ms;
     time_t          _startTime;
     int             _rtspTestInterval_ms;
 
     //-- RTSP UDP reconnect timeout
     uint64_t        _udpReconnect_us;
+
 #endif
 
     QString         _uri;
@@ -155,4 +155,3 @@ protected:
     bool            _showFullScreen;
     VideoSettings*  _videoSettings;
 };
-
