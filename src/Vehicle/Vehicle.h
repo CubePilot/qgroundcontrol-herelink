@@ -659,6 +659,7 @@ public:
     Q_PROPERTY(Fact* airSpeed           READ airSpeed           CONSTANT)
     Q_PROPERTY(Fact* climbRate          READ climbRate          CONSTANT)
     Q_PROPERTY(Fact* altitudeRelative   READ altitudeRelative   CONSTANT)
+    Q_PROPERTY(Fact* gStream            READ gStream            CONSTANT)
     Q_PROPERTY(Fact* altitudeAMSL       READ altitudeAMSL       CONSTANT)
     Q_PROPERTY(Fact* flightDistance     READ flightDistance     CONSTANT)
     Q_PROPERTY(Fact* distanceToHome     READ distanceToHome     CONSTANT)
@@ -947,6 +948,7 @@ public:
     Fact* groundSpeed       (void) { return &_groundSpeedFact; }
     Fact* climbRate         (void) { return &_climbRateFact; }
     Fact* altitudeRelative  (void) { return &_altitudeRelativeFact; }
+    Fact* gStream           (void) { return &_gStreamFact; }
     Fact* altitudeAMSL      (void) { return &_altitudeAMSLFact; }
     Fact* flightDistance    (void) { return &_flightDistanceFact; }
     Fact* distanceToHome    (void) { return &_distanceToHomeFact; }
@@ -1477,6 +1479,7 @@ private:
     Fact _airSpeedFact;
     Fact _climbRateFact;
     Fact _altitudeRelativeFact;
+    Fact _gStreamFact;
     Fact _altitudeAMSLFact;
     Fact _flightDistanceFact;
     Fact _flightTimeFact;
@@ -1506,6 +1509,7 @@ private:
     static const char* _airSpeedFactName;
     static const char* _climbRateFactName;
     static const char* _altitudeRelativeFactName;
+    static const char* _gStreamFactName;
     static const char* _altitudeAMSLFactName;
     static const char* _flightDistanceFactName;
     static const char* _flightTimeFactName;

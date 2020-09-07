@@ -114,5 +114,12 @@
     "name":             "hobbs",
     "shortDescription": "Hobbs Meter",
     "type":             "string"
+},
+{
+    "name":             "gStream",
+    "shortDescription": "MMGC Ratio",
+    "type":             "double",
+    "decimalPlaces":    0,
+    "units":            ""
 }
 ]
