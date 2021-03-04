@@ -676,20 +676,20 @@ void Joystick::startPolling(Vehicle* vehicle)
         // Build action list
         _buildActionList(vehicle);
         // Only connect the new vehicle if it wants joystick data
-        if (vehicle->joystickEnabled()) {
-            _pollingStartedForCalibration = false;
-            UAS* uas = _activeVehicle->uas();
-            connect(this, &Joystick::manualControl, uas, &UAS::setExternalControlSetpoint);
-            connect(this, &Joystick::setArmed,           _activeVehicle, &Vehicle::setArmed);
-            connect(this, &Joystick::setVtolInFwdFlight, _activeVehicle, &Vehicle::setVtolInFwdFlight);
-            connect(this, &Joystick::setFlightMode,      _activeVehicle, &Vehicle::setFlightMode);
-            connect(this, &Joystick::gimbalPitchStep,    _activeVehicle, &Vehicle::gimbalPitchStep);
-            connect(this, &Joystick::gimbalYawStep,      _activeVehicle, &Vehicle::gimbalYawStep);
-            connect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
-            connect(this, &Joystick::gimbalControlValue, _activeVehicle, &Vehicle::gimbalControlValue);
+        // if (vehicle->joystickEnabled()) {
+        _pollingStartedForCalibration = false;
+        UAS* uas = _activeVehicle->uas();
+        // connect(this, &Joystick::manualControl, uas, &UAS::setExternalControlSetpoint);
+        connect(this, &Joystick::setArmed,           _activeVehicle, &Vehicle::setArmed);
+        connect(this, &Joystick::setVtolInFwdFlight, _activeVehicle, &Vehicle::setVtolInFwdFlight);
+        connect(this, &Joystick::setFlightMode,      _activeVehicle, &Vehicle::setFlightMode);
+        connect(this, &Joystick::gimbalPitchStep,    _activeVehicle, &Vehicle::gimbalPitchStep);
+        connect(this, &Joystick::gimbalYawStep,      _activeVehicle, &Vehicle::gimbalYawStep);
+        connect(this, &Joystick::centerGimbal,       _activeVehicle, &Vehicle::centerGimbal);
+        connect(this, &Joystick::gimbalControlValue, _activeVehicle, &Vehicle::gimbalControlValue);
             // FIXME: ****
             //connect(this, &Joystick::buttonActionTriggered, uas, &UAS::triggerAction);
-        }
+        // }
     }
     if (!isRunning()) {
         _exitThread = false;
