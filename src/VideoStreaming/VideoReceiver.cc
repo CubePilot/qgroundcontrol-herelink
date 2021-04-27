@@ -370,13 +370,14 @@ VideoReceiver::start()
             qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('queue') [1]";
             break;
         }
+        
+        g_object_set(G_OBJECT(queue1),"leaky ",2,NULL);
 
         if(isTaisyncUSB) {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
         } else {
             gst_bin_add_many(GST_BIN(_pipeline), dataSource, demux, parser, _tee, queue, decoder, queue1, _videoSink, nullptr);
         }
-        gst_bin_add_many(GST_BIN(_pipeline), dataSource, demux, _tee, queue, parser, decoder, queue1, _videoSink, NULL);
 
         pipelineUp = true;
 
