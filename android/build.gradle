@@ -53,9 +53,19 @@ android {
             jniLibs.srcDirs = ['libs']
        }
     }
+    buildTypes {
+        debug{
+            debuggable true
+            minifyEnabled false
+        }
+        release {
+            minifyEnabled false
+        }
+    }
 
     aaptOptions {
         cruncherEnabled = false
+        noCompress ''
     }
 
     lintOptions {

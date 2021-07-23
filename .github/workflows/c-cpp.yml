@@ -7,28 +7,35 @@ jobs:
   build:
 
     runs-on: self-hosted
+    strategy:
+      matrix: 
+        config: [ { BITNESS: '32', GSTREAMER_NAME: 'armv7' }, { BITNESS: '64', GSTREAMER_NAME: 'arm64' } ]
+    defaults:
+      run:
+        shell: bash
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Java
-      uses: actions/setup-java@v1
-      with:
-        java-version: 1.8
     - name: apt
       run: sudo apt-get update && sudo apt-get install wget curl    speech-dispatcher    libgstreamer-plugins-base1.0-dev     libgstreamer1.0-0:amd64     libgstreamer1.0-dev     libudev-dev android-sdk
     - name: configure
       env: 
-        JOBS: 4
+        JOBS: 16
         SHADOW_BUILD_DIR: /tmp/shadow_build_dir
         CODESIGN: nocodesign
         SPEC: android-clang
         CONFIG: installer
-        BITNESS: 64
-        GSTREAMER_NAME: arm64
+        BITNESS: ${{ matrix.config.BITNESS }}
+        GSTREAMER_NAME: ${{ matrix.config.GSTREAMER_NAME }}
         ANDROID_HOME: /usr/local/lib/android/sdk
       run: |
         set -o xtrace
+        
+        export PATH=$ANDROID_HOME/tools/bin:/opt/java/jdk1.8.0_131/bin:$PATH          
+
         git submodule update --init --recursive
+                
+        rm -rf /tmp/shadow_build_dir
         
         export sdk_version=sdk-tools-linux-4333796.zip
         
@@ -40,43 +47,65 @@ jobs:
         #mkdir ~/.android && echo '### User Sources for Android SDK Manager' > ~/.android/repositories.cfg
         #sudo yes | sdkmanager --licenses && sdkmanager --update
         
-        #sudo sdkmanager "build-tools;28.0.3"
+        #sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-30" "platforms;android-29" "build-tools;30.0.0"
+        sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;25.0.3" "platforms;android-29" "platform-tools"
         
-        wget --quiet https://s3-us-west-2.amazonaws.com/qgroundcontrol/dependencies/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2 
-        tar jxf gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2 
+        if [ ! -f "/tmp/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2" ]; then
+            wget -N --quiet https://s3-us-west-2.amazonaws.com/qgroundcontrol/dependencies/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2 -O /tmp/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2
+        fi
+        tar jxf /tmp/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2
         ls -al
         ls -al gstreamer-1.0-android-universal-1.14.4
         
-        wget --quiet https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip 
-        unzip android-ndk-r20-linux-x86_64.zip > /dev/null
+        if [ ! -f "/tmp/android-ndk-r20-linux-x86_64.zip" ]; then
+            wget -N --quiet https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip -O /tmp/android-ndk-r20-linux-x86_64.zip
+        fi
+        unzip /tmp/android-ndk-r20-linux-x86_64.zip > /dev/null
         export ANDROID_NDK_ROOT=`pwd`/android-ndk-r20 
         export ANDROID_SDK_ROOT=/usr/local/lib/android/sdk
-        export PATH=`pwd`/android-ndk-r20:$PATH        
-
+        export PATH=`pwd`/android-ndk-r20:$PATH
         
-        wget --quiet https://s3-us-west-2.amazonaws.com/qgroundcontrol/dependencies/Qt5.12.6-android_arm64_v8a-min.tar.bz2 
-        tar jxf Qt5.12.6-android_arm64_v8a-min.tar.bz2 -C /tmp 
-        export PATH=/tmp/Qt5.12-android_arm64_v8a/5.12.6/android_arm64_v8a/bin:$PATH
+        if [ "$BITNESS" == "64" ]; then
+            if [ ! -f "/tmp/Qt5.12.6-android_arm64_v8a-min.tar.bz2" ]; then
+                wget --quiet https://s3-us-west-2.amazonaws.com/qgroundcontrol/dependencies/Qt5.12.6-android_arm64_v8a-min.tar.bz2 -O /tmp/Qt5.12.6-android_arm64_v8a-min.tar.bz2
+            fi
+            tar jxf /tmp/Qt5.12.6-android_arm64_v8a-min.tar.bz2 -C /tmp 
+            export PATH=/tmp/Qt5.12-android_arm64_v8a/5.12.6/android_arm64_v8a/bin:$PATH
+        fi
+        
+        if [ "$BITNESS" == "32" ]; then
+            if [ ! -f "/tmp/Qt5.12.6-android_armv7-min.tar.bz2" ]; then
+                wget -N --quiet https://s3-us-west-2.amazonaws.com/qgroundcontrol/dependencies/Qt5.12.6-android_armv7-min.tar.bz2 -O /tmp/Qt5.12.6-android_armv7-min.tar.bz2
+            fi
+            tar jxf /tmp/Qt5.12.6-android_armv7-min.tar.bz2 -C /tmp
+            export PATH=/tmp/Qt5.12-android_armv7/5.12.6/android_armv7/bin:$PATH
+        fi
         
         #git remote set-branches origin 'master' 
         #git fetch --tags origin master 
-        ./tools/update_android_version.sh ${BITNESS} master
+        ./tools/update_android_version.sh ${BITNESS} notmaster
         
-        rm -rf gstreamer-1.0-android-armv7-1.5.2
+        java -version
+        gradle --version
+        cd android
+        ./gradlew --version
+        cd ..
+        
+        #rm android/debug.keystore
+        #keytool -genkey -v -keystore android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000               
         
         mkdir -p ${SHADOW_BUILD_DIR} 
         cd ${SHADOW_BUILD_DIR}
         
-        export STABLE_OR_DAILY=StableBuild;    
+        export STABLE_OR_DAILY=StableBuild
         
-        qmake -r $GITHUB_WORKSPACE/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=thread CONFIG+=${STABLE_OR_DAILY} CONFIG+=${CODESIGN} -spec ${SPEC}
-       
-        make VERBOSE=1 -j8 install || true
+        qmake -r $GITHUB_WORKSPACE/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=${STABLE_OR_DAILY} -spec ${SPEC}
+               
+        make -j16 VERBOSE=1 install INSTALL_ROOT=./release/android-build/
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
-        # Artifact name
-        name: release.zip
+        name: ${{ matrix.config.BITNESS }}.zip
         # A file, directory or wildcard pattern that describes what to upload
         path: /tmp/shadow_build_dir/release/android-build/build/outputs/
