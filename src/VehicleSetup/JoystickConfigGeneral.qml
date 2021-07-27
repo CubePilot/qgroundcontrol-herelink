@@ -21,7 +21,7 @@ import QGroundControl.FactSystem    1.0
 import QGroundControl.FactControls  1.0
 
 Item {
-    width:                  mainCol.width  + (ScreenTools.defaultFontPixelWidth  * 2)
+    width:                  availableWidth
     height:                 mainCol.height + (ScreenTools.defaultFontPixelHeight * 2)
     readonly property real axisMonitorWidth: ScreenTools.defaultFontPixelWidth * 32
     Column {
