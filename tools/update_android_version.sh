@@ -1,11 +1,37 @@
 #!/usr/bin/env bash
 
+# Strip the 'v' from the beginning of the tag
 VERSIONNAME=`git describe --always --tags | sed -e 's/^v//'`
+echo "tag $VERSIONNAME"
 
-# Android versionCode from git tag vX.Y.Z-123-gSHA
+# Change all occurences of '-' in tag to '.' and separate into parts
 IFS=. read major minor patch dev sha <<<"${VERSIONNAME//-/.}"
-VERSIONCODE=$(($major*100000))
-VERSIONCODE=$(($(($minor*10000)) + $VERSIONCODE))
+echo "major:$major minor:$minor patch:$patch dev:$dev sha:$sha"
+
+# Max Android version code is 2100000000. Version codes must increase with each release and the 
+# version codes for multiple apks for the same release must be unique and not collide as well. 
+# All of this makes it next to impossible to create a rational system of building a version code
+# from a semantic version without imposing some strict restrictions.
+if [ $major -gt 9 ]; then
+    echo "Error: Major version larger than 1 digit: $major"
+    exit 1
+fi
+if [ $minor -gt 9 ]; then
+    echo "Error: Minor version larger than 1 digit: $minor"
+    exit 1
+fi
+if [ $patch -gt 99 ]; then
+    echo "Error: Patch version larger than 2 digits: $patch"
+    exit 1
+fi
+if [ $dev -gt 999 ]; then
+    echo "Error: Dev version larger than 3 digits: $dev"
+    exit 1
+fi
+
+# Version code format: BBMIPPDDD (B=Bitness, I=Minor)
+VERSIONCODE=$(($major*1000000))
+VERSIONCODE=$(($(($minor*100000)) + $VERSIONCODE))
 VERSIONCODE=$(($(($patch*1000)) + $VERSIONCODE))
 VERSIONCODE=$(($(($dev)) + $VERSIONCODE))
 
