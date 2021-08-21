@@ -17,10 +17,11 @@ Item {
 
     property Fact _noFact: Fact { }
 
-    property Fact compassPrimaryFact:               factPanelController.getParameterFact(-1, "COMPASS_PRIMARY")
-    property bool compass1Primary:                  compassPrimaryFact.rawValue == 0
-    property bool compass2Primary:                  compassPrimaryFact.rawValue == 1
-    property bool compass3Primary:                  compassPrimaryFact.rawValue == 2
+    property bool compassPrimaryFactAvailable:      factPanelController.parameterExists(-1, "COMPASS_PRIMARY")
+    property Fact compassPrimaryFact:               compassPrimaryFactAvailable ? factPanelController.getParameterFact(-1, "COMPASS_PRIMARY") : _noFact
+    property bool compass1Primary:                  compassPrimaryFactAvailable ? compassPrimaryFact.rawValue == 0 : false
+    property bool compass2Primary:                  compassPrimaryFactAvailable ? compassPrimaryFact.rawValue == 1 : false
+    property bool compass3Primary:                  compassPrimaryFactAvailable ? compassPrimaryFact.rawValue == 2 : false
     property var  rgCompassPrimary:                 [ compass1Primary, compass2Primary, compass3Primary ]
 
     property Fact compass1Id:                       factPanelController.getParameterFact(-1, "COMPASS_DEV_ID")
