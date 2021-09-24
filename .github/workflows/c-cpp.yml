@@ -6,7 +6,7 @@ on:
 jobs:
   build:
 
-    runs-on: self-hosted
+    runs-on: ubuntu-20.04
     strategy:
       matrix: 
         config: [ { BITNESS: '32', GSTREAMER_NAME: 'armv7' }, { BITNESS: '64', GSTREAMER_NAME: 'arm64' } ]
