@@ -20,6 +20,8 @@ jobs:
       run: sudo apt-get update && sudo apt-get install wget curl    speech-dispatcher    libgstreamer-plugins-base1.0-dev     libgstreamer1.0-0:amd64     libgstreamer1.0-dev     libudev-dev android-sdk
     - name: Set up JDK 1.8
       uses: joschi/setup-jdk@v2
+      with:
+          java-version: 8
     - name: configure
       env: 
         JOBS: 16
