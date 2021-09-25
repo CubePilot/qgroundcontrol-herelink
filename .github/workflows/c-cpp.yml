@@ -52,6 +52,7 @@ jobs:
         #sudo yes | sdkmanager --licenses && sdkmanager --update
         
         #sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-30" "platforms;android-29" "build-tools;30.0.0"
+        #sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-31" "platforms;android-30" "platforms;android-29" "build-tools;31.0.0" "build-tools;30.0.0"
         sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;25.0.3" "platforms;android-29" "platform-tools"
         
         if [ ! -f "/tmp/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2" ]; then
