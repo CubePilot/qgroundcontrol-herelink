@@ -22,6 +22,7 @@
 #include "APMTuningComponent.h"
 #include "APMSensorsComponent.h"
 #include "APMPowerComponent.h"
+#include "APMSpiritComponent.h"
 #include "APMMotorComponent.h"
 #include "APMCameraComponent.h"
 #include "APMLightsComponent.h"
@@ -72,84 +73,19 @@ const QVariantList& APMAutoPilotPlugin::vehicleComponents(void)
 {
     if (_components.count() == 0 && !_incorrectParameterVersion) {
         if (_vehicle->parameterManager()->parametersReady()) {
-            _airframeComponent = new APMAirframeComponent(_vehicle, this);
-            _airframeComponent->setupTriggerSignals();
-            _components.append(QVariant::fromValue((VehicleComponent*)_airframeComponent));
 
-            if ( _vehicle->supportsRadio() ) {
-                _radioComponent = new APMRadioComponent(_vehicle, this);
-                _radioComponent->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_radioComponent));
-            }
-
-            // No flight modes component for Sub versions 3.5 and up
-            if (!_vehicle->sub() || (_vehicle->versionCompare(3, 5, 0) < 0)) {
-                _flightModesComponent = new APMFlightModesComponent(_vehicle, this);
-                _flightModesComponent->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_flightModesComponent));
-            }
-
-            _sensorsComponent = new APMSensorsComponent(_vehicle, this);
-            _sensorsComponent->setupTriggerSignals();
-            _components.append(QVariant::fromValue((VehicleComponent*)_sensorsComponent));
-
-            _powerComponent = new APMPowerComponent(_vehicle, this);
-            _powerComponent->setupTriggerSignals();
-            _components.append(QVariant::fromValue((VehicleComponent*)_powerComponent));
-
-            if (!_vehicle->sub() || (_vehicle->sub() && _vehicle->versionCompare(3, 5, 3) >= 0)) {
-                _motorComponent = new APMMotorComponent(_vehicle, this);
-                _motorComponent->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_motorComponent));
-            }
+            _spiritComponent = new APMSpiritComponent(_vehicle, this);
+            _spiritComponent->setupTriggerSignals();
+            _components.append(QVariant::fromValue((VehicleComponent*)_spiritComponent));
 
             _safetyComponent = new APMSafetyComponent(_vehicle, this);
             _safetyComponent->setupTriggerSignals();
             _components.append(QVariant::fromValue((VehicleComponent*)_safetyComponent));
 
-#if 0
-    // Follow me not ready for Stable
+            _sensorsComponent = new APMSensorsComponent(_vehicle, this);
+            _sensorsComponent->setupTriggerSignals();
+            _components.append(QVariant::fromValue((VehicleComponent*)_sensorsComponent));
 
-            if ((qobject_cast<ArduCopterFirmwarePlugin*>(_vehicle->firmwarePlugin()) || qobject_cast<ArduRoverFirmwarePlugin*>(_vehicle->firmwarePlugin())) &&
-                    _vehicle->parameterManager()->parameterExists(-1, QStringLiteral("FOLL_ENABLE"))) {
-                _followComponent = new APMFollowComponent(_vehicle, this);
-                _followComponent->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_followComponent));
-            }
-#endif
-
-            if (_vehicle->vehicleType() == MAV_TYPE_HELICOPTER && (_vehicle->versionCompare(4, 0, 0) >= 0)) {
-                _heliComponent = new APMHeliComponent(_vehicle, this);
-                _heliComponent->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_heliComponent));
-            }
-
-            _tuningComponent = new APMTuningComponent(_vehicle, this);
-            _tuningComponent->setupTriggerSignals();
-            _components.append(QVariant::fromValue((VehicleComponent*)_tuningComponent));
-
-            //_cameraComponent = new APMCameraComponent(_vehicle, this);
-            //_cameraComponent->setupTriggerSignals();
-            //_components.append(QVariant::fromValue((VehicleComponent*)_cameraComponent));
-
-            if (_vehicle->sub()) {
-                _lightsComponent = new APMLightsComponent(_vehicle, this);
-                _lightsComponent->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_lightsComponent));
-
-                if(_vehicle->versionCompare(3, 5, 0) >= 0) {
-                    _subFrameComponent = new APMSubFrameComponent(_vehicle, this);
-                    _subFrameComponent->setupTriggerSignals();
-                    _components.append(QVariant::fromValue((VehicleComponent*)_subFrameComponent));
-                }
-            }
-
-            //-- Is there an ESP8266 Connected?
-            if(_vehicle->parameterManager()->parameterExists(MAV_COMP_ID_UDP_BRIDGE, "SW_VER")) {
-                _esp8266Component = new ESP8266Component(_vehicle, this);
-                _esp8266Component->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_esp8266Component));
-            }
         } else {
             qWarning() << "Call to vehicleCompenents prior to parametersReady";
         }
@@ -162,23 +98,9 @@ QString APMAutoPilotPlugin::prerequisiteSetup(VehicleComponent* component) const
 {
     bool requiresAirframeCheck = false;
 
-    if (qobject_cast<const APMFlightModesComponent*>(component)) {
-        if (_airframeComponent && !_airframeComponent->setupComplete()) {
-            return _airframeComponent->name();
-        }
-        if (_radioComponent && !_radioComponent->setupComplete()) {
-            return _radioComponent->name();
-        }
-        requiresAirframeCheck = true;
-    } else if (qobject_cast<const APMRadioComponent*>(component)) {
-        requiresAirframeCheck = true;
-    } else if (qobject_cast<const APMCameraComponent*>(component)) {
-        requiresAirframeCheck = true;
-    } else if (qobject_cast<const APMPowerComponent*>(component)) {
+    if (qobject_cast<const APMSpiritComponent*>(component)) {
         requiresAirframeCheck = true;
     } else if (qobject_cast<const APMSafetyComponent*>(component)) {
-        requiresAirframeCheck = true;
-    } else if (qobject_cast<const APMTuningComponent*>(component)) {
         requiresAirframeCheck = true;
     } else if (qobject_cast<const APMSensorsComponent*>(component)) {
         requiresAirframeCheck = true;

@@ -15,17 +15,17 @@ import QGroundControl.Vehicle   1.0
 
 // This class stores the data and functions of the check list but NOT the GUI (which is handled somewhere else).
 PreFlightCheckButton {
-    name:                           qsTr("Battery")
-    manualText:                     qsTr("Battery connector firmly plugged?")
+    name:                           qsTr("BATTERY LEVEL")
+    manualText:                     ""
     telemetryFailure:               _batLow
     telemetryTextFailure:           allowTelemetryFailureOverride ?
-                                        qsTr("Warning - Battery charge below %1%.").arg(failurePercent) :
-                                        qsTr("Battery charge below %1%. Please recharge.").arg(failurePercent)
-    allowTelemetryFailureOverride:  allowFailurePercentOverride
+                                        qsTr("Warning - Battery Voltage below %1.").arg(failureVoltage) :
+                                        qsTr("Battery Voltage below %1 V. Please recharge.").arg(failureVoltage)
+    allowTelemetryFailureOverride:  allowFailureVoltageOverride
 
-    property int    failurePercent:                 40
-    property bool   allowFailurePercentOverride:    false
-    property var    _batteryValue:                  activeVehicle ? activeVehicle.battery.percentRemaining.value : 0
-    property var    _batPercentRemaining:           isNaN(_batteryValue) ? 0 : _batteryValue
-    property bool   _batLow:                        _batPercentRemaining < failurePercent
+    property int    failureVoltage:                 43
+    property bool   allowFailureVoltageOverride:    false
+    property var    _batteryValue:                  activeVehicle ? activeVehicle.battery.voltage.value : 0
+    property var    _batVoltageRemaining:           isNaN(_batteryValue) ? 0 : _batteryValue
+    property bool   _batLow:                        _batVoltageRemaining < failureVoltage
 }

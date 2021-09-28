@@ -73,4 +73,10 @@ android {
     lintOptions {
         abortOnError false
     }
+    
+    defaultConfig {
+        applicationId "com.ascent.spiritqgc"
+    }
+    
 }
+    

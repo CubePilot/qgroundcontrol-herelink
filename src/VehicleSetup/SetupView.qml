@@ -238,39 +238,6 @@ Rectangle {
                 onClicked: showSummaryPanel()
             }
 
-            SubMenuButton {
-                id:                 firmwareButton
-                imageResource:      "/qmlimages/FirmwareUpgradeIcon.png"
-                setupIndicator:     false
-                exclusiveGroup:     setupButtonGroup
-                visible:            !ScreenTools.isMobile && _corePlugin.options.showFirmwareUpgrade
-                text:               qsTr("Firmware")
-                Layout.fillWidth:   true
-
-                onClicked: showPanel(this, "FirmwareUpgrade.qml")
-            }
-
-            SubMenuButton {
-                id:                 px4FlowButton
-                exclusiveGroup:     setupButtonGroup
-                visible:            QGroundControl.multiVehicleManager.activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle.priorityLink.isPX4Flow : false
-                setupIndicator:     false
-                text:               qsTr("PX4Flow")
-                Layout.fillWidth:   true
-                onClicked:          showPanel(this, "PX4FlowSensor.qml")
-            }
-
-            SubMenuButton {
-                id:                 joystickButton
-                setupIndicator:     true
-                setupComplete:      true
-                exclusiveGroup:     setupButtonGroup
-                visible:            _fullParameterVehicleAvailable && joystickManager.joysticks.length !== 0
-                text:               qsTr("Buttons")
-                Layout.fillWidth:   true
-                onClicked:          showPanel(this, "JoystickConfig.qml")
-            }
-
             Repeater {
                 id:     componentRepeater
                 model:  _fullParameterVehicleAvailable ? QGroundControl.multiVehicleManager.activeVehicle.autopilot.vehicleComponents : 0
@@ -285,6 +252,29 @@ Rectangle {
                     Layout.fillWidth:   true
                     onClicked:          showVehicleComponentPanel(modelData)
                 }
+            }
+
+            SubMenuButton {
+                id:                 firmwareButton
+                imageResource:      "/qmlimages/FirmwareUpgradeIcon.png"
+                setupIndicator:     false
+                exclusiveGroup:     setupButtonGroup
+                visible:            !ScreenTools.isMobile && _corePlugin.options.showFirmwareUpgrade
+                text:               qsTr("Firmware")
+                Layout.fillWidth:   true
+
+                onClicked: showPanel(this, "FirmwareUpgrade.qml")
+            }
+
+            SubMenuButton {
+                id:                 joystickButton
+                setupIndicator:     true
+                setupComplete:      true
+                exclusiveGroup:     setupButtonGroup
+                visible:            _fullParameterVehicleAvailable && joystickManager.joysticks.length !== 0
+                text:               qsTr("Buttons")
+                Layout.fillWidth:   true
+                onClicked:          showPanel(this, "JoystickConfig.qml")
             }
 
             SubMenuButton {

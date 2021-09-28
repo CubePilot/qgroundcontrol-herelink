@@ -16,6 +16,7 @@ import QGroundControl.Controls              1.0
 import QGroundControl.MultiVehicleManager   1.0
 import QGroundControl.ScreenTools           1.0
 import QGroundControl.Palette               1.0
+import QGroundControl.Vehicle               1.0
 
 //-------------------------------------------------------------------------
 //-- Armed Indicator
@@ -26,11 +27,13 @@ QGCComboBox {
     font.pointSize:         ScreenTools.mediumFontPointSize
     currentIndex:           -1
     sizeToContents:         true
+    enabled: _armed || _checklistCleared
 
     property bool showIndicator: true
 
     property var    _activeVehicle: QGroundControl.multiVehicleManager.activeVehicle
     property bool   _armed:         _activeVehicle ? _activeVehicle.armed : false
+    property bool   _checklistCleared: _activeVehicle ? ( (_activeVehicle.checkListState === Vehicle.CheckListPassed) ? true : false) : false
 
     onActivated: {
         if (index == 0) {

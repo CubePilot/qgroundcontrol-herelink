@@ -104,7 +104,7 @@ Item {
     property bool showArm:              _guidedActionsEnabled && !_vehicleArmed && _canArm
     property bool showDisarm:           _guidedActionsEnabled && _vehicleArmed && !_vehicleFlying
     property bool showRTL:              _guidedActionsEnabled && _vehicleArmed && activeVehicle.guidedModeSupported && _vehicleFlying && !_vehicleInRTLMode
-    property bool showTakeoff:          _guidedActionsEnabled && activeVehicle.takeoffVehicleSupported && !_vehicleFlying && _canArm
+    property bool showTakeoff:          _guidedActionsEnabled && activeVehicle.takeoffVehicleSupported && !_vehicleFlying && _canArm && (_flightMode === "Guided") // TODO: activeVehicle.guidedMode did not work
     property bool showLand:             _guidedActionsEnabled && activeVehicle.guidedModeSupported && _vehicleArmed && !activeVehicle.fixedWing && !_vehicleInLandMode
     property bool showStartMission:     _guidedActionsEnabled && _missionAvailable && !_missionActive && !_vehicleFlying && _canArm
     property bool showContinueMission:  _guidedActionsEnabled && _missionAvailable && !_missionActive && _vehicleArmed && _vehicleFlying && (_currentMissionIndex < _missionItemCount - 1)

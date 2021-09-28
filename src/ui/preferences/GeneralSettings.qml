@@ -335,7 +335,7 @@ Rectangle {
                                     QGCCheckBox {
                                         id:         announcePercentCheckbox
                                         text:       qsTr("Announce battery lower than")
-                                        checked:    _percentRemainingAnnounce.value !== 0
+                                        checked:    false
                                         onClicked: {
                                             if (checked) {
                                                 _percentRemainingAnnounce.value = _percentRemainingAnnounce.defaultValueString

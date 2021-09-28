@@ -41,19 +41,20 @@ Rectangle {
                 onLinkActivated:    Qt.openUrlExternally(link)
             }
 
-            QGCLabel { text: qsTr("PX4 Users Discussion Forum") }
+            QGCLabel { text: qsTr("ADVANCED USERS - ArduPilot Manual") }
             QGCLabel {
                 linkColor:          qgcPal.text
-                text:               "<a href=\"http://discuss.px4.io/c/qgroundcontrol\">http://discuss.px4.io/c/qgroundcontrol</a>"
+                text:               "<a href=\"https://ardupilot.org/copter/docs/introduction.html\">https://ardupilot.org/copter/docs/introduction.html</a>"
                 onLinkActivated:    Qt.openUrlExternally(link)
             }
 
-            QGCLabel { text: qsTr("ArduPilot Users Discussion Forum") }
+            QGCLabel { text: qsTr("Ascent Support") }
             QGCLabel {
                 linkColor:          qgcPal.text
-                text:               "<a href=\"https://discuss.ardupilot.org/c/ground-control-software/qgroundcontrol\">https://discuss.ardupilot.org/c/ground-control-software/qgroundcontrol</a>"
+                text:               "<a href=\"info@ascentaerosystems.com\">info@ascentaerosystems.com</a>"
                 onLinkActivated:    Qt.openUrlExternally(link)
             }
+
         }
     }
 }

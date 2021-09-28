@@ -54,6 +54,7 @@ thirdParty/qserialport/lib/
 libs/thirdParty/libxbee/lib/
 GeneratedFiles/
 gstreamer-1.0-android*
+android-ndk-*
 src/Airmap/Airmap_api_key.h
 localization/qgroundcontrol/
 

@@ -15,7 +15,7 @@ import QGroundControl.Vehicle   1.0
 
 PreFlightCheckButton {
     name:                   qsTr("Radio Control")
-    manualText:             qsTr("Receiving signal. Perform range test & confirm.")
+    manualText:             qsTr("Does right stick move servos?")
     telemetryTextFailure:   qsTr("No signal or invalid autopilot-RC config. Check RC and console.")
     telemetryFailure:       _unhealthySensors & Vehicle.SysStatusSensorRCReceiver
 

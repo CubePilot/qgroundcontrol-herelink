@@ -117,7 +117,7 @@ Item {
     }
 
     function showPreflightChecklistIfNeeded () {
-        if (activeVehicle && !_checklistComplete && _enforceChecklist) {
+        if (activeVehicle && !vehicleArmed && !_checklistComplete && _enforceChecklist) {
             checklistPopupTimer.restart()
         }
     }
@@ -610,7 +610,7 @@ Item {
                     name:               _guidedController.takeoffTitle,
                     iconSource:         "/res/takeoff.svg",
                     buttonVisible:      _guidedController.showTakeoff || !_guidedController.showLand,
-                    buttonEnabled:      _guidedController.showTakeoff,
+                    buttonEnabled:      _guidedController.showTakeoff && activeVehicle,
                     action:             _guidedController.actionTakeoff
                 },
                 {

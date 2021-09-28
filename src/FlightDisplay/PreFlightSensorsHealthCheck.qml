@@ -14,7 +14,7 @@ import QGroundControl.Controls  1.0
 import QGroundControl.Vehicle   1.0
 
 PreFlightCheckButton {
-    name:               qsTr("Sensors")
+    name:               qsTr("FLIGHT SENSORS")
     telemetryFailure:   _unhealthySensors & _allCheckedSensors
 
     property int    _unhealthySensors:  activeVehicle ? activeVehicle.sensorsUnhealthyBits : 1
