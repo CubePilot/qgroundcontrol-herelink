@@ -64,7 +64,7 @@ SetupPage {
                             Layout.column:  0
                             anchors.leftMargin: 10
                             anchors.topMargin: 10
-                            text:       qsTr("Spirit parameters")
+                            text:       qsTr("SPIRIT PARAMETERS")
                             font.family: ScreenTools.demiboldFontFamily
                             font.pointSize: 15
                         }
@@ -140,14 +140,23 @@ SetupPage {
                         columnSpacing:  _margins
                         anchors.margins:    _margins
 
-                        QGCCheckBox {
+                        QGCLabel {
+                            Layout.row:     1
+                            Layout.column:  0
+                            anchors.leftMargin: 10
+                            anchors.topMargin: 10
+                            text:       qsTr("ADVANCED PARAMETERS")
+                            font.family: ScreenTools.demiboldFontFamily
+                            font.pointSize: 15
+                        }
+
+                        QGCLabel {
                             id:         advancedUserCheckbox
-                            text:       qsTr("ADVANCED PARAMETERS - ENABLE WITH CAUTION")
+                            text:       qsTr("DO NOT MODIFY UNLESS YOU ARE PDK DEVELOPER OR USING CUSTOM PAYLOAD")
                             Layout.row:     5
                             Layout.column:  0
                             anchors.leftMargin: 10
                             anchors.topMargin: 10
-                            checked:    false
                         }
 
                         QGCLabel {
@@ -155,7 +164,6 @@ SetupPage {
                             Layout.row:     6
                             Layout.column:  0
                             text:           qsTr("Additional Payload weight in lbs:")
-                            enabled: advancedUserCheckbox.checked
                         }
 
                         FactTextField {
@@ -166,7 +174,6 @@ SetupPage {
                             anchors.leftMargin: 5
                             anchors.topMargin: 50
                             fact:   payloadWeight
-                            enabled: advancedUserCheckbox.checked
                         }
 
                         Text {
@@ -176,7 +183,7 @@ SetupPage {
                             font.pointSize: 11
                             textFormat: Text.RichText
                             wrapMode: Text.Wrap
-                            text: "(Excluding landing gear and standard GPS lid)</p>"
+                            text: "(Excluding landing gear and standard GPS lid, Default 0)</p>"
                         }
                     }
                 }

@@ -17,16 +17,15 @@ Item {
 
     property Fact _noFact: Fact { }
 
-    property bool compassPrimaryFactAvailable:      factPanelController.parameterExists(-1, "COMPASS_PRIMARY")
-    property Fact compassPrimaryFact:               compassPrimaryFactAvailable ? factPanelController.getParameterFact(-1, "COMPASS_PRIMARY") : _noFact
-    property bool compass1Primary:                  compassPrimaryFactAvailable ? compassPrimaryFact.rawValue == 0 : false
-    property bool compass2Primary:                  compassPrimaryFactAvailable ? compassPrimaryFact.rawValue == 1 : false
-    property bool compass3Primary:                  compassPrimaryFactAvailable ? compassPrimaryFact.rawValue == 2 : false
-    property var  rgCompassPrimary:                 [ compass1Primary, compass2Primary, compass3Primary ]
-
     property Fact compass1Id:                       factPanelController.getParameterFact(-1, "COMPASS_DEV_ID")
     property Fact compass2Id:                       factPanelController.getParameterFact(-1, "COMPASS_DEV_ID2")
     property Fact compass3Id:                       factPanelController.getParameterFact(-1, "COMPASS_DEV_ID3")
+
+    property Fact compassPrimaryFact:               factPanelController.getParameterFact(-1, "COMPASS_PRIO1_ID")
+    property bool compass1Primary:                  compassPrimaryFact.rawValue == compass1Id.rawValue
+    property bool compass2Primary:                  compassPrimaryFact.rawValue == compass2Id.rawValue
+    property bool compass3Primary:                  compassPrimaryFact.rawValue == compass3Id.rawValue
+    property var  rgCompassPrimary:                 [ compass1Primary, compass2Primary, compass3Primary ]
 
     property bool compass1Available:                compass1Id.value > 0
     property bool compass2Available:                compass2Id.value > 0
