@@ -57,9 +57,11 @@ android {
         debug{
             debuggable true
             minifyEnabled false
+            multiDexEnabled true
         }
         release {
             minifyEnabled false
+            multiDexEnabled true
         }
     }
 
