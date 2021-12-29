@@ -110,7 +110,7 @@ SetupPage {
                             anchors.verticalCenter: camTypeFieldBanner.verticalCenter
                             anchors.leftMargin: 5
                             width:          ScreenTools.defaultFontPixelWidth * 15
-                            model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR-35") , qsTr("Z40K") , qsTr("Z40TIR") ]
+                            model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR") , qsTr("Z40K") , qsTr("Z40TIR") ]
 
                             currentIndex:   camType.value
                             onActivated:    camType.value = index
@@ -123,7 +123,7 @@ SetupPage {
                             font.pointSize: 11
                             textFormat: Text.RichText
                             wrapMode: Text.Wrap
-                            text: "<p>Supported cameras</p> <p><ul><li>Q10F - Single Sensor, Visual Light, x10 zoom <li>Q10T - Single Sensor, Visual Light, x10 zoom, Tracking <li>Z10TIR - Dual Sensor, Visual and Thermal, x10 zoom, Tracking <li> Z40K - Single Sensor, Visual Light, x40 zoom, 4k resolution <li>Z40TIR - Dual Sensor, Visual and Thermal, x40 zoom, 4k resolution, Tracking</ul></p>"
+                            text: "<p>Supported cameras</p> <p><ul><li>Q10F - Single Sensor, Visual Light, x10 zoom <li>Q10T - Single Sensor, Visual Light, x10 zoom, Tracking <li>Z10TIR - Dual Sensor, Visual and Thermal, Tracking, includes Mini and -35 models <li> Z40K - Single Sensor, Visual Light, x40 zoom, 4k resolution <li>Z40TIR - Dual Sensor, Visual and Thermal, x40 zoom, 4k resolution, Tracking</ul></p>"
                         }
                     }
                 }
