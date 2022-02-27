@@ -11393,7 +11393,7 @@ Note that this will also completely reset everything, including UAVCAN nodes.</s
     <message>
         <location filename="../src/api/QGCCorePlugin.cc" line="273"/>
         <source>Values</source>
-        <translation>値</translation>
+        <translation>テレメトリ</translation>
     </message>
     <message>
         <location filename="../src/api/QGCCorePlugin.cc" line="274"/>
@@ -14618,7 +14618,7 @@ Confirm change?</source>
     <message>
         <location filename="../src/FlightMap/Widgets/ValuePageWidget.qml" line="40"/>
         <source>Value Widget Setup</source>
-        <translation>値ウィジェットの設定</translation>
+        <translation>テレメトリウィジェットの設定</translation>
     </message>
     <message>
         <location filename="../src/FlightMap/Widgets/ValuePageWidget.qml" line="168"/>
