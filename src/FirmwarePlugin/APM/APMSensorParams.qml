@@ -21,10 +21,12 @@ Item {
     property Fact compass2Id:                       factPanelController.getParameterFact(-1, "COMPASS_DEV_ID2")
     property Fact compass3Id:                       factPanelController.getParameterFact(-1, "COMPASS_DEV_ID3")
 
-    property Fact compassPrimaryFact:               factPanelController.getParameterFact(-1, "COMPASS_PRIO1_ID")
-    property bool compass1Primary:                  compassPrimaryFact.rawValue == compass1Id.rawValue
-    property bool compass2Primary:                  compassPrimaryFact.rawValue == compass2Id.rawValue
-    property bool compass3Primary:                  compassPrimaryFact.rawValue == compass3Id.rawValue
+    property bool oldCompassConfig: factPanelController.parameterExists(-1, "COMPASS_PRIMARY")
+
+    property Fact compassPrimaryFact:  oldCompassConfig ? factPanelController.getParameterFact(-1, "COMPASS_PRIMARY") : factPanelController.getParameterFact(-1, "COMPASS_PRIO1_ID")
+    property bool compass1Primary:  oldCompassConfig ? compassPrimaryFact.rawValue == 0 : compassPrimaryFact.rawValue == compass1Id.rawValue
+    property bool compass2Primary:  oldCompassConfig ? compassPrimaryFact.rawValue == 1 : compassPrimaryFact.rawValue == compass2Id.rawValue
+    property bool compass3Primary:  oldCompassConfig ? compassPrimaryFact.rawValue == 2 : compassPrimaryFact.rawValue == compass3Id.rawValue
     property var  rgCompassPrimary:                 [ compass1Primary, compass2Primary, compass3Primary ]
 
     property bool compass1Available:                compass1Id.value > 0
