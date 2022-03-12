@@ -864,6 +864,9 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
         _handleWind(message);
         break;
 #endif
+    case MAVLINK_MSG_ID_FENCE_STATUS:
+        _handleFenceStatus(message);
+        break;
     }
 
     // This must be emitted after the vehicle processes the message. This way the vehicle state is up to date when anyone else
@@ -871,6 +874,42 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     emit mavlinkMessageReceived(message);
 
     _uas->receiveMessage(message);
+}
+
+void Vehicle::_handleFenceStatus(const mavlink_message_t& message)
+{
+    mavlink_fence_status_t fenceStatus;
+
+    mavlink_msg_fence_status_decode(&message, &fenceStatus);
+
+    qCDebug(VehicleLog) << "_handleFenceStatus breach_status" << fenceStatus.breach_status;
+    static qint64 lastUpdate = 0;
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    if (fenceStatus.breach_status == 1) {
+        if (now - lastUpdate > 3000) {
+            lastUpdate = now;
+            const char *fence;
+            switch (fenceStatus.breach_type) {
+                case 0:
+                default:
+                    fence = "";
+                    break;
+                case 1:
+                    fence = "Minimum altitude ";
+                    break;
+                case 2:
+                    fence = "Maximum altitude ";
+                    break;
+                case 3:
+                    fence = "Circle or polygon ";
+                    break;
+            }
+
+            qgcApp()->toolbox()->audioOutput()->say(tr(fence) + tr("Fence Breached"));
+        }
+    } else {
+        lastUpdate = now;
+    }
 }
 
 #if !defined(NO_ARDUPILOT_DIALECT)
