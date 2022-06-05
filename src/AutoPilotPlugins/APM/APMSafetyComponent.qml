@@ -404,6 +404,7 @@ SetupPage {
 
                     property Fact _fenceAction: controller.getParameterFact(-1, "FENCE_ACTION")
                     property Fact _fenceAltMax: controller.getParameterFact(-1, "FENCE_ALT_MAX")
+                    property Fact _fenceAltMin: controller.getParameterFact(-1, "FENCE_ALT_MIN")
                     property Fact _fenceEnable: controller.getParameterFact(-1, "FENCE_ENABLE")
                     property Fact _fenceMargin: controller.getParameterFact(-1, "FENCE_MARGIN")
                     property Fact _fenceRadius: controller.getParameterFact(-1, "FENCE_RADIUS")
@@ -417,8 +418,8 @@ SetupPage {
 
                     Rectangle {
                         id:     geoFenceSettings
-                        width:  fenceAltMaxField.x + fenceAltMaxField.width + _margins
-                        height: fenceAltMaxField.y + fenceAltMaxField.height + _margins
+                        width:  fenceAltMinField.x + fenceAltMinField.width + _margins
+                        height: fenceAltMinField.y + fenceAltMinField.height + _margins
                         color:  ggcPal.windowShade
 
                         QGCCheckBox {
@@ -451,7 +452,7 @@ SetupPage {
                             anchors.topMargin:  _margins / 2
                             anchors.left:       circleGeo.left
                             anchors.top:        circleGeo.bottom
-                            text:               qsTr("Altitude GeoFence enabled")
+                            text:               qsTr("Max Altitude GeoFence enabled")
                             checked:            _fenceEnable.value != 0 && _fenceType.value & 1
 
                             onClicked: {
@@ -471,11 +472,36 @@ SetupPage {
                             }
                         }
 
+                        QGCCheckBox {
+                            id:                 altitudeMinGeo
+                            anchors.topMargin:  _margins / 2
+                            anchors.left:       circleGeo.left
+                            anchors.top:        altitudeGeo.bottom
+                            text:               qsTr("Min Altitude GeoFence enabled")
+                            checked:            _fenceEnable.value != 0 && _fenceType.value & 1
+
+                            onClicked: {
+                                if (checked) {
+                                    if (_fenceEnable.value == 1) {
+                                        _fenceType.value |= 8
+                                    } else {
+                                        _fenceEnable.value = 1
+                                        _fenceType.value = 8
+                                    }
+                                } else if (circleGeo.checked) {
+                                    _fenceType.value &= ~8
+                                } else {
+                                    _fenceEnable.value = 0
+                                    _fenceType.value = 0
+                                }
+                            }
+                        }
+
                         QGCRadioButton {
                             id:                 geoReportRadio
                             anchors.margins:    _margins
                             anchors.left:       parent.left
-                            anchors.top:        altitudeGeo.bottom
+                            anchors.top:        altitudeMinGeo.bottom
                             text:               qsTr("Report only")
                             checked:            _fenceAction.value == 0
 
@@ -523,6 +549,23 @@ SetupPage {
                             anchors.left:       fenceAltMaxLabel.right
                             anchors.top:        fenceRadiusField.bottom
                             fact:               _fenceAltMax
+                            showUnits:          true
+                        }
+
+                        QGCLabel {
+                            id:                 fenceAltMinLabel
+                            anchors.left:       circleGeo.left
+                            anchors.baseline:   fenceAltMinField.baseline
+                            text:               qsTr("Min altitude:")
+                        }
+
+                        FactTextField {
+                            id:                 fenceAltMinField
+                            anchors.topMargin:  _margins / 2
+                            anchors.leftMargin: _margins
+                            anchors.left:       fenceAltMinLabel.right
+                            anchors.top:        fenceAltMaxField.bottom
+                            fact:               _fenceAltMin
                             showUnits:          true
                         }
                     } // Rectangle - GeoFence Settings
