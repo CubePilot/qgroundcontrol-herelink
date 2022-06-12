@@ -6,6 +6,12 @@ echo "tag $VERSIONNAME"
 
 # Change all occurences of '-' in tag to '.' and separate into parts
 IFS=. read major minor patch dev sha <<<"${VERSIONNAME//-/.}"
+
+major=4
+minor=0
+patch=8
+dev=0
+sha=$VERSIONNAME
 echo "major:$major minor:$minor patch:$patch dev:$dev sha:$sha"
 
 # Max Android version code is 2100000000. Version codes must increase with each release and the 
@@ -37,9 +43,9 @@ VERSIONCODE=$(($(($dev)) + $VERSIONCODE))
 
 # The 32 bit and 64 bit APKs each need there own version code.
 if [ "$1" = "32" ]; then
-    VERSIONCODE=330$VERSIONCODE
+    VERSIONCODE=33$VERSIONCODE
 else
-    VERSIONCODE=650$VERSIONCODE
+    VERSIONCODE=65$VERSIONCODE
 fi
 
 MANIFEST_FILE=android/AndroidManifest.xml
