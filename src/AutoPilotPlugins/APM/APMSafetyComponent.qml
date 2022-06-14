@@ -417,8 +417,8 @@ SetupPage {
 
                     Rectangle {
                         id:     geoFenceSettings
-                        width:  fenceAltMaxField.x + fenceAltMaxField.width + _margins
-                        height: fenceAltMaxField.y + fenceAltMaxField.height + _margins
+                        width:  fenceMarginField.x + fenceMarginField.width + _margins
+                        height: fenceMarginField.y + fenceMarginField.height + _margins
                         color:  ggcPal.windowShade
 
                         QGCCheckBox {
@@ -548,6 +548,23 @@ SetupPage {
                             anchors.left:       fenceAltMaxLabel.right
                             anchors.top:        fenceRadiusField.bottom
                             fact:               _fenceAltMax
+                            showUnits:          true
+                        }
+
+                        QGCLabel {
+                            id:                 fenceMarginLabel
+                            anchors.left:       circleGeo.left
+                            anchors.baseline:   fenceMarginField.baseline
+                            text:               qsTr("Margin:         ")
+                        }
+
+                        FactTextField {
+                            id:                 fenceMarginField
+                            anchors.topMargin:  _margins / 2
+                            anchors.leftMargin: _margins
+                            anchors.left:       fenceMarginLabel.right
+                            anchors.top:        fenceAltMaxField.bottom
+                            fact:               _fenceMargin
                             showUnits:          true
                         }
                     } // Rectangle - GeoFence Settings
