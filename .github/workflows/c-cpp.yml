@@ -1,4 +1,4 @@
-name: C/C++ CI
+name: C/C++ CI debug
 
 on:
   push:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix: 
-        config: [ { BITNESS: '32', GSTREAMER_NAME: 'armv7' }, { BITNESS: '64', GSTREAMER_NAME: 'arm64' } ]
+        config: [ { BITNESS: '32', GSTREAMER_NAME: 'armv7', CONFIG: 'installer' }, { BITNESS: '64', GSTREAMER_NAME: 'arm64', CONFIG: 'installer' } ]
     defaults:
       run:
         shell: bash
@@ -17,25 +17,41 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: apt
-      run: sudo apt-get update && sudo apt-get install wget curl    speech-dispatcher    libgstreamer-plugins-base1.0-dev     libgstreamer1.0-0:amd64     libgstreamer1.0-dev     libudev-dev android-sdk
+      run: sudo apt-get update && sudo apt-get install wget curl    speech-dispatcher    libgstreamer-plugins-base1.0-dev     libgstreamer1.0-0:amd64     libgstreamer1.0-dev     libudev-dev android-sdk ccache
     - name: Set up JDK 1.8
       uses: joschi/setup-jdk@v2
       with:
           java-version: 8
+    - name: ccache
+      uses: hendrikmuhs/ccache-action@v1.2
+      with:
+        key: ccache-${{ runner.os }}-${{ matrix.config.BITNESS }}
+    - name: Cache zips
+      uses: actions/cache@v3
+      with:
+        path: |
+          /home/runner/.gradle
+          /tmp/android-ndk-r20-linux-x86_64.zip
+          /tmp/Qt5.12.6-android_arm64_v8a-min.tar.bz2
+          /tmp/Qt5.12.6-android_armv7-min.tar.bz2
+        key: ${{ runner.os }}-${{ matrix.config.BITNESS }}
     - name: configure
       env: 
         JOBS: 16
         SHADOW_BUILD_DIR: /tmp/shadow_build_dir
         CODESIGN: nocodesign
         SPEC: android-clang
-        CONFIG: installer
+        CONFIG: ${{ matrix.config.CONFIG }}
         BITNESS: ${{ matrix.config.BITNESS }}
         GSTREAMER_NAME: ${{ matrix.config.GSTREAMER_NAME }}
+        GSTREAMER_VERSION: 1.20.3
         ANDROID_HOME: /usr/local/lib/android/sdk
       run: |
         set -o xtrace
         
         export PATH=$ANDROID_HOME/tools/bin:/opt/java/jdk1.8.0_131/bin:$PATH          
+        
+        ccache -s
 
         git submodule update --init --recursive
                 
@@ -52,15 +68,12 @@ jobs:
         #sudo yes | sdkmanager --licenses && sdkmanager --update
         
         #sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-30" "platforms;android-29" "build-tools;30.0.0"
-        sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-31" "platforms;android-30" "platforms;android-29" "build-tools;31.0.0" "build-tools;30.0.0" "build-tools;32.0.0"
-        sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;25.0.3" "platforms;android-29" "platform-tools"
+        sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-31" "platforms;android-30" "platforms;android-29" "platforms;android-32" "platforms;android-33" "build-tools;31.0.0" "build-tools;30.0.0" "build-tools;32.0.0" "build-tools;33.0.0" > /dev/null
+        sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;25.0.3" "platforms;android-29" "platform-tools" > /dev/null
         
-        if [ ! -f "/tmp/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2" ]; then
-            wget -N --quiet https://s3-us-west-2.amazonaws.com/qgroundcontrol/dependencies/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2 -O /tmp/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2
-        fi
-        tar jxf /tmp/gstreamer-1.0-android-${GSTREAMER_NAME}-1.14.4.tar.bz2
-        ls -al
-        ls -al gstreamer-1.0-android-universal-1.14.4
+        wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/${GSTREAMER_VERSION}/gstreamer-1.0-android-universal-${GSTREAMER_VERSION}.tar.xz &&
+        mkdir gstreamer-1.0-android-universal-${GSTREAMER_VERSION} &&
+        tar xf gstreamer-1.0-android-universal-${GSTREAMER_VERSION}.tar.xz -C gstreamer-1.0-android-universal-${GSTREAMER_VERSION}
         
         if [ ! -f "/tmp/android-ndk-r20-linux-x86_64.zip" ]; then
             wget -N --quiet https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip -O /tmp/android-ndk-r20-linux-x86_64.zip
@@ -104,13 +117,17 @@ jobs:
         
         export STABLE_OR_DAILY=StableBuild
         
-        qmake -r $GITHUB_WORKSPACE/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=${STABLE_OR_DAILY} -spec ${SPEC}
+        qmake -r $GITHUB_WORKSPACE/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=${STABLE_OR_DAILY} CONFIG+=ccache -spec ${SPEC}
                
         make -j16 VERBOSE=1 install INSTALL_ROOT=./release/android-build/
+        
+        ccache -s
 
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.config.BITNESS }}.zip
         # A file, directory or wildcard pattern that describes what to upload
-        path: /tmp/shadow_build_dir/release/android-build/build/outputs/
+        path: |
+          /tmp/shadow_build_dir/release/android-build/build/outputs/
+          /tmp/shadow_build_dir/debug/android-build/build/outputs/

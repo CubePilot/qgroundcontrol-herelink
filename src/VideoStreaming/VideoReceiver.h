@@ -33,6 +33,7 @@ class VideoReceiver : public QObject
 {
     Q_OBJECT
 public:
+
 #if defined(QGC_GST_STREAMING)
     Q_PROPERTY(bool             recording           READ    recording           NOTIFY recordingChanged)
 #endif
@@ -123,6 +124,7 @@ protected:
     static GstPadProbeReturn    _unlinkCallBack         (GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
     static GstPadProbeReturn    _videoSinkProbe         (GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
     static GstPadProbeReturn    _keyframeWatch          (GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
+    static GstPadProbeReturn    _frameWatch             (GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
 
     virtual void                _detachRecordingBranch  (GstPadProbeInfo* info);
     virtual void                _shutdownRecordingBranch();
@@ -155,3 +157,4 @@ protected:
     bool            _showFullScreen;
     VideoSettings*  _videoSettings;
 };
+
