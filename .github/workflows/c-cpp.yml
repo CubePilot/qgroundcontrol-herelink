@@ -44,7 +44,7 @@ jobs:
         CONFIG: ${{ matrix.config.CONFIG }}
         BITNESS: ${{ matrix.config.BITNESS }}
         GSTREAMER_NAME: ${{ matrix.config.GSTREAMER_NAME }}
-        GSTREAMER_VERSION: 1.20.3
+        GSTREAMER_VERSION: 1.14.4
         ANDROID_HOME: /usr/local/lib/android/sdk
       run: |
         set -o xtrace
@@ -71,9 +71,9 @@ jobs:
         sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-31" "platforms;android-30" "platforms;android-29" "platforms;android-32" "platforms;android-33" "build-tools;31.0.0" "build-tools;30.0.0" "build-tools;32.0.0" "build-tools;33.0.0" > /dev/null
         sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;25.0.3" "platforms;android-29" "platform-tools" > /dev/null
         
-        wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/${GSTREAMER_VERSION}/gstreamer-1.0-android-universal-${GSTREAMER_VERSION}.tar.xz &&
+        wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/${GSTREAMER_VERSION}/gstreamer-1.0-android-universal-${GSTREAMER_VERSION}.tar.bz2 &&
         mkdir gstreamer-1.0-android-universal-${GSTREAMER_VERSION} &&
-        tar xf gstreamer-1.0-android-universal-${GSTREAMER_VERSION}.tar.xz -C gstreamer-1.0-android-universal-${GSTREAMER_VERSION}
+        tar xf gstreamer-1.0-android-universal-${GSTREAMER_VERSION}.tar.bz2 -C gstreamer-1.0-android-universal-${GSTREAMER_VERSION}
         
         if [ ! -f "/tmp/android-ndk-r20-linux-x86_64.zip" ]; then
             wget -N --quiet https://dl.google.com/android/repository/android-ndk-r20-linux-x86_64.zip -O /tmp/android-ndk-r20-linux-x86_64.zip
