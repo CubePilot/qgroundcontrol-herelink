@@ -18,6 +18,7 @@
 #include "SettingsManager.h"
 #include "QGCApplication.h"
 #include "VideoManager.h"
+#include <gst/base/gstbaseparse.h>
 #ifdef QGC_GST_TAISYNC_ENABLED
 #include "TaisyncHandler.h"
 #endif
