@@ -44,7 +44,7 @@ jobs:
         CONFIG: ${{ matrix.config.CONFIG }}
         BITNESS: ${{ matrix.config.BITNESS }}
         GSTREAMER_NAME: ${{ matrix.config.GSTREAMER_NAME }}
-        GSTREAMER_VERSION: 1.20.3
+        GSTREAMER_VERSION: 1.14.4
         ANDROID_HOME: /usr/local/lib/android/sdk
       run: |
         set -o xtrace
