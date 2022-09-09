@@ -50,6 +50,9 @@ fi
 
 MANIFEST_FILE=android/AndroidManifest.xml
 
+QGC_PKG_NAME="org.mavlink.qgroundcontrolvideomod"
+sed -i -e 's/package *= *"[^"]*"/package="'$QGC_PKG_NAME'"/' $MANIFEST_FILE
+
 # manifest package
 if [ "$2" = "master" ]; then
 	QGC_PKG_NAME="org.mavlink.qgroundcontrolbeta"

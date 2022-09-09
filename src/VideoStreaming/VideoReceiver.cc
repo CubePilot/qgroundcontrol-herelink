@@ -323,7 +323,7 @@ VideoReceiver::start()
             QUrl url(_uri);
             g_object_set(static_cast<gpointer>(dataSource), "port", url.port(), nullptr);
         } else {
-            g_object_set(G_OBJECT(dataSource), "location", qPrintable(_uri), "latency", 41, "udp-reconnect", 1, "timeout", static_cast<guint64>(0), "do-retransmission", false, NULL);
+            g_object_set(G_OBJECT(dataSource), "location", qPrintable(_uri), "latency", 333, "udp-reconnect", 1, "timeout", static_cast<guint64>(0), "do-retransmission", false, NULL);
         }
 
         if (isTCP || isMPEGTS) {
