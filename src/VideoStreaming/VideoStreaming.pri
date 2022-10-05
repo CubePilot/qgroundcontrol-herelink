@@ -61,13 +61,13 @@ LinuxBuild {
         QMAKE_POST_LINK += $$escape_expand(\\n) xcopy \"$$GST_ROOT_WIN\\lib\\gstreamer-1.0\\validate\\*.dll\" \"$$DESTDIR_WIN\\gstreamer-plugins\\validate\\\" /Y $$escape_expand(\\n)
     }
 } else:AndroidBuild {
-    #- gstreamer assumed to be installed in $$PWD/../../gstreamer-1.0-android-universal-1.20.3/***
+    #- gstreamer assumed to be installed in $$PWD/../../gstreamer-1.0-android-universal-1.14.4/***
     contains(QT_ARCH, arm) {
-        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.20.3/armv7
+        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/armv7
     } else:contains(QT_ARCH, arm64) {
-        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.20.3/arm64
+        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/arm64
     } else {
-        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.20.3/x86
+        GST_ROOT = $$PWD/../../gstreamer-1.0-android-universal-1.14.4/x86
     }
 
     exists($$GST_ROOT) {

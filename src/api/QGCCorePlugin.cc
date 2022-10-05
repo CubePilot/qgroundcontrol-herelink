@@ -115,7 +115,7 @@ QGCCorePlugin::~QGCCorePlugin()
 QGCCorePlugin::QGCCorePlugin(QGCApplication *app, QGCToolbox* toolbox)
     : QGCTool(app, toolbox)
     , _showTouchAreas(false)
-    , _showAdvancedUI(true)
+    , _showAdvancedUI(false)
 {
     _p = new QGCCorePlugin_p;
 }

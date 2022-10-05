@@ -56,6 +56,9 @@ FlightMap {
     property bool   _keepVehicleCentered:       mainIsMap ? false : true
     property bool   _pipping:                   false
 
+    property int    _cameraYawAngle:            0
+    property bool   _camera:                    true                    
+
     function updateAirspace(reset) {
         if(_airspaceEnabled) {
             var coordinateNW = flightMap.toCoordinate(Qt.point(0,0), false /* clipToViewPort */)
@@ -244,12 +247,15 @@ FlightMap {
     MapItemView {
         model: QGroundControl.multiVehicleManager.vehicles
         delegate: VehicleMapItem {
-            vehicle:        object
-            coordinate:     object.coordinate
-            map:            flightMap
-            size:           mainIsMap ? ScreenTools.defaultFontPixelHeight * 3 : ScreenTools.defaultFontPixelHeight
-            z:              QGroundControl.zOrderVehicles
-        }
+                    vehicle:        object
+                    coordinate:     object.coordinate
+                    map:            flightMap
+                    size:           mainIsMap ? ScreenTools.defaultFontPixelHeight * 3 : ScreenTools.defaultFontPixelHeight
+                    z:              QGroundControl.zOrderVehicles
+
+                    _cameraYawAngle:      flightMap._cameraYawAngle
+                    _camera:              _camera
+                }
     }
 
     // Add ADSB vehicles to the map

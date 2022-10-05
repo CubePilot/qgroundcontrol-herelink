@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 787.38 375.14">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: #fff;
+      }
+
+      .cls-3 {
+        stroke-width: 30px;
+      }
+
+      .cls-3, .cls-4 {
+        fill: none;
+      }
+
+      .cls-3, .cls-4, .cls-2 {
+        stroke: #fff;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      .cls-4, .cls-2 {
+        stroke-width: 15px;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <circle class="cls-2" cx="124.73" cy="250.41" r="117.23"/>
+    <line class="cls-4" x1="119.66" y1="366.28" x2="527.43" y2="367.64"/>
+    <circle class="cls-2" cx="267.97" cy="124.73" r="117.23"/>
+    <circle class="cls-2" cx="413.92" cy="199.76" r="117.23"/>
+    <circle class="cls-2" cx="531.15" cy="250.41" r="117.23"/>
+    <rect class="cls-2" x="157.16" y="182.5" width="362.84" height="175.68"/>
+    <g>
+      <line class="cls-3" x1="723.66" y1="192.67" x2="724.84" y2="357.86"/>
+      <polygon class="cls-1" points="722.87 82.53 660.56 238.18 723.72 200.9 787.38 237.28 722.87 82.53"/>
+    </g>
+  </g>
+</svg>

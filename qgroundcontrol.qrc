@@ -143,6 +143,7 @@
         <file alias="QGroundControl/Controls/QGCMouseArea.qml">src/QmlControls/QGCMouseArea.qml</file>
         <file alias="QGroundControl/Controls/QGCMovableItem.qml">src/QmlControls/QGCMovableItem.qml</file>
         <file alias="QGroundControl/Controls/QGCPipable.qml">src/QmlControls/QGCPipable.qml</file>
+        <file alias="QGroundControl/Controls/QGCPopupDialog.qml">src/QmlControls/QGCPopupDialog.qml</file>
         <file alias="QGroundControl/Controls/QGCRadioButton.qml">src/QmlControls/QGCRadioButton.qml</file>
         <file alias="QGroundControl/Controls/QGCSlider.qml">src/QmlControls/QGCSlider.qml</file>
         <file alias="QGroundControl/Controls/QGCSwitch.qml">src/QmlControls/QGCSwitch.qml</file>
@@ -192,6 +193,13 @@
         <file alias="QGroundControl/FlightDisplay/GuidedActionsController.qml">src/FlightDisplay/GuidedActionsController.qml</file>
         <file alias="QGroundControl/FlightDisplay/GuidedAltitudeSlider.qml">src/FlightDisplay/GuidedAltitudeSlider.qml</file>
         <file alias="QGroundControl/FlightDisplay/MultiVehicleList.qml">src/FlightDisplay/MultiVehicleList.qml</file>
+
+        <file alias="QGroundControl/FlightDisplay/AscentCameraWidget.qml">src/FlightDisplay/AscentCameraWidget.qml</file>
+        <file alias="QGroundControl/FlightDisplay/AscentTelemWidget.qml">src/FlightDisplay/AscentTelemWidget.qml</file>
+        <file alias="QGroundControl/FlightDisplay/AscentAttitudeWidget.qml">src/FlightDisplay/AscentAttitudeWidget.qml</file>
+        <file alias="QGroundControl/FlightDisplay/AscentArtificialHorizon.qml">src/FlightDisplay/AscentArtificialHorizon.qml</file>
+        <file alias="QGroundControl/FlightDisplay/AscentAlerts.qml">src/FlightDisplay/AscentAlerts.qml</file>
+
         <file alias="QGroundControl/FlightDisplay/PreFlightBatteryCheck.qml">src/FlightDisplay/PreFlightBatteryCheck.qml</file>
         <file alias="QGroundControl/FlightDisplay/PreFlightGPSCheck.qml">src/FlightDisplay/PreFlightGPSCheck.qml</file>
         <file alias="QGroundControl/FlightDisplay/PreFlightRCCheck.qml">src/FlightDisplay/PreFlightRCCheck.qml</file>

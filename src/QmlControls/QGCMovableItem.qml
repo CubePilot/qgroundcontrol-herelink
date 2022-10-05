@@ -37,28 +37,28 @@ Item {
         }
         onWheel:
         {
-            var zoomFactor = 1;
-            if(wheel.angleDelta.y > 0)
-                zoomFactor = 1 + (1/factor)
-            else
-                zoomFactor = 1 - (1/factor)
-            var realX = wheel.x * tform.xScale
-            var realY = wheel.y * tform.yScale
-            var tx = root.x + (1-zoomFactor)*realX
-            var ty = root.y + (1-zoomFactor)*realY
-            if(tx < 0) tx = 0
-            if(ty < 0) ty = 0
-            var ts = tform.xScale * zoomFactor
-            if(root.width * ts >= root.minimumWidth) {
-                if(root.height * ts >= root.minimumHeight) {
-                    if(((root.width * ts) + tx) < root.parent.width && ((root.height * ts) + ty) < root.parent.height) {
-                        root.x = tx
-                        root.y = ty
-                        tform.xScale = ts
-                        tform.yScale = ts
-                    }
-                }
-            }
+            // var zoomFactor = 1;
+            // if(wheel.angleDelta.y > 0)
+            //     zoomFactor = 1 + (1/factor)
+            // else
+            //     zoomFactor = 1 - (1/factor)
+            // var realX = wheel.x * tform.xScale
+            // var realY = wheel.y * tform.yScale
+            // var tx = root.x + (1-zoomFactor)*realX
+            // var ty = root.y + (1-zoomFactor)*realY
+            // if(tx < 0) tx = 0
+            // if(ty < 0) ty = 0
+            // var ts = tform.xScale * zoomFactor
+            // if(root.width * ts >= root.minimumWidth) {
+            //     if(root.height * ts >= root.minimumHeight) {
+            //         if(((root.width * ts) + tx) < root.parent.width && ((root.height * ts) + ty) < root.parent.height) {
+            //             root.x = tx
+            //             root.y = ty
+            //             tform.xScale = ts
+            //             tform.yScale = ts
+            //         }
+            //     }
+            // }
         }
     }
 }

@@ -62,30 +62,30 @@ Rectangle {
         anchors.verticalCenter: parent.verticalCenter
     }
 
-    Item {
-        id:                 _valuesItem
-        anchors.topMargin:  ScreenTools.defaultFontPixelHeight / 4
-        anchors.top:        parent.bottom
-        width:              parent.width
-        height:             _valuesWidget.height
-        visible:            widgetRoot.showValues
+    // Item {
+    //     id:                 _valuesItem
+    //     anchors.topMargin:  ScreenTools.defaultFontPixelHeight / 4
+    //     anchors.top:        parent.bottom
+    //     width:              parent.width
+    //     height:             _valuesWidget.height
+    //     visible:            widgetRoot.showValues
 
-        // Prevent all clicks from going through to lower layers
-        DeadMouseArea {
-            anchors.fill: parent
-        }
+    //     // Prevent all clicks from going through to lower layers
+    //     DeadMouseArea {
+    //         anchors.fill: parent
+    //     }
 
-        Rectangle {
-            anchors.fill:   _valuesWidget
-            color:          qgcPal.window
-        }
+    //     Rectangle {
+    //         anchors.fill:   _valuesWidget
+    //         color:          qgcPal.window
+    //     }
 
-        PageView {
-            id:                 _valuesWidget
-            anchors.margins:    1
-            anchors.left:       parent.left
-            anchors.right:      parent.right
-            maxHeight:          _availableValueHeight
-        }
-    }
+    //     PageView {
+    //         id:                 _valuesWidget
+    //         anchors.margins:    1
+    //         anchors.left:       parent.left
+    //         anchors.right:      parent.right
+    //         maxHeight:          _availableValueHeight
+    //     }
+    // }
 }

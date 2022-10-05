@@ -13,6 +13,9 @@ QMAKE_PROJECT_DEPTH = 0 # undocumented qmake flag to force absolute paths in mak
 DEFINES += QGC_GST_TAISYNC_DISABLED
 DEFINES += QGC_GST_MICROHARD_DISABLED
 
+INCLUDEPATH += /usr/lib/jvm/java-8-openjdk-amd64/include
+INCLUDEPATH += /usr/lib/jvm/java-8-openjdk-amd64/include/linux
+
 exists($${OUT_PWD}/qgroundcontrol.pro) {
     error("You must use shadow build (e.g. mkdir build; cd build; qmake ../qgroundcontrol.pro).")
 }
@@ -570,6 +573,8 @@ HEADERS += \
     src/CmdLineOptParser.h \
     src/FirmwarePlugin/PX4/px4_custom_mode.h \
     src/FlightMap/Widgets/ValuesWidgetController.h \
+    src/FlightDisplay/AscentCC.h \
+    src/FlightDisplay/AscentAlertsController.h \
     src/FollowMe/FollowMe.h \
     src/Joystick/Joystick.h \
     src/Joystick/JoystickManager.h \
@@ -760,7 +765,8 @@ iOSBuild {
 }
 
 AndroidBuild {
-    SOURCES += src/MobileScreenMgr.cc \
+SOURCES += \
+    src/MobileScreenMgr.cc \
     src/Joystick/JoystickAndroid.cc \
     src/AndroidInterface.cc \
 }
@@ -778,6 +784,8 @@ SOURCES += \
     src/Camera/QGCCameraManager.cc \
     src/CmdLineOptParser.cc \
     src/FlightMap/Widgets/ValuesWidgetController.cc \
+    src/FlightDisplay/AscentCC.cc \
+    src/FlightDisplay/AscentAlertsController.cc \
     src/FollowMe/FollowMe.cc \
     src/Joystick/Joystick.cc \
     src/Joystick/JoystickManager.cc \

@@ -781,6 +781,17 @@ public:
     Q_INVOKABLE void flashBootloader();
 #endif
 
+    //Helpers for Ascent UI
+
+    Q_PROPERTY(int cameraType                   READ cameraType                             NOTIFY cameraTypeChanged);
+    Q_PROPERTY(int numBatt                      READ numBatt                                NOTIFY numBattChanged);
+
+    Q_INVOKABLE void requestCamType(){_requestCamType();}
+    Q_INVOKABLE void requestNumBatt(){_requestNumBatt();}
+    
+    int cameraType(void){return (int)_cam_type;}
+    int numBatt(void){return (int)_num_batt;}
+
     bool    guidedModeSupported     () const;
     bool    pauseVehicleSupported   () const;
     bool    orbitModeSupported      () const;
@@ -1235,6 +1246,10 @@ signals:
     void gimbalDataChanged              ();
     void isROIEnabledChanged            ();
 
+    //Helpers for Ascent UI
+    void cameraTypeChanged(int cameraType);
+    void numBattChanged(int numBatt);
+
 private slots:
     void _mavlinkMessageReceived        (LinkInterface* link, mavlink_message_t message);
     void _linkInactiveOrDeleted         (LinkInterface* link);
@@ -1316,6 +1331,8 @@ private:
     void _handleGimbalOrientation       (const mavlink_message_t& message);
     void _handleObstacleDistance        (const mavlink_message_t& message);
     void _handleFenceStatus             (const mavlink_message_t& message);
+    void _handleParamValue              (const mavlink_message_t& message);
+
     // ArduPilot dialect messages
 #if !defined(NO_ARDUPILOT_DIALECT)
     void _handleCameraFeedback          (const mavlink_message_t& message);
@@ -1616,5 +1633,13 @@ private:
     static const char* _settingsGroup;
     static const char* _joystickModeSettingsKey;
     static const char* _joystickEnabledSettingsKey;
+
+    //Helpers for Ascent UI
+    void _requestCamType();
+    void _requestNumBatt();
+    int _cam_type = 0;
+    int _num_batt = 0;
+    bool _waiting_for_cam_type = false;
+    bool _waiting_for_num_batt = false;
 
 };

@@ -79,7 +79,7 @@ Item {
                     instrumentsLoader.source = "qrc:/qml/QGCInstrumentWidgetAlternate.qml"
                 }
                 else{
-                    instrumentsLoader.source = "qrc:/qml/QGCInstrumentWidget.qml"
+                    //instrumentsLoader.source = "qrc:/qml/QGCInstrumentWidget.qml"
                 }
             }
         } else {
@@ -162,95 +162,95 @@ Item {
             text:                       "The vehicle has failed a pre-arm check. In order to arm the vehicle, resolve the failure."
         }
     }
-    Column {
-        id:                     instrumentsColumn
-        spacing:                ScreenTools.defaultFontPixelHeight * 0.25
-        anchors.top:            parent.top
-        anchors.topMargin:      QGroundControl.corePlugin.options.instrumentWidget ? (QGroundControl.corePlugin.options.instrumentWidget.widgetTopMargin + _toolsMargin) : 0
-        anchors.margins:        _toolsMargin
-        anchors.right:          parent.right
-        //-------------------------------------------------------
-        // Airmap Airspace Control
-        AirspaceControl {
-            id:                 airspaceControl
-            width:              _rightPanelWidth
-            planView:           false
-            visible:            _airspaceEnabled
-        }
-        //-------------------------------------------------------
-        //-- Instrument Panel
-        Loader {
-            id:                         instrumentsLoader
-            anchors.margins:            _toolsMargin
-            property real maxHeight:    widgetRoot ? widgetRoot.height - instrumentsColumn.y - airspaceControl.height - (ScreenTools.defaultFontPixelHeight * 4) : 0
-            states: [
-                State {
-                    name:   "topRightMode"
-                    AnchorChanges {
-                        target:                 instrumentsLoader
-                        anchors.verticalCenter: undefined
-                        anchors.bottom:         undefined
-                        anchors.top:            widgetRoot ? widgetRoot.top : undefined
-                        anchors.right:          widgetRoot ? widgetRoot.right : undefined
-                        anchors.left:           undefined
-                    }
-                },
-                State {
-                    name:   "centerRightMode"
-                    AnchorChanges {
-                        target:                 instrumentsLoader
-                        anchors.top:            undefined
-                        anchors.bottom:         undefined
-                        anchors.verticalCenter: widgetRoot ? widgetRoot.verticalCenter : undefined
-                        anchors.right:          widgetRoot ? widgetRoot.right : undefined
-                        anchors.left:           undefined
-                    }
-                },
-                State {
-                    name:   "bottomRightMode"
-                    AnchorChanges {
-                        target:                 instrumentsLoader
-                        anchors.top:            undefined
-                        anchors.verticalCenter: undefined
-                        anchors.bottom:         widgetRoot ? widgetRoot.bottom : undefined
-                        anchors.right:          widgetRoot ? widgetRoot.right : undefined
-                        anchors.left:           undefined
-                    }
-                },
-                State {
-                    name:   "topLeftMode"
-                    AnchorChanges {
-                        target:                 instrumentsLoader
-                        anchors.verticalCenter: undefined
-                        anchors.bottom:         undefined
-                        anchors.top:            widgetRoot ? widgetRoot.top : undefined
-                        anchors.right:          undefined
-                        anchors.left:           widgetRoot ? widgetRoot.left : undefined
-                    }
-                },
-                State {
-                    name:   "centerLeftMode"
-                    AnchorChanges {
-                        target:                 instrumentsLoader
-                        anchors.top:            undefined
-                        anchors.bottom:         undefined
-                        anchors.verticalCenter: widgetRoot ? widgetRoot.verticalCenter : undefined
-                        anchors.right:          undefined
-                        anchors.left:           widgetRoot ? widgetRoot.left : undefined
-                    }
-                },
-                State {
-                    name:   "bottomLeftMode"
-                    AnchorChanges {
-                        target:                 instrumentsLoader
-                        anchors.top:            undefined
-                        anchors.verticalCenter: undefined
-                        anchors.bottom:         widgetRoot ? widgetRoot.bottom : undefined
-                        anchors.right:          undefined
-                        anchors.left:           widgetRoot ? widgetRoot.left : undefined
-                    }
-                }
-            ]
-        }
-    }
+    // Column {
+    //     id:                     instrumentsColumn
+    //     spacing:                ScreenTools.defaultFontPixelHeight * 0.25
+    //     anchors.top:            parent.top
+    //     anchors.topMargin:      QGroundControl.corePlugin.options.instrumentWidget ? (QGroundControl.corePlugin.options.instrumentWidget.widgetTopMargin + _toolsMargin) : 0
+    //     anchors.margins:        _toolsMargin
+    //     anchors.right:          parent.right
+    //     //-------------------------------------------------------
+    //     // Airmap Airspace Control
+    //     AirspaceControl {
+    //         id:                 airspaceControl
+    //         width:              _rightPanelWidth
+    //         planView:           false
+    //         visible:            _airspaceEnabled
+    //     }
+    //     //-------------------------------------------------------
+    //     //-- Instrument Panel
+    //     Loader {
+    //         id:                         instrumentsLoader
+    //         anchors.margins:            _toolsMargin
+    //         property real maxHeight:    widgetRoot ? widgetRoot.height - instrumentsColumn.y - airspaceControl.height - (ScreenTools.defaultFontPixelHeight * 4) : 0
+    //         states: [
+    //             State {
+    //                 name:   "topRightMode"
+    //                 AnchorChanges {
+    //                     target:                 instrumentsLoader
+    //                     anchors.verticalCenter: undefined
+    //                     anchors.bottom:         undefined
+    //                     anchors.top:            widgetRoot ? widgetRoot.top : undefined
+    //                     anchors.right:          widgetRoot ? widgetRoot.right : undefined
+    //                     anchors.left:           undefined
+    //                 }
+    //             },
+    //             State {
+    //                 name:   "centerRightMode"
+    //                 AnchorChanges {
+    //                     target:                 instrumentsLoader
+    //                     anchors.top:            undefined
+    //                     anchors.bottom:         undefined
+    //                     anchors.verticalCenter: widgetRoot ? widgetRoot.verticalCenter : undefined
+    //                     anchors.right:          widgetRoot ? widgetRoot.right : undefined
+    //                     anchors.left:           undefined
+    //                 }
+    //             },
+    //             State {
+    //                 name:   "bottomRightMode"
+    //                 AnchorChanges {
+    //                     target:                 instrumentsLoader
+    //                     anchors.top:            undefined
+    //                     anchors.verticalCenter: undefined
+    //                     anchors.bottom:         widgetRoot ? widgetRoot.bottom : undefined
+    //                     anchors.right:          widgetRoot ? widgetRoot.right : undefined
+    //                     anchors.left:           undefined
+    //                 }
+    //             },
+    //             State {
+    //                 name:   "topLeftMode"
+    //                 AnchorChanges {
+    //                     target:                 instrumentsLoader
+    //                     anchors.verticalCenter: undefined
+    //                     anchors.bottom:         undefined
+    //                     anchors.top:            widgetRoot ? widgetRoot.top : undefined
+    //                     anchors.right:          undefined
+    //                     anchors.left:           widgetRoot ? widgetRoot.left : undefined
+    //                 }
+    //             },
+    //             State {
+    //                 name:   "centerLeftMode"
+    //                 AnchorChanges {
+    //                     target:                 instrumentsLoader
+    //                     anchors.top:            undefined
+    //                     anchors.bottom:         undefined
+    //                     anchors.verticalCenter: widgetRoot ? widgetRoot.verticalCenter : undefined
+    //                     anchors.right:          undefined
+    //                     anchors.left:           widgetRoot ? widgetRoot.left : undefined
+    //                 }
+    //             },
+    //             State {
+    //                 name:   "bottomLeftMode"
+    //                 AnchorChanges {
+    //                     target:                 instrumentsLoader
+    //                     anchors.top:            undefined
+    //                     anchors.verticalCenter: undefined
+    //                     anchors.bottom:         widgetRoot ? widgetRoot.bottom : undefined
+    //                     anchors.right:          undefined
+    //                     anchors.left:           widgetRoot ? widgetRoot.left : undefined
+    //                 }
+    //             }
+    //         ]
+    //     }
+    // }
 }

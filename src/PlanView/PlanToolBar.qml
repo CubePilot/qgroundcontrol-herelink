@@ -27,12 +27,22 @@ Rectangle {
         anchors.bottomMargin:   1
         anchors.rightMargin:    ScreenTools.defaultFontPixelWidth / 2
         anchors.fill:           parent
-        spacing:                ScreenTools.defaultFontPixelWidth * 2
+        spacing:                ScreenTools.defaultFontPixelWidth / 2
+
         QGCToolBarButton {
             id:                 settingsButton
             Layout.fillHeight:  true
-            icon.source:        "/qmlimages/PaperPlane.svg"
+            icon.source:        "/res/QGCLogoWhite"
             logo:               true
+            onClicked: {
+                checked = true
+                mainWindow.showToolSelectPopup()
+            }
+        }
+        QGCToolBarButton {
+            id:                 flyButton
+            Layout.fillHeight:  true
+            icon.source:        "/qmlimages/PaperPlane.svg"
             checked:            false
             onClicked: {
                 checked = false

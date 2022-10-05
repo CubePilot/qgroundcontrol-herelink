@@ -116,7 +116,6 @@ ApplicationWindow {
         if (!flightView.visible) {
             flightView.showPreflightChecklistIfNeeded()
         }
-
         viewSwitch(false)
         flightView.visible = true
     }
@@ -124,6 +123,10 @@ ApplicationWindow {
     function showPlanView() {
         viewSwitch(true)
         planViewLoader.visible = true
+    }
+
+    function showToolSelectPopup(){
+        toolSelect.visible = true
     }
 
     function showAnalyzeView() {
@@ -393,6 +396,84 @@ ApplicationWindow {
         anchors.centerIn: parent
     }
 
+
+    /////////////////////////
+    //Settings pages pop up//
+    /////////////////////////
+    Popup{
+        id:                 toolSelect
+        width:              ScreenTools.defaultFontPixelHeight * (11)
+        height:             ScreenTools.defaultFontPixelHeight * (16)
+        modal:              true
+        focus:              true
+        x:                  Math.round((mainWindow.width  - width)  * 0.5)
+        y:                  Math.round((mainWindow.height - height) * 0.2)
+        closePolicy:        Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        background: Rectangle {
+            anchors.fill:   parent
+            color:          qgcPal.window
+            border.color:   qgcPal.text
+            radius:         ScreenTools.defaultFontPixelHeight * 0.5
+        }
+
+
+        ColumnLayout{
+            id:         toolSelectColumn
+            anchors.fill: parent
+            spacing:    5
+            Image {
+                Layout.fillWidth:   true
+                Layout.preferredHeight: setupSelect.height
+                Layout.bottomMargin: ScreenTools.defaultFontPixelHeight * 0.5
+                source:             _outdoorPalette ? "/res/AscentAerosystemsBlack.svg" : "/res/AscentAerosystemsWhite.svg"
+                fillMode:           Image.PreserveAspectFit
+                mipmap:             true
+                smooth:             true
+                property bool   _outdoorPalette:        qgcPal.globalTheme === QGCPalette.Light
+            
+            }
+            SubMenuButton {
+                id:                 vehicleSetupSelect
+                Layout.fillWidth: true
+                imageResource:     "/qmlimages/PaperPlane.svg"
+                text:               qsTr("Vehicle Setup")
+                onClicked: {
+                    if (mainWindow.preventViewSwitch()) {
+                        return
+                    }
+                    mainWindow.showSetupView()
+                    toolSelect.close()
+                }
+            }
+            SubMenuButton {
+                id:                 planViewSelect
+                Layout.fillWidth: true
+                imageResource:     "/qmlimages/Plan.svg"
+                text:               qsTr("Plan a Mission")
+                onClicked: {
+                    if (mainWindow.preventViewSwitch()) {
+                        return
+                    }
+                    mainWindow.showPlanView()
+                    toolSelect.close()
+                }
+            }
+            SubMenuButton {
+                id:                 setupSelect
+                Layout.fillWidth: true
+                imageResource:     "/res/QGCLogoWhite"
+                text:               qsTr("App Settings")
+                onClicked: {
+                    if (mainWindow.preventViewSwitch()) {
+                        return
+                    }
+                    mainWindow.showSettingsView()
+                    toolSelect.close()
+                }
+            }
+            Item { Layout.fillHeight: true }
+        }
+    }
     //-------------------------------------------------------------------------
     //-- Vehicle Messages
 
@@ -514,7 +595,7 @@ ApplicationWindow {
             _messageQueue.push(message)
         } else {
             _systemMessage = message
-            systemMessageArea.open()
+            //systemMessageArea.open()
         }
     }
 
@@ -560,7 +641,7 @@ ApplicationWindow {
                 }
                 //-- Clear it
                 mainWindow._messageQueue = []
-                systemMessageArea.open()
+                //systemMessageArea.open()
             } else {
                 mainWindow._systemMessage = ""
             }

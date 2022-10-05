@@ -40,6 +40,8 @@ SetupPage {
             property Fact battNumber:    controller.getParameterFact(-1, "SPIRIT_BATT_NUM", false)
             property Fact payloadWeight: controller.getParameterFact(-1, "SPIRIT_PAYLD_WT", false)
             property Fact camType:    controller.getParameterFact(-1, "SPIRIT_CAM_TYPE", false)
+            property Fact ser2Proto:  controller.getParameterFact(-1, "SERIAL2_PROTOCOL", false)
+            property Fact mntType:    controller.getParameterFact(-1, "MNT_TYPE", false)
 
             QGCPalette { id: ggcPal; colorGroupEnabled: true }
 
@@ -51,76 +53,64 @@ SetupPage {
                     width:  availableWidth
                     height: spiritParamsGrid.y + spiritParamsGrid.height + _margins
                     color:  ggcPal.windowShade
-
-                    GridLayout {
+                    
+                    ColumnLayout {
                         id: spiritParamsGrid
-                        columns:        2
-                        rowSpacing:     _margins
-                        columnSpacing:  _margins
+                        spacing:  _margins
                         anchors.margins:    _margins
 
                         QGCLabel {
-                            Layout.row:     1
-                            Layout.column:  0
-                            anchors.leftMargin: 10
-                            anchors.topMargin: 10
                             text:       qsTr("SPIRIT PARAMETERS")
                             font.family: ScreenTools.demiboldFontFamily
                             font.pointSize: 15
                         }
 
-                        QGCLabel {
-                            id:             numberOfBattFieldBanner
-                            Layout.row:     2
-                            Layout.column:  0
-                            anchors.leftMargin: 10
-                            anchors.topMargin: 10
-                            text:           qsTr("Number of batteries:")
-                        }
+                        RowLayout{
+                            QGCLabel {
+                                id:             numberOfBattFieldBanner
+                                text:           qsTr("Number of batteries:")
+                            }
 
-                        QGCComboBox {
-                            id:             numberOfBattField
-                            anchors.left:   numberOfBattFieldBanner.right
-                            anchors.verticalCenter:   numberOfBattFieldBanner.verticalCenter
-                            anchors.leftMargin: 5
-                            width:          ScreenTools.defaultFontPixelWidth * 15
-                            model:          [ qsTr("1"), qsTr("2") ]
-                            currentIndex:   battNumber.value - 1
-                            onActivated:    battNumber.value = index + 1
+                            QGCComboBox {
+                                id:             numberOfBattField
+                                width:          ScreenTools.defaultFontPixelWidth * 15
+                                model:          [ qsTr("1"), qsTr("2") ]
+                                currentIndex:   battNumber.value - 1
+                                onActivated:    battNumber.value = index + 1
+                            }
                         }
-
                         QGCLabel {
-                            anchors.left: numberOfBattField.right
-                            anchors.verticalCenter: numberOfBattField.verticalCenter
-                            anchors.leftMargin: 5
                             text:           qsTr("WARNING - ONE battery shall be mounted on the top of the vehicle")
                         }
 
-                        QGCLabel {
-                            id: camTypeFieldBanner
-                            Layout.row:     3
-                            Layout.column:  0
-                            anchors.leftMargin: 10
-                            text:           qsTr("Camera type")
+                        RowLayout{
+                            QGCLabel {
+                                id: camTypeFieldBanner
+                                text:           qsTr("Camera type:")
+                            }
+
+                            QGCComboBox {
+                                id:             camTypeField
+                                implicitWidth:          ScreenTools.defaultFontPixelWidth * 20
+                                model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR") , qsTr("Z40K") , qsTr("Z40TIR"), qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye")]
+                                
+                                currentIndex:   camType.value
+                                onActivated:    {
+                                    camType.value = index
+                                    if(index == 1 || index == 2 || index == 3 || index == 4 || index == 5 || index == 6 || index == 7){
+                                        ser2Proto.value = 38;
+                                        mntType.value = 6;
+                                    }
+                                    if(index == 8 || index == 9){
+                                        ser2Proto.value = 2;
+                                        mntType.value = 7;
+                                    }
+                                }
+                            }
                         }
-
-                        QGCComboBox {
-                            id:             camTypeField
-                            anchors.left: camTypeFieldBanner.right
-                            anchors.verticalCenter: camTypeFieldBanner.verticalCenter
-                            anchors.leftMargin: 5
-                            width:          ScreenTools.defaultFontPixelWidth * 15
-                            model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR") , qsTr("Z40K") , qsTr("Z40TIR") ]
-
-                            currentIndex:   camType.value
-                            onActivated:    camType.value = index
-                        }
-
                         Text {
-                            anchors.left: camTypeField.right
-                            anchors.top: camTypeField.bottom
-                            anchors.leftMargin: 20
-                            font.pointSize: 11
+                            font.pointSize: 10
+                            color: qgcPal.text
                             textFormat: Text.RichText
                             wrapMode: Text.Wrap
                             text: "<p>Supported cameras</p> <p><ul><li>Q10F - Single Sensor, Visual Light, x10 zoom <li>Q10T - Single Sensor, Visual Light, x10 zoom, Tracking <li>Z10TIR - Dual Sensor, Visual and Thermal, Tracking, includes Mini and -35 models <li> Z40K - Single Sensor, Visual Light, x40 zoom, 4k resolution <li>Z40TIR - Dual Sensor, Visual and Thermal, x40 zoom, 4k resolution, Tracking</ul></p>"
@@ -143,8 +133,6 @@ SetupPage {
                         QGCLabel {
                             Layout.row:     1
                             Layout.column:  0
-                            anchors.leftMargin: 10
-                            anchors.topMargin: 10
                             text:       qsTr("ADVANCED PARAMETERS")
                             font.family: ScreenTools.demiboldFontFamily
                             font.pointSize: 15
@@ -155,8 +143,6 @@ SetupPage {
                             text:       qsTr("DO NOT MODIFY UNLESS YOU ARE PDK DEVELOPER OR USING CUSTOM PAYLOAD")
                             Layout.row:     5
                             Layout.column:  0
-                            anchors.leftMargin: 10
-                            anchors.topMargin: 10
                         }
 
                         QGCLabel {
@@ -168,21 +154,15 @@ SetupPage {
 
                         FactTextField {
                             id:     plWeightField
-                            anchors.left: plWeightFieldBanner.right
-                            anchors.verticalCenter: plWeightFieldBanner.verticalCenter
                             width:  20
-                            anchors.leftMargin: 5
-                            anchors.topMargin: 50
                             fact:   payloadWeight
                         }
 
                         Text {
-                            anchors.left: plWeightField.right
-                            anchors.top: plWeightFieldBanner.top
-                            anchors.leftMargin: 5
                             font.pointSize: 11
                             textFormat: Text.RichText
                             wrapMode: Text.Wrap
+                            color:  qgcPal.text
                             text: "(Excluding landing gear and standard GPS lid, Default 0)</p>"
                         }
                     }

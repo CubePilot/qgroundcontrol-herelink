@@ -38,6 +38,8 @@
 #include "QGCOptions.h"
 #include "ADSBVehicleManager.h"
 #include "QGCCameraManager.h"
+#include "AscentCC.h"
+#include "AscentAlertsController.h"
 #include "VideoReceiver.h"
 #include "VideoManager.h"
 #include "VideoSettings.h"
@@ -65,7 +67,7 @@ const char* Vehicle::_joystickEnabledSettingsKey =  "JoystickEnabled";
 const char* Vehicle::_rollFactName =                "roll";
 const char* Vehicle::_pitchFactName =               "pitch";
 const char* Vehicle::_headingFactName =             "heading";
-const char* Vehicle::_rollRateFactName =             "rollRate";
+const char* Vehicle::_rollRateFactName =            "rollRate";
 const char* Vehicle::_pitchRateFactName =           "pitchRate";
 const char* Vehicle::_yawRateFactName =             "yawRate";
 const char* Vehicle::_airSpeedFactName =            "airSpeed";
@@ -867,13 +869,76 @@ void Vehicle::_mavlinkMessageReceived(LinkInterface* link, mavlink_message_t mes
     case MAVLINK_MSG_ID_FENCE_STATUS:
         _handleFenceStatus(message);
         break;
+    
+    case MAVLINK_MSG_ID_PARAM_VALUE:
+        _handleParamValue(message);
+        break;
     }
+
+    
 
     // This must be emitted after the vehicle processes the message. This way the vehicle state is up to date when anyone else
     // does processing.
     emit mavlinkMessageReceived(message);
 
     _uas->receiveMessage(message);
+}
+
+
+void Vehicle::_handleParamValue(const mavlink_message_t& message)
+{
+    mavlink_param_value_t pv;
+    mavlink_msg_param_value_decode(&message, &pv);
+    mavlink_param_union_t paramUnion;
+    paramUnion.param_float = pv.param_value;
+    paramUnion.type = pv.param_type;
+    const char *camTypeID = "SPIRIT_CAM_TYPE";
+    const char *numBattID = "SPIRIT_BATT_NUM";
+    
+    if(strcmp(pv.param_id, camTypeID) == 0){
+        _cam_type = paramUnion.param_uint16;
+        emit cameraTypeChanged(_cam_type);
+        _waiting_for_cam_type = false;
+        qWarning() << "CAM TYPE RECEIVED: " << pv.param_id << " = " << _cam_type;
+    }
+    else if(strcmp(pv.param_id, numBattID) == 0){
+        _num_batt = paramUnion.param_uint16;
+        emit numBattChanged(_num_batt);
+        _waiting_for_num_batt = false;
+        qWarning() << "BATT NUM RECEIVED: " << pv.param_id << " = " << _num_batt;
+    }
+}
+
+void Vehicle::_requestCamType()
+{
+    const char *paramID = "SPIRIT_CAM_TYPE";
+    mavlink_message_t message;
+    mavlink_msg_param_request_read_pack_chan(_mavlink->getSystemId(),
+                                            _mavlink->getComponentId(),
+                                            priorityLink()->mavlinkChannel(),
+                                            &message,
+                                            id(),
+                                            defaultComponentId(),
+                                            paramID,
+                                            -1);
+    sendMessageOnLink(priorityLink(), message);
+    _waiting_for_cam_type = true;
+}
+
+void Vehicle::_requestNumBatt()
+{
+    const char *paramID = "SPIRIT_BATT_NUM";
+    mavlink_message_t message;
+    mavlink_msg_param_request_read_pack_chan(_mavlink->getSystemId(),
+                                            _mavlink->getComponentId(),
+                                            priorityLink()->mavlinkChannel(),
+                                            &message,
+                                            id(),
+                                            defaultComponentId(),
+                                            paramID,
+                                            -1);
+    sendMessageOnLink(priorityLink(), message);
+    _waiting_for_num_batt = true;
 }
 
 void Vehicle::_handleFenceStatus(const mavlink_message_t& message)
@@ -1010,14 +1075,47 @@ void Vehicle::_handleStatusText(mavlink_message_t& message, bool longVersion)
     }
 
 
+
+
+
     // If the message is NOTIFY or higher severity, or starts with a '#',
     // then read it aloud.
-    if (messageText.startsWith("#") || severity <= MAV_SEVERITY_NOTICE) {
+    if(messageText.contains(QStringLiteral("Battery Failsafe"))){
+        qgcApp()->toolbox()->audioOutput()->say("Low Battery");
+    }
+    else if(messageText.contains(QStringLiteral("GPS Glitch cleared"))){
+        qgcApp()->toolbox()->audioOutput()->say("GPS Signal Recovered");
+    }
+    else if(messageText.contains(QStringLiteral("GPS Glitch"))){
+        qgcApp()->toolbox()->audioOutput()->say("GPS Failure");
+    }
+    else if(messageText.contains(QStringLiteral("EKF variance"))){
+        qgcApp()->toolbox()->audioOutput()->say("Position Lost");
+    }
+    else if(messageText.contains(QStringLiteral("EKF Failsafe Cleared"))){
+        qgcApp()->toolbox()->audioOutput()->say("Position Recovered");
+    }
+    else if (messageText.startsWith("#") || severity <= MAV_SEVERITY_NOTICE) { //This was here before
         messageText.remove("#");
         if (!skipSpoken) {
             qgcApp()->toolbox()->audioOutput()->say(messageText);
         }
     }
+    else if(messageText.contains(QStringLiteral("mag anomaly"))){
+        return;
+    }
+
+
+/*
+To do:
+Don't read any messages, but instead filter out the messages we WANT to read
+*/
+
+
+
+
+
+
     emit textMessageReceived(id(), message.compid, severity, messageText);
 }
 
@@ -1627,17 +1725,17 @@ void Vehicle::_batteryStatusWorker(int batteryId, double voltage, double current
     pBatteryFactGroup->instantPower()->setRawValue(voltage * current);
     pBatteryFactGroup->percentRemaining()->setRawValue(batteryRemainingPct);
 
-    //-- Low battery warning
-    if (batteryId == 0 && !qIsNaN(batteryRemainingPct)) {
-        int warnThreshold = _settingsManager->appSettings()->batteryPercentRemainingAnnounce()->rawValue().toInt();
-        if (batteryRemainingPct < warnThreshold &&
-                batteryRemainingPct < _lastAnnouncedLowBatteryPercent &&
-                _lastBatteryAnnouncement.elapsed() > (batteryRemainingPct < warnThreshold * 0.5 ? 15000 : 30000)) {
-            _say(tr("%1 low battery: %2 percent remaining").arg(_vehicleIdSpeech()).arg(static_cast<int>(batteryRemainingPct)));
-            _lastBatteryAnnouncement.start();
-            _lastAnnouncedLowBatteryPercent = static_cast<int>(batteryRemainingPct);
-        }
-    }
+    // //-- Low battery warning
+    // if (batteryId == 0 && !qIsNaN(batteryRemainingPct)) {
+    //     int warnThreshold = _settingsManager->appSettings()->batteryPercentRemainingAnnounce()->rawValue().toInt();
+    //     if (batteryRemainingPct < warnThreshold &&
+    //             batteryRemainingPct < _lastAnnouncedLowBatteryPercent &&
+    //             _lastBatteryAnnouncement.elapsed() > (batteryRemainingPct < warnThreshold * 0.5 ? 15000 : 30000)) {
+    //         _say(tr("%1 low battery: %2 percent remaining").arg(_vehicleIdSpeech()).arg(static_cast<int>(batteryRemainingPct)));
+    //         _lastBatteryAnnouncement.start();
+    //         _lastAnnouncedLowBatteryPercent = static_cast<int>(batteryRemainingPct);
+    //     }
+    // }
 }
 
 void Vehicle::_handleSysStatus(mavlink_message_t& message)

@@ -162,7 +162,7 @@
     "type":             "uint32",
     "enumStrings":      "Indoor,Outdoor",
     "enumValues":       "1,0",
-    "defaultValue":     0
+    "defaultValue":     1
 },
 {
     "name":             "showLargeCompass",

@@ -43,7 +43,8 @@ Item {
     property bool   activeVehicleJoystickEnabled:  activeVehicle ? activeVehicle.joystickEnabled : false
     property bool   mainIsMap:                     QGroundControl.videoManager.hasVideo ? QGroundControl.loadBoolGlobalSetting(_mainIsMapKey,  true) : true
     property bool   isBackgroundDark:              mainIsMap ? (mainWindow.flightDisplayMap ? mainWindow.flightDisplayMap.isSatelliteMap : true) : true
-
+    property var    _parametersReady:              activeVehicle ? QGroundControl.multiVehicleManager.activeVehicle.parameterManager.parametersReady: null
+    
     property var    _missionController:             _planController.missionController
     property var    _geoFenceController:            _planController.geoFenceController
     property var    _rallyPointController:          _planController.rallyPointController
@@ -66,9 +67,21 @@ Item {
     readonly property real      _defaultGroundSpeed:    0
     readonly property real      _defaultAirSpeed:       0
     readonly property string    _mapName:               "FlightDisplayView"
-    readonly property string    _showMapBackgroundKey:  "/showMapBackground"
+    readonly property string    _showMapBackgroundKey:  "/showMapBackground"   
     readonly property string    _mainIsMapKey:          "MainFlyWindowIsMap"
     readonly property string    _PIPVisibleKey:         "IsPIPVisible"
+
+    property bool _toolsMinimized: false
+    property bool _telemVisible: true
+    property bool _camToolsVisible: false
+    property bool _all_checks_passed: false
+    property var cameraModels: [ qsTr("~Waiting~"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR") , qsTr("Z40K") , qsTr("Z40TIR") , qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye")]
+    property int camType: activeVehicle ? activeVehicle.cameraType : 0
+    property int numBatt: activeVehicle ? activeVehicle.numBatt : 0
+
+    on_ParametersReady: {
+        showPreflightChecklistIfNeeded()
+    }
 
     Timer {
         id:             checklistPopupTimer
@@ -100,20 +113,6 @@ Item {
     function setPipVisibility(state) {
         _isPipVisible = state;
         QGroundControl.saveBoolGlobalSetting(_PIPVisibleKey, state)
-    }
-
-    function isInstrumentRight() {
-        if(QGroundControl.corePlugin.options.instrumentWidget) {
-            if(QGroundControl.corePlugin.options.instrumentWidget.source.toString().length) {
-                switch(QGroundControl.corePlugin.options.instrumentWidget.widgetPosition) {
-                case CustomInstrumentWidget.POS_TOP_LEFT:
-                case CustomInstrumentWidget.POS_BOTTOM_LEFT:
-                case CustomInstrumentWidget.POS_CENTER_LEFT:
-                    return false;
-                }
-            }
-        }
-        return true;
     }
 
     function showPreflightChecklistIfNeeded () {
@@ -149,6 +148,7 @@ Item {
         if(QGroundControl.corePlugin.options.preFlightChecklistUrl.toString().length) {
             checkList.source = QGroundControl.corePlugin.options.preFlightChecklistUrl
         }
+        showPreflightChecklistIfNeeded ()
     }
 
     // The following code is used to track vehicle states for showing the mission complete dialog
@@ -339,12 +339,19 @@ Item {
                 rightPanelWidth:            ScreenTools.defaultFontPixelHeight * 9
                 multiVehicleView:           !singleVehicleView.checked
                 scaleState:                 (mainIsMap && flyViewOverlay.item) ? (flyViewOverlay.item.scaleState ? flyViewOverlay.item.scaleState : "bottomMode") : "bottomMode"
+
+                _cameraYawAngle: ascentCam._yawAngle
+                _camera:         (camType == 0 || camType == 8 || camType == 9) ? false : true
+
                 Component.onCompleted: {
                     mainWindow.flightDisplayMap = _fMap
                     _fMap.adjustMapSize()
                 }
             }
         }
+
+
+
 
         //-- Video View
         Item {
@@ -441,6 +448,11 @@ Item {
                 id:             videoStreaming
                 anchors.fill:   parent
                 visible:        QGroundControl.videoManager.isGStreamer
+
+                MouseArea{
+                    id:                 _trackingPoint
+                    anchors.fill:       parent
+                }
             }
             //-- UVC Video (USB Camera or Video Device)
             Loader {
@@ -558,13 +570,12 @@ Item {
         }
 
         ToolStrip {
-            visible:            (activeVehicle ? activeVehicle.guidedModeSupported : true) && !QGroundControl.videoManager.fullScreen
+            //visible:            (activeVehicle ? activeVehicle.guidedModeSupported : true) && !QGroundControl.videoManager.fullScreen
+            visible: true
             id:                 toolStrip
 
-            anchors.leftMargin: isInstrumentRight() ? _toolsMargin : undefined
-            anchors.left:       isInstrumentRight() ? _mapAndVideo.left : undefined
-            anchors.rightMargin:isInstrumentRight() ? undefined : ScreenTools.defaultFontPixelWidth
-            anchors.right:      isInstrumentRight() ? undefined : _mapAndVideo.right
+            anchors.leftMargin: _toolsMargin
+            anchors.left:       _mapAndVideo.left
             anchors.topMargin:  _toolsMargin
             anchors.top:        parent.top
             z:                  _mapAndVideo.z + 4
@@ -709,7 +720,6 @@ Item {
             anchors.horizontalCenter:   parent.horizontalCenter
             guidedController:           _guidedController
         }
-
         //-- Altitude slider
         GuidedAltitudeSlider {
             id:                 altitudeSlider
@@ -776,7 +786,7 @@ Item {
     Popup {
         id:             checklistDropPanel
         x:              Math.round((mainWindow.width  - width)  * 0.5)
-        y:              Math.round((mainWindow.height - height) * 0.5)
+        y:              Math.round((mainWindow.height - height) * 0.25)
         height:         checkList.height
         width:          checkList.width
         modal:          true
@@ -800,10 +810,311 @@ Item {
             onAllChecksPassedChanged: {
                 if (target.allChecksPassed)
                 {
+                    _all_checks_passed = true;
                     checklistPopupTimer.restart()
                 }
             }
         }
+        //onClosed: if(_all_checks_passed){checklistCompanion.open()}
     }
 
+    ///////////////////////
+    //Checklist Companion//
+    ///////////////////////
+    // Popup {
+    //     id:             checklistCompanion
+    //     height:         ScreenTools.defaultPixelHeight * (3)
+    //     width:          ScreenTools.defaultPixelHeight * (3)
+    //     x:              Math.round((mainWindow.width  - checklistDropPanel.width)  * 0.5)
+    //     y:              Math.round((mainWindow.height - checklistDropPanel.height) * 0.25)
+
+    //     modal:          true
+    //     focus:          true
+    //     closePolicy:    Popup.CloseOnEscape | Popup.CloseOnPressOutside
+
+    //     background: Rectangle {
+    //         anchors.fill:   parent
+    //         color:          qgcPal.window
+    //         border.color:   qgcPal.text
+    //         radius:         ScreenTools.defaultFontPixelHeight * 0.5
+    //     }
+
+    //     ColumnLayout {
+    //         anchors.fill: parent
+    //         spacing:    5
+    //         RowLayout {
+    //             Layout.fillHeight: true
+    //             Layout.alignment: Qt.AlignHCenter
+    //             QGCLabel {text: qsTr("Current Vehicle Configuration")}
+    //         }
+    //         Rectangle{
+    //             Layout.fillWidth: true
+    //             Layout.alignment: Qt.AlignHCenter
+    //             color: qgcPal.text
+    //             height: ScreenTools.defaultFontPixelHeight / 8
+    //             width: parent.width * (0.95)
+    //         }
+    //         RowLayout {
+    //             Layout.fillHeight: true
+    //             Layout.alignment: Qt.AlignVCenter
+    //             QGCLabel {text: qsTr("Current Camera: %1").arg(cameraModels[camType])}
+    //         }
+    //         RowLayout {
+    //             Layout.fillHeight: true
+    //             Layout.alignment: Qt.AlignVCenter
+    //             QGCLabel {text: qsTr("Number of Batteries: %1").arg(numBatt)}
+    //         }
+    //         SubMenuButton {
+    //             Layout.fillWidth:  true
+    //             imageResource:     "/qmlimages/PaperPlane.svg"
+    //             text:              qsTr("Vehicle Setup")
+    //             onClicked: {
+    //                 mainWindow.showSetupView()
+    //                 //checklistDropPanel.close()
+    //                 checklistCompanion.close()
+    //             }
+    //         }
+    //     }
+
+    //     onOpened: {activeVehicle.requestCamType()
+    //                requestBattDelay.restart()}
+    // }
+
+    // Timer {
+    //     id: requestBattDelay
+    //     interval: 250
+    //     onTriggered: activeVehicle.requestNumBatt()
+    // }
+
+    ///////////////////////////////////////
+    //Space for tools window to move into//
+    ///////////////////////////////////////
+    Item{
+        id:minimizedToolsSpace
+        anchors.left: parent.right
+        anchors.top:   parent.top
+        anchors.margins:  _margins * (5)
+        width:          ScreenTools.defaultFontPixelHeight * (15)
+        height:         ScreenTools.defaultFontPixelHeight * (15)
+    }
+
+    //////////////////////
+    //Ascent Tool Window//
+    //////////////////////
+    Item{
+        id: ascentTools
+        anchors.right:    minimizedToolsSpace.left
+        anchors.top:   minimizedToolsSpace.top
+        anchors.margins:  _margins * (5)
+        width:          ScreenTools.defaultFontPixelHeight * (15)
+        height:         ScreenTools.defaultFontPixelHeight * (15)
+        state: "open"
+
+        states: [
+            State{name: "minimized"; AnchorChanges{target: ascentTools; anchors.right: minimizedToolsSpace.right}},
+            State{name: "open"     ; AnchorChanges{target: ascentTools; anchors.right: minimizedToolsSpace.left}}
+        ]
+
+        transitions: Transition {
+            // smoothly reanchor myRect and move into new position
+            AnchorAnimation { duration: 250 }
+        }
+
+        //Whole Widget Dead Space
+        DeadMouseArea { 
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            width: parent.width * 1.1
+            height: parent.height * 1.1
+            enabled: !_toolsMinimized
+        }
+        //Widget Tabs Dead Space
+        DeadMouseArea { 
+            anchors.horizontalCenter: camPage.horizontalCenter
+            anchors.verticalCenter: camPage.top
+            width: camPage.width * 1.25
+            height: camPage.height * 2.25
+            enabled: !_toolsMinimized
+        }
+
+        AscentCameraWidget{
+            id:     ascentCam
+            anchors.fill: parent
+            visible: _camToolsVisible
+        }
+
+        AscentTelemWidget{  
+            id:     ascentTelem
+            anchors.fill: parent
+            visible: _telemVisible
+        }
+
+        Rectangle{
+            id: telemPage
+            visible: !_toolsMinimized
+            anchors.top: parent.top
+            anchors.right: parent.left
+            height: parent.height/6
+            width: height
+            opacity: ascentTelem.visible ? 1.0 : 0.5
+            color: qgcPal.colorGrey
+            border.color: qgcPal.text
+            border.width: 1
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    _telemVisible = true
+                    _camToolsVisible = false
+                }
+            }
+            Image{
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                source:                            "qrc:/res/aaTelem.svg"
+                fillMode:                           Image.PreserveAspectFit
+                width:                              parent.width * 0.8
+                height:                             width
+                smooth:                             true
+                antialiasing:                       true
+                mipmap:                             true
+            }
+        }
+        Rectangle{
+            id: camPage
+            visible: !_toolsMinimized
+            anchors.top: telemPage.bottom
+            anchors.right: parent.left
+            height: telemPage.height
+            width: height
+            opacity: ascentCam.visible ? 1.0 : 0.5
+            color: qgcPal.brandingPurple
+            border.color: qgcPal.text
+            border.width: 1
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    _telemVisible = false
+                    _camToolsVisible = true
+                }
+            }
+            Image{
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                source:                            "qrc:/res/aaImageMode.svg"
+                fillMode:                           Image.PreserveAspectFit
+                width:                              parent.width * 0.8
+                height:                             width
+                smooth:                             true
+                antialiasing:                       true
+                mipmap:                             true
+            }
+        }
+
+        Rectangle{
+            id: minimizeToolsButton
+            anchors.bottom: parent.bottom
+            anchors.right: parent.left
+            height: telemPage.height
+            width: height
+            opacity: 0.75
+            color: qgcPal.brandingPurple
+            border.color: qgcPal.text
+            border.width: 1
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    _toolsMinimized = !_toolsMinimized
+                    if(ascentTools.state == "minimized"){ascentTools.state ="open"}
+                    else if(ascentTools.state == "open"){ascentTools.state ="minimized"}
+                }
+            }
+            Image{
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                source:                            "qrc:/res/buttonRight.svg"
+                fillMode:                           Image.PreserveAspectFit
+                width:                              parent.width * 0.8
+                height:                             width
+                smooth:                             true
+                antialiasing:                       true
+                mipmap:                             true
+                visible:                            ascentTools.state == "open"
+            }
+            Image{
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.verticalCenter: parent.verticalCenter
+                source:                            "qrc:/res/buttonLeft.svg"
+                fillMode:                           Image.PreserveAspectFit
+                width:                              parent.width * 0.8
+                height:                             width
+                smooth:                             true
+                antialiasing:                       true
+                mipmap:                             true
+                visible:                            ascentTools.state == "minimized"
+            }
+        }  
+    }
+
+    /////////////////////////////
+    //Ascent Attitude Indicator//
+    /////////////////////////////
+    QGCMovableItem{
+        id:             ascentAttitude
+        //anchors.top: parent.top
+        //anchors.horizontalCenter:  parent.horizontalCenter
+        //anchors.margins:  _margins * (2)
+        x: parent.width/2 - width/2
+        y: 0
+        width:          ScreenTools.defaultFontPixelHeight * 8
+        height:         ScreenTools.defaultFontPixelHeight * 8
+        Rectangle{
+            anchors.fill: parent
+            radius:         width/2
+            color:          "#222222" 
+            opacity:        0.5
+        }
+        onResetRequested: {
+            ascentAttitude.x = parent.width/2 - width/2;
+            ascentAttitude.y = 0;
+            console.log("CLICK");
+        }
+    }
+    AscentAttitudeWidget{
+        size:               ascentAttitude.height * 0.7
+        vehicle:            activeVehicle
+        anchors.centerIn:   ascentAttitude
+        _cameraYawAngle:    ascentCam._yawAngle
+        _camera:            (camType == 0 || camType == 8 || camType == 9) ? false : true
+    }
+    Image{
+        anchors.centerIn:                   ascentAttitude
+        source:                             "/qmlimages/compassInstrumentArrow.svg"
+        height:                             ascentAttitude.height/4
+        width:                              height
+        smooth:                             true
+        antialiasing:                       true
+        mipmap:                             true
+    }
+
+    ///////////////////////////////////////
+    //Space for alert window to move into//
+    ///////////////////////////////////////
+    Item {
+        id: minimizedAlertsSpace
+        anchors.top: parent.bottom
+        anchors.horizontalCenter: parent.horizontalCenter
+        width:                         ascentAlerts.width
+        height:                        ascentAlerts.height
+    }
+
+    ////////////////////////
+    //Ascent ALerts Window//
+    ////////////////////////
+    AscentAlerts{
+        id:                            ascentAlerts
+        anchors.bottom:                minimizedAlertsSpace.bottom
+        anchors.horizontalCenter:      minimizedAlertsSpace.horizontalCenter
+        width:                         ScreenTools.defaultFontPixelHeight * (15)
+        height:                        ScreenTools.defaultFontPixelHeight * (10)
+    }
 }

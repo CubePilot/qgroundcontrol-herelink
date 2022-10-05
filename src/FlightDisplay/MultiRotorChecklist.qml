@@ -49,31 +49,17 @@ Item {
 
             PreFlightCheckButton {
                 name:            qsTr("SPIRIT SETTINGS")
-                manualText:      qsTr("Spirit configuration settings are accurate (see configuration screen)")
+                manualText:      qsTr("Spirit configuration settings are accurate (see Vehicle Settings)")
             }
 
             PreFlightCheckButton {
                 name:            qsTr("BATTERY ON TOP")
                 manualText:      qsTr("Confirm at least ONE battery mounted on top")
             }
-        }
-
-        PreFlightCheckGroup {
-            name: qsTr("Mission checklist")
-
-            PreFlightCheckButton {
-                name:           qsTr("WEATHER")
-                manualText:     qsTr("Check wind and weather within limits")
-            }
 
             PreFlightCheckButton {
                 name:           qsTr("SAFETY SETTINGS")
-                manualText:     qsTr("Review settings in Safety tab")
-            }
-
-            PreFlightCheckButton {
-                name:           qsTr("MISSION")
-                manualText:     qsTr("If applicable - Waypoints and altitudes set correctly")
+                manualText:     qsTr("Review settings in Safety tab (see Vehicle Settings)")
             }
 
         }

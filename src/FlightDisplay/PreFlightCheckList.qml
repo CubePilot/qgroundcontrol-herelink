@@ -27,7 +27,7 @@ Rectangle {
 
     Loader {
         id:     modelContainer
-        source: "/checklists/DefaultChecklist.qml"
+        source: "/checklists/MultiRotorChecklist.qml"
     }
 
     property bool allChecksPassed:  false

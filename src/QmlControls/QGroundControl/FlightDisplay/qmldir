@@ -14,3 +14,8 @@ PreFlightGPSCheck           1.0 PreFlightGPSCheck.qml
 PreFlightRCCheck            1.0 PreFlightRCCheck.qml
 PreFlightSensorsHealthCheck 1.0 PreFlightSensorsHealthCheck.qml
 PreFlightSoundCheck         1.0 PreFlightSoundCheck.qml
+AscentCameraWidget          1.0 AscentCameraWidget.qml
+AscentTelemWidget           1.0 AscentTelemWidget.qml
+AscentAttitudeWidget        1.0 AscentAttitudeWidget.qml
+AscentArtificialHorizon     1.0 AscentArtificialHorizon.qml
+AscentAlerts                1.0 AscentAlerts.qml

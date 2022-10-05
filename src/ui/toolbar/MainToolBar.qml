@@ -37,15 +37,21 @@ Item {
         visible:        qgcPal.globalTheme === QGCPalette.Light
     }
 
-
-    //-- Setup can be invoked from c++ side
     Connections {
         target: setupWindow
         onVisibleChanged: {
             if (setupWindow.visible) {
                 buttonRow.clearAllChecks()
-                setupButton.checked = true
             }
+        }
+    }
+
+    Connections {
+        target: toolSelect
+        onClosed: {
+            if(flightView.visible){flyButton.checked = true}
+            else{flyButton.checked = false}
+            if(analyzeWindow.visible){analyzeButton.checked = true}
         }
     }
 
@@ -80,6 +86,7 @@ Item {
                     }
                 }
 
+                //Settings Buttom
                 QGCToolBarButton {
                     id:                 settingsButton
                     Layout.fillHeight:  true
@@ -92,38 +99,11 @@ Item {
                         }
                         buttonRow.clearAllChecks()
                         checked = true
-                        mainWindow.showSettingsView()
+                        mainWindow.showToolSelectPopup()
                     }
                 }
 
-                QGCToolBarButton {
-                    id:                 setupButton
-                    Layout.fillHeight:  true
-                    icon.source:        "/qmlimages/Gears.svg"
-                    onClicked: {
-                        if (mainWindow.preventViewSwitch()) {
-                            return
-                        }
-                        buttonRow.clearAllChecks()
-                        checked = true
-                        mainWindow.showSetupView()
-                    }
-                }
-
-                QGCToolBarButton {
-                    id:                 planButton
-                    Layout.fillHeight:  true
-                    icon.source:        "/qmlimages/Plan.svg"
-                    onClicked: {
-                        if (mainWindow.preventViewSwitch()) {
-                            return
-                        }
-                        buttonRow.clearAllChecks()
-                        checked = true
-                        mainWindow.showPlanView()
-                    }
-                }
-
+                //Fly Button
                 QGCToolBarButton {
                     id:                 flyButton
                     Layout.fillHeight:  true
@@ -171,6 +151,7 @@ Item {
                     }
                 }
 
+                //Analyze Button
                 QGCToolBarButton {
                     id:                 analyzeButton
                     Layout.fillHeight:  true
@@ -207,15 +188,28 @@ Item {
                 }
             }
 
+            
+
             Loader {
                 id:                 toolbarIndicators
                 Layout.fillHeight:  true
                 source:             "/toolbar/MainToolBarIndicators.qml"
                 visible:            activeVehicle && !communicationLost
             }
+
+
+            
+            Rectangle {
+                Layout.fillWidth: true
+                Layout.fillHeight:  true
+                color: qgcPal.colorGreen
+                opacity: 0.8
+                visible: true
+            }
         }
     }
 
+    /*
     //-------------------------------------------------------------------------
     //-- Branding Logo
     Image {
@@ -251,6 +245,7 @@ Item {
                                                         )
                                                     )
     }
+    */
 
     // Small parameter download progress bar
     Rectangle {

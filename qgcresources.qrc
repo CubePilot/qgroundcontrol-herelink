@@ -48,6 +48,27 @@
         <file alias="XDelete.svg">resources/XDelete.svg</file>
         <file alias="XDeleteBlack.svg">resources/XDeleteBlack.svg</file>
         <file alias="waypoint.svg">resources/waypoint.svg</file>
+        <file alias="aaRecord.svg">resources/AscentResources/RecordVideo.svg</file>
+        <file alias="aaRecording.svg">resources/AscentResources/Recording.svg</file>
+        <file alias="aaTakePhoto.svg">resources/AscentResources/TakePhoto.svg</file>
+        <file alias="aaImageMode.svg">resources/AscentResources/ImageMode.svg</file>
+        <file alias="aaVideoMode.svg">resources/AscentResources/VideoMode.svg</file>
+        <file alias="aaGimbalDirection.svg">resources/AscentResources/GimbalDirection.svg</file>
+        <file alias="aaHeading.svg">resources/AscentResources/AscentHeading.svg</file>
+        <file alias="aaCompassTicks.svg">resources/AscentResources/CompassTicks.svg</file>
+        <file alias="aaNorth.svg">resources/AscentResources/North.svg</file>
+        <file alias="aaSouth.svg">resources/AscentResources/South.svg</file>
+        <file alias="aaWest.svg">resources/AscentResources/West.svg</file>
+        <file alias="aaEast.svg">resources/AscentResources/East.svg</file>
+        <file alias="AscentAerosystemsWhite.svg">resources/AscentResources/AscentAerosystemsWhite.svg</file>
+        <file alias="AscentAerosystemsBlack.svg">resources/AscentResources/AscentAerosystemsBlack.svg</file>
+        <file alias="HSpeed.svg">resources/AscentResources/HoriSpeed.svg</file>
+        <file alias="VSpeed.svg">resources/AscentResources/VertSpeed.svg</file>
+        <file alias="DTH.svg">resources/AscentResources/DTH.svg</file>
+        <file alias="aaAltitude.svg">resources/AscentResources/Altitude.svg</file>
+        <file alias="aaTelem.svg">resources/AscentResources/telem.svg</file>
+        <file alias="ExpandUp.svg">resources/AscentResources/ExpandUp.svg</file>
+        <file alias="ExpandDown.svg">resources/AscentResources/ExpandDown.svg</file>
         <file>resources/icons/qgroundcontrol.ico</file>
     </qresource>
     <qresource prefix="/res/firmware">

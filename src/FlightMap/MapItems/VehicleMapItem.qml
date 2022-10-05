@@ -37,6 +37,10 @@ MapQuickItem {
     property var    _map:           map
     property bool   _multiVehicle:  QGroundControl.multiVehicleManager.vehicles.count > 1
 
+    property int    _cameraYawAngle:          0
+    property bool   _camera:                  true                  
+    property int    camType:                  activeVehicle ? activeVehicle.cameraType : 0
+
     sourceItem: Item {
         id:         vehicleItem
         width:      vehicleIcon.width
@@ -60,6 +64,33 @@ MapQuickItem {
             color:              Qt.rgba(0.94,0.91,0,0.5)
             source:             vehicleShadow
         }
+
+
+
+        Image{
+            id:                                 gimbalDir
+            opacity:                            (!_adsbVehicle && _camera) ? 1.0 : 0.0
+            anchors.horizontalCenter:           vehicleIcon.horizontalCenter
+            anchors.bottom:                     vehicleIcon.verticalCenter
+            source:                             "qrc:/res/aaGimbalDirection.svg"
+            fillMode:                           Image.PreserveAspectFit
+            height:                             vehicleIcon.height * 1.5
+            width:                              height
+            smooth:                             true
+            antialiasing:                       true
+            mipmap:                             true
+
+            transform: [
+                Rotation {
+                    origin.x: gimbalDir.width/2
+                    origin.y: gimbalDir.height
+                    angle:    isNaN(heading) ? 0 : heading + _cameraYawAngle
+                }
+            ]
+        }
+
+
+        
         Image {
             id:                 vehicleIcon
             source:             _adsbVehicle ? (alert ? "/qmlimages/AlertAircraft.svg" : "/qmlimages/AwarenessAircraft.svg") : vehicle.vehicleImageOpaque

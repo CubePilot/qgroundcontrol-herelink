@@ -77,6 +77,8 @@
 #include "MAVLinkInspectorController.h"
 #endif
 #include "ValuesWidgetController.h"
+#include "AscentCC.h"
+#include "AscentAlertsController.h"
 #include "AppMessages.h"
 #include "SimulatedPosition.h"
 #include "PositionManager.h"
@@ -533,6 +535,8 @@ void QGCApplication::_initCommon()
     qmlRegisterType<ScreenToolsController>          (kQGCControllers,                       1, 0, "ScreenToolsController");
     qmlRegisterType<PlanMasterController>           (kQGCControllers,                       1, 0, "PlanMasterController");
     qmlRegisterType<ValuesWidgetController>         (kQGCControllers,                       1, 0, "ValuesWidgetController");
+    qmlRegisterType<AscentCC>                       (kQGCControllers,                       1, 0, "AscentCC");
+    qmlRegisterType<AscentAlertsController>         (kQGCControllers,                       1, 0, "AscentAlertsController");
     qmlRegisterType<QGCFileDialogController>        (kQGCControllers,                       1, 0, "QGCFileDialogController");
     qmlRegisterType<RCChannelMonitorController>     (kQGCControllers,                       1, 0, "RCChannelMonitorController");
     qmlRegisterType<JoystickConfigController>       (kQGCControllers,                       1, 0, "JoystickConfigController");
