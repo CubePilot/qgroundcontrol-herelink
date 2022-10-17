@@ -422,12 +422,12 @@ Item{
                     }
                 }
                 QGCButton{
-                    text: qsTr("  Color\nPallette")
+                    text: qsTr("  Color\nPalette")
                     Layout.fillHeight: true
                     Layout.fillWidth: true
                     Layout.preferredWidth: ScreenTools.defaultFontPixelHeight * (3) 
                     onClicked: {
-                        console.log("Next Pallette")
+                        console.log("Next Palette")
                         controller.nextPallette()
                     }
                 }

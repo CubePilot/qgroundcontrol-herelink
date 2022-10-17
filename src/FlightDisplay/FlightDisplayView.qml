@@ -1060,9 +1060,6 @@ Item {
     /////////////////////////////
     QGCMovableItem{
         id:             ascentAttitude
-        //anchors.top: parent.top
-        //anchors.horizontalCenter:  parent.horizontalCenter
-        //anchors.margins:  _margins * (2)
         x: parent.width/2 - width/2
         y: 0
         width:          ScreenTools.defaultFontPixelHeight * 8

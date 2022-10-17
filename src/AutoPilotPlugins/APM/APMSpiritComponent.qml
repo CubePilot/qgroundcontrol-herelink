@@ -37,11 +37,12 @@ SetupPage {
             width:      availableWidth
             spacing:    _margins
 
-            property Fact battNumber:    controller.getParameterFact(-1, "SPIRIT_BATT_NUM", false)
-            property Fact payloadWeight: controller.getParameterFact(-1, "SPIRIT_PAYLD_WT", false)
-            property Fact camType:    controller.getParameterFact(-1, "SPIRIT_CAM_TYPE", false)
-            property Fact ser2Proto:  controller.getParameterFact(-1, "SERIAL2_PROTOCOL", false)
-            property Fact mntType:    controller.getParameterFact(-1, "MNT_TYPE", false)
+            property Fact battNumber:       controller.getParameterFact(-1, "SPIRIT_BATT_NUM"       , false)
+            property Fact payloadWeight:    controller.getParameterFact(-1, "SPIRIT_PAYLD_WT"       , false)
+            property Fact camType:          controller.getParameterFact(-1, "SPIRIT_CAM_TYPE"       , false)
+            property Fact ser2Baud:         controller.getParameterFact(-1, "SERIAL2_BAUD"          , false)
+            property Fact ser2Proto:        controller.getParameterFact(-1, "SERIAL2_PROTOCOL"      , false)
+            property Fact mntType:          controller.getParameterFact(-1, "MNT_TYPE"              , false)
 
             QGCPalette { id: ggcPal; colorGroupEnabled: true }
 
@@ -92,7 +93,7 @@ SetupPage {
                             QGCComboBox {
                                 id:             camTypeField
                                 implicitWidth:          ScreenTools.defaultFontPixelWidth * 20
-                                model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR") , qsTr("Z40K") , qsTr("Z40TIR"), qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye")]
+                                model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR-35") , qsTr("Z40K") , qsTr("Z40TIR"), qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye")]
                                 
                                 currentIndex:   camType.value
                                 onActivated:    {
@@ -100,20 +101,15 @@ SetupPage {
                                     if(index == 1 || index == 2 || index == 3 || index == 4 || index == 5 || index == 6 || index == 7){
                                         ser2Proto.value = 38;
                                         mntType.value = 6;
+                                        ser2Baud.value = 115;
                                     }
                                     if(index == 8 || index == 9){
                                         ser2Proto.value = 2;
                                         mntType.value = 7;
+                                        ser2Baud.value = 115;
                                     }
                                 }
                             }
-                        }
-                        Text {
-                            font.pointSize: 10
-                            color: qgcPal.text
-                            textFormat: Text.RichText
-                            wrapMode: Text.Wrap
-                            text: "<p>Supported cameras</p> <p><ul><li>Q10F - Single Sensor, Visual Light, x10 zoom <li>Q10T - Single Sensor, Visual Light, x10 zoom, Tracking <li>Z10TIR - Dual Sensor, Visual and Thermal, Tracking, includes Mini and -35 models <li> Z40K - Single Sensor, Visual Light, x40 zoom, 4k resolution <li>Z40TIR - Dual Sensor, Visual and Thermal, x40 zoom, 4k resolution, Tracking</ul></p>"
                         }
                     }
                 }
