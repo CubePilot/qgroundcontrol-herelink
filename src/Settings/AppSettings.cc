@@ -37,7 +37,7 @@ const char* AppSettings::crashDirectory =           "CrashLogs";
 DECLARE_SETTINGGROUP(App, "")
 {
     qmlRegisterUncreatableType<AppSettings>("QGroundControl.SettingsManager", 1, 0, "AppSettings", "Reference only");
-    QGCPalette::setGlobalTheme(indoorPalette()->rawValue().toBool() ? QGCPalette::Dark : QGCPalette::Light);
+    QGCPalette::setGlobalTheme(indoorPalette()->rawValue().toBool() ? QGCPalette::Dark : QGCPalette::Dark);
 
     // virtualJoystickCentralized -> virtualJoystickAutoCenterThrottle
     QSettings settings;
