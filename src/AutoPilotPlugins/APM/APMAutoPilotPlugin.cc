@@ -73,13 +73,6 @@ const QVariantList& APMAutoPilotPlugin::vehicleComponents(void)
 {
     if (_components.count() == 0 && !_incorrectParameterVersion) {
         if (_vehicle->parameterManager()->parametersReady()) {
-            
-            if ( _vehicle->supportsRadio() ) {
-                _radioComponent = new APMRadioComponent(_vehicle, this);
-                _radioComponent->setupTriggerSignals();
-                _components.append(QVariant::fromValue((VehicleComponent*)_radioComponent));
-            }
-
             _spiritComponent = new APMSpiritComponent(_vehicle, this);
             _spiritComponent->setupTriggerSignals();
             _components.append(QVariant::fromValue((VehicleComponent*)_spiritComponent));
@@ -91,6 +84,12 @@ const QVariantList& APMAutoPilotPlugin::vehicleComponents(void)
             _sensorsComponent = new APMSensorsComponent(_vehicle, this);
             _sensorsComponent->setupTriggerSignals();
             _components.append(QVariant::fromValue((VehicleComponent*)_sensorsComponent));
+            
+            if ( _vehicle->supportsRadio() ) {
+                _radioComponent = new APMRadioComponent(_vehicle, this);
+                _radioComponent->setupTriggerSignals();
+                _components.append(QVariant::fromValue((VehicleComponent*)_radioComponent));
+            }
 
         } else {
             qWarning() << "Call to vehicleCompenents prior to parametersReady";
