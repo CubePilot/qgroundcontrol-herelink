@@ -93,7 +93,7 @@ SetupPage {
                             QGCComboBox {
                                 id:             camTypeField
                                 implicitWidth:          ScreenTools.defaultFontPixelWidth * 20
-                                model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR-35") , qsTr("Z40K") , qsTr("Z40TIR"), qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye")]
+                                model:          [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR-35") , qsTr("Z40K") , qsTr("Z40TIR"), qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye"), qsTr("Raptor")]
                                 
                                 currentIndex:   camType.value
                                 onActivated:    {
@@ -103,7 +103,7 @@ SetupPage {
                                         mntType.value = 6;
                                         ser2Baud.value = 115;
                                     }
-                                    if(index == 8 || index == 9){
+                                    if(index == 8 || index == 9 || index == 10){
                                         ser2Proto.value = 2;
                                         mntType.value = 7;
                                         ser2Baud.value = 115;
@@ -119,16 +119,11 @@ SetupPage {
                     height: spiritAdvParamsGrid.y + spiritAdvParamsGrid.height + _margins
                     color:  ggcPal.windowShade
 
-                    GridLayout {
+                    ColumnLayout {
                         id: spiritAdvParamsGrid
-                        columns:        2
-                        rowSpacing:     _margins
-                        columnSpacing:  _margins
                         anchors.margins:    _margins
 
                         QGCLabel {
-                            Layout.row:     1
-                            Layout.column:  0
                             text:       qsTr("ADVANCED PARAMETERS")
                             font.family: ScreenTools.demiboldFontFamily
                             font.pointSize: 15
@@ -137,14 +132,10 @@ SetupPage {
                         QGCLabel {
                             id:         advancedUserCheckbox
                             text:       qsTr("DO NOT MODIFY UNLESS YOU ARE PDK DEVELOPER OR USING CUSTOM PAYLOAD")
-                            Layout.row:     5
-                            Layout.column:  0
                         }
 
                         QGCLabel {
                             id:     plWeightFieldBanner
-                            Layout.row:     6
-                            Layout.column:  0
                             text:           qsTr("Additional Payload weight in lbs:")
                         }
 
@@ -154,12 +145,11 @@ SetupPage {
                             fact:   payloadWeight
                         }
 
-                        Text {
+                        QGCLabel {
                             font.pointSize: 11
                             textFormat: Text.RichText
-                            wrapMode: Text.Wrap
                             color:  qgcPal.text
-                            text: "(Excluding landing gear and standard GPS lid, Default 0)</p>"
+                            text: "(Excluding landing gear and standard GPS lid, Default 0)"
                         }
                     }
                 }
@@ -167,3 +157,4 @@ SetupPage {
         } // Flow
     } // Component - spiritPageComponent
 } // SetupPage
+

@@ -782,15 +782,18 @@ public:
 #endif
 
     //Helpers for Ascent UI
-
-    Q_PROPERTY(int cameraType                   READ cameraType                             NOTIFY cameraTypeChanged);
-    Q_PROPERTY(int numBatt                      READ numBatt                                NOTIFY numBattChanged);
-
+    Q_PROPERTY(int cameraType READ cameraType NOTIFY cameraTypeChanged)
+    Q_PROPERTY(int numBatt READ numBatt NOTIFY numBattChanged)
+    Q_PROPERTY(int gcsType READ gcsType NOTIFY gcsTypeChanged)
+    Q_PROPERTY(int gcsFS READ gcsFS NOTIFY gcsFSChanged)
+    Q_PROPERTY(int thrFS READ thrFS NOTIFY thrFSChanged)
     Q_INVOKABLE void requestCamType(){_requestCamType();}
     Q_INVOKABLE void requestNumBatt(){_requestNumBatt();}
-    
     int cameraType(void){return (int)_cam_type;}
     int numBatt(void){return (int)_num_batt;}
+    int gcsType(void){return (int)_gcs_type;}
+    int gcsFS(void){return (int)_gcs_fs;}
+    int thrFS(void){return (int)_thr_fs;}
 
     bool    guidedModeSupported     () const;
     bool    pauseVehicleSupported   () const;
@@ -1249,6 +1252,9 @@ signals:
     //Helpers for Ascent UI
     void cameraTypeChanged(int cameraType);
     void numBattChanged(int numBatt);
+    void gcsTypeChanged(int gcsType);
+    void gcsFSChanged(int gcsFS);
+    void thrFSChanged(int thrFS);
 
 private slots:
     void _mavlinkMessageReceived        (LinkInterface* link, mavlink_message_t message);
@@ -1639,6 +1645,9 @@ private:
     void _requestNumBatt();
     int _cam_type = 0;
     int _num_batt = 0;
+    int _gcs_type = 0;
+    int _gcs_fs   = 0;
+    int _thr_fs   = 0;
     bool _waiting_for_cam_type = false;
     bool _waiting_for_num_batt = false;
 

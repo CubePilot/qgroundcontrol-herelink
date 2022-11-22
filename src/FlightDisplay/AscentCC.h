@@ -46,10 +46,16 @@ public:
 
     int cameraYaw(void) const {return (int)_yaw; }
     int cameraType(void) const {return (int)_cam_type;}
+    bool isPiP(void) const {return (bool)_isPiP;}
+    void setIsPiP(bool pip);
+    bool eoIsMain(void) const {return (bool)_eoIsMain;}
+    void setEOIsMain(bool eo);
 
 signals:
     void cameraYawChanged(int cameraYaw);
     void cameraTypeChanged(int cameraType);
+    void isPiPChanged(bool pip);
+    void eoIsMainChanged(bool eo);
 
 private slots:
     void _setActiveVehicle                  (Vehicle* vehicle);
@@ -100,4 +106,6 @@ private:
     float       _yaw = 0.0;
     int         _cam_type = 0;
     bool        _waiting_for_parameter = false;
+    bool        _isPiP = false;
+    bool        _eoIsMain = true;
 };

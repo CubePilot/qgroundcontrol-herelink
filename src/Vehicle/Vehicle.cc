@@ -894,18 +894,149 @@ void Vehicle::_handleParamValue(const mavlink_message_t& message)
     paramUnion.type = pv.param_type;
     const char *camTypeID = "SPIRIT_CAM_TYPE";
     const char *numBattID = "SPIRIT_BATT_NUM";
-    
+    const char *gcsTypeID = "MNT_GCS_TYPE";
+    const char *gcsFSID   = "FS_GCS_ENABLE";
+    const char *thrFSID   = "FS_THR_ENABLE";
+
     if(strcmp(pv.param_id, camTypeID) == 0){
-        _cam_type = paramUnion.param_uint16;
+
+        switch (paramUnion.type) {
+        case MAV_PARAM_TYPE_REAL32:
+            _cam_type = paramUnion.param_float;
+            break;
+        case MAV_PARAM_TYPE_UINT8:
+            _cam_type = paramUnion.param_uint8;
+            break;
+        case MAV_PARAM_TYPE_INT8:
+            _cam_type = paramUnion.param_int8;
+            break;
+        case MAV_PARAM_TYPE_UINT16:
+            _cam_type = paramUnion.param_uint16;
+            break;
+        case MAV_PARAM_TYPE_INT16:
+            _cam_type = paramUnion.param_int16;
+            break;
+        case MAV_PARAM_TYPE_UINT32:
+            _cam_type = paramUnion.param_uint32;
+            break;
+        case MAV_PARAM_TYPE_INT32:
+            _cam_type = paramUnion.param_int32;
+            break;
+        }
+
         emit cameraTypeChanged(_cam_type);
         _waiting_for_cam_type = false;
         qWarning() << "CAM TYPE RECEIVED: " << pv.param_id << " = " << _cam_type;
     }
     else if(strcmp(pv.param_id, numBattID) == 0){
-        _num_batt = paramUnion.param_uint16;
+
+        switch (paramUnion.type) {
+        case MAV_PARAM_TYPE_REAL32:
+            _num_batt = paramUnion.param_float;
+            break;
+        case MAV_PARAM_TYPE_UINT8:
+            _num_batt = paramUnion.param_uint8;
+            break;
+        case MAV_PARAM_TYPE_INT8:
+            _num_batt = paramUnion.param_int8;
+            break;
+        case MAV_PARAM_TYPE_UINT16:
+            _num_batt = paramUnion.param_uint16;
+            break;
+        case MAV_PARAM_TYPE_INT16:
+            _num_batt = paramUnion.param_int16;
+            break;
+        case MAV_PARAM_TYPE_UINT32:
+            _num_batt = paramUnion.param_uint32;
+            break;
+        case MAV_PARAM_TYPE_INT32:
+            _num_batt = paramUnion.param_int32;
+            break;
+        }
         emit numBattChanged(_num_batt);
         _waiting_for_num_batt = false;
         qWarning() << "BATT NUM RECEIVED: " << pv.param_id << " = " << _num_batt;
+    }
+    else if(strcmp(pv.param_id, gcsTypeID) == 0){
+        switch (paramUnion.type) {
+        case MAV_PARAM_TYPE_REAL32:
+            _gcs_type = paramUnion.param_float;
+            break;
+        case MAV_PARAM_TYPE_UINT8:
+            _gcs_type = paramUnion.param_uint8;
+            break;
+        case MAV_PARAM_TYPE_INT8:
+            _gcs_type = paramUnion.param_int8;
+            break;
+        case MAV_PARAM_TYPE_UINT16:
+            _gcs_type = paramUnion.param_uint16;
+            break;
+        case MAV_PARAM_TYPE_INT16:
+            _gcs_type = paramUnion.param_int16;
+            break;
+        case MAV_PARAM_TYPE_UINT32:
+            _gcs_type = paramUnion.param_uint32;
+            break;
+        case MAV_PARAM_TYPE_INT32:
+            _gcs_type = paramUnion.param_int32;
+            break;
+        }
+        emit gcsTypeChanged(_gcs_type);
+        qWarning() << "GCS TYPE RECEIVED: " << pv.param_id << " = " << _gcs_type;
+    }
+    else if(strcmp(pv.param_id, gcsFSID) == 0){
+        switch (paramUnion.type) {
+        case MAV_PARAM_TYPE_REAL32:
+            _gcs_fs = paramUnion.param_float;
+            break;
+        case MAV_PARAM_TYPE_UINT8:
+            _gcs_fs = paramUnion.param_uint8;
+            break;
+        case MAV_PARAM_TYPE_INT8:
+            _gcs_fs = paramUnion.param_int8;
+            break;
+        case MAV_PARAM_TYPE_UINT16:
+            _gcs_fs = paramUnion.param_uint16;
+            break;
+        case MAV_PARAM_TYPE_INT16:
+            _gcs_fs = paramUnion.param_int16;
+            break;
+        case MAV_PARAM_TYPE_UINT32:
+            _gcs_fs = paramUnion.param_uint32;
+            break;
+        case MAV_PARAM_TYPE_INT32:
+            _gcs_fs = paramUnion.param_int32;
+            break;
+        }
+        emit gcsFSChanged(_gcs_fs);
+        qWarning() << "GCS FAILSAFE TYPE RECEIVED: " << pv.param_id << " = " << _gcs_fs;
+    }
+    else if(strcmp(pv.param_id, thrFSID) == 0){
+        switch (paramUnion.type) {
+        case MAV_PARAM_TYPE_REAL32:
+            _thr_fs = paramUnion.param_float;
+            break;
+        case MAV_PARAM_TYPE_UINT8:
+            _thr_fs = paramUnion.param_uint8;
+            break;
+        case MAV_PARAM_TYPE_INT8:
+            _thr_fs = paramUnion.param_int8;
+            break;
+        case MAV_PARAM_TYPE_UINT16:
+            _thr_fs = paramUnion.param_uint16;
+            break;
+        case MAV_PARAM_TYPE_INT16:
+            _thr_fs = paramUnion.param_int16;
+            break;
+        case MAV_PARAM_TYPE_UINT32:
+            _thr_fs = paramUnion.param_uint32;
+            break;
+        case MAV_PARAM_TYPE_INT32:
+            _thr_fs = paramUnion.param_int32;
+            break;
+        }
+        emit thrFSChanged(_thr_fs);
+        qWarning() << "THR FAILSAFE TYPE RECEIVED: " << pv.param_id << " = " << _thr_fs;
     }
 }
 
@@ -1074,47 +1205,38 @@ void Vehicle::_handleStatusText(mavlink_message_t& message, bool longVersion)
         }
     }
 
-
-
-
+    static bool EKF_FLAG = false;
 
     // If the message is NOTIFY or higher severity, or starts with a '#',
     // then read it aloud.
-    if(messageText.contains(QStringLiteral("Battery Failsafe"))){
+    if(messageText.contains(QStringLiteral("Battery")) && messageText.contains(QStringLiteral(" low "))){
         qgcApp()->toolbox()->audioOutput()->say("Low Battery");
+    }
+    else if(messageText.contains(QStringLiteral("Battery")) && messageText.contains(QStringLiteral(" critical "))){
+        qgcApp()->toolbox()->audioOutput()->say("Critically Low Battery");
     }
     else if(messageText.contains(QStringLiteral("GPS Glitch cleared"))){
         qgcApp()->toolbox()->audioOutput()->say("GPS Signal Recovered");
     }
     else if(messageText.contains(QStringLiteral("GPS Glitch"))){
-        qgcApp()->toolbox()->audioOutput()->say("GPS Failure");
+        qgcApp()->toolbox()->audioOutput()->say("GPS Failing");
     }
     else if(messageText.contains(QStringLiteral("EKF variance"))){
-        qgcApp()->toolbox()->audioOutput()->say("Position Lost");
+        qgcApp()->toolbox()->audioOutput()->say("Vehicle position uncertain, pilot take control");
+        EKF_FLAG = true;
     }
-    else if(messageText.contains(QStringLiteral("EKF Failsafe Cleared"))){
+    else if((messageText.contains(QStringLiteral("EKF Failsafe Cleared")) || messageText.contains(QStringLiteral("is using GPS"))) && EKF_FLAG){
         qgcApp()->toolbox()->audioOutput()->say("Position Recovered");
+        EKF_FLAG = false;
     }
-    else if (messageText.startsWith("#") || severity <= MAV_SEVERITY_NOTICE) { //This was here before
-        messageText.remove("#");
-        if (!skipSpoken) {
-            qgcApp()->toolbox()->audioOutput()->say(messageText);
-        }
+    else if(messageText.contains(QStringLiteral("mag anomaly")) || messageText.contains(QStringLiteral("---"))){
+        //Do nothing
     }
-    else if(messageText.contains(QStringLiteral("mag anomaly"))){
-        return;
-    }
-
 
 /*
 To do:
 Don't read any messages, but instead filter out the messages we WANT to read
 */
-
-
-
-
-
 
     emit textMessageReceived(id(), message.compid, severity, messageText);
 }

@@ -105,10 +105,10 @@ Item {
             text:           qsTr("Refresh")
             onTriggered:	controller.refresh()
         }
-        QGCMenuItem {
-            text:           qsTr("Reset all to firmware's defaults")
-            onTriggered:    mainWindow.showComponentDialog(resetToDefaultConfirmComponent, qsTr("Reset All"), mainWindow.showDialogDefaultWidth, StandardButton.Cancel | StandardButton.Reset)
-        }
+        // QGCMenuItem {
+        //     text:           qsTr("Reset all to firmware's defaults")
+        //     onTriggered:    mainWindow.showComponentDialog(resetToDefaultConfirmComponent, qsTr("Reset All"), mainWindow.showDialogDefaultWidth, StandardButton.Cancel | StandardButton.Reset)
+        // }
         QGCMenuItem {
             text:           qsTr("Reset to vehicle's configuration defaults")
             visible:        !activeVehicle.apmFirmware

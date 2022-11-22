@@ -79,6 +79,15 @@ Item {
     property int camType: activeVehicle ? activeVehicle.cameraType : 0
     property int numBatt: activeVehicle ? activeVehicle.numBatt : 0
 
+    property bool vehicleFlying: activeVehicle ? activeVehicle.flying || activeVehicle.landing : false
+    property bool vehicleGrounded: activeVehicle ? !activeVehicle.flying && !activeVehicle.landing : false
+
+    onVehicleGroundedChanged: {
+        if(vehicleGrounded && !vehicleFlying && ascentCam._recording){ //Redundancy in here just in case the value "changes" upon booting
+            stopRecordingPopup.open()
+        }
+    }
+
     on_ParametersReady: {
         showPreflightChecklistIfNeeded()
     }
@@ -885,6 +894,71 @@ Item {
     //     interval: 250
     //     onTriggered: activeVehicle.requestNumBatt()
     // }
+
+     Popup {
+        id: stopRecordingPopup
+        modal:          true
+        focus:          true
+        closePolicy:    Popup.CloseOnEscape | Popup.CloseOnPressOutside
+        height: ScreenTools.defaultFontPixelHeight * 10
+        property real _margins:             ScreenTools.defaultFontPixelWidth
+        x:              Math.round((mainWindow.width  - checklistDropPanel.width)  * 0.5)
+        y:              Math.round((mainWindow.height - checklistDropPanel.height) * 0.25)
+
+        background: Rectangle {
+            anchors.fill:   parent
+            color:          qgcPal.window
+            border.color:   qgcPal.text
+            radius:         ScreenTools.defaultFontPixelHeight * 0.5
+        }
+
+        ColumnLayout {
+            anchors.fill: parent
+            QGCLabel {
+                Layout.fillWidth:       true
+                Layout.fillHeight: true
+                font.pointSize:         ScreenTools.mediumFontPointSize
+                font.family:            ScreenTools.demiboldFontFamily * 0.75
+                font.bold:              true
+                horizontalAlignment: Text.AlignHCenter
+                text: qsTr("You're still recording")
+            }
+
+            Item{Layout.fillHeight: true}
+
+            MouseArea{
+                Layout.preferredWidth: ascentTools.width / 5
+                Layout.preferredHeight: ascentTools.width / 5
+                Layout.fillWidth: true
+                Image{
+                    horizontalAlignment: Qt.AlignHCenter
+                    anchors.fill: parent
+                    source: ascentCam._recording ? "qrc:/res/aaRecording.svg" : "qrc:/res/aaRecord.svg"
+                    smooth:                             true
+                    antialiasing:                       true
+                    mipmap:                             true
+                    fillMode:                           Image.PreserveAspectFit
+                }
+                onClicked: {
+                    ascentCam.toggleRecording();
+                }
+            }
+
+            QGCLabel {
+                Layout.fillWidth:       true
+                Layout.fillHeight: true
+                font.pointSize:         ScreenTools.mediumFontPointSize
+                font.family:            ScreenTools.demiboldFontFamily * 0.75
+                font.bold:              true
+                horizontalAlignment: Text.AlignHCenter
+                text: {
+                        if(ascentCam.sec < 10 && ascentCam.min < 10){qsTr("0" + ascentCam.min + " : " + "0" + ascentCam.sec)}
+                        else if(ascentCam.sec < 10){qsTr(ascentCam.min + " : " + "0" + ascentCam.sec)}
+                        else if(ascentCam.min < 10){qsTr("0" + ascentCam.min + " : " + ascentCam.sec)}
+                    }
+            }
+        }
+    }
 
     ///////////////////////////////////////
     //Space for tools window to move into//

@@ -28,9 +28,12 @@ Item {
     property bool _lossOfLink:                  communicationLost
     property bool _gpsGlitch:                   _activeVehicle ? controller.gpsFailsafe : false
     property bool _ekfFailsafe:                 _activeVehicle ? controller.ekfFailsafe : false
+    property bool _radioFailsafe:               _activeVehicle ? controller.radioFailsafe : false
+
     property bool _recovered:                   false
     property int  _recoveredFrom:               AscentAlerts.Alerts.Normal
-
+    property int  _gcsFailsafe:                 _activeVehicle.gcsFS
+    property int  _thrFailsafe:                 _activeVehicle.thrFS
     property bool _blink:                       false
     property bool _blinkFlag:                   false
     property bool _messageAvailable:            false
@@ -52,7 +55,8 @@ Item {
         BatteryFailsafe,
         LossOfLink,
         GpsGlitch,
-        EkfFailsafe
+        EkfFailsafe,
+        RadioFailsafe
     }
 
     state: "minimized"
@@ -100,43 +104,61 @@ Item {
         onTriggered: {_blinkFlag = !_blinkFlag}
     }
 
+    function nextAlert() {
+        _recovered = false;
+        if(_lossOfLink){
+            _blink = true;
+            _severity = AscentAlerts.Severity.Critical;
+        }
+        else if(_ekfFailsafe){
+            _blink = true;
+            _severity = AscentAlerts.Severity.Critical;
+        }
+        else if(_radioFailsafe){
+            _blink = true;
+            _severity = AscentAlerts.Severity.Critical;
+        }
+        else if(_gpsGlitch){
+            _blink = true;
+            _severity = AscentAlerts.Severity.Warning;
+        }
+        else if(_criticalBattery){
+            _blink = true;
+            _severity = AscentAlerts.Severity.Critical;
+        }
+        else if(_batteryFailsafe){
+            _blink = true;
+            _severity = AscentAlerts.Severity.Warning;
+        }
+        else{
+            _severity = AscentAlerts.Severity.Normal;
+            _noActionNeeded = true; 
+                _noActionNeeded = true; 
+            _noActionNeeded = true; 
+            _messageAvailable = false;
+            if(ascentAlerts.state == "open"){ascentAlerts.state ="minimized"}
+        }
+    }
+
+    function resetBatteryFailsafes(){
+        _batteryFailsafe = false;
+        _criticalBattery = false;
+        _severity = AscentAlerts.Severity.Normal;
+        _noActionNeeded = true; 
+        _messageAvailable = false;
+        if(ascentAlerts.state == "open"){ascentAlerts.state ="minimized"}
+    }
+
     Timer {id: recoveryTimer
         interval: 3000
         onTriggered: {
-            _recovered = false;
-            if(_lossOfLink){
-                _blink = true;
-                _severity = AscentAlerts.Severity.Critical;
-            }
-            else if(_ekfFailsafe){
-                _blink = true;
-                _severity = AscentAlerts.Severity.Critical;
-            }
-            else if(_gpsGlitch){
-                _blink = true;
-                _severity = AscentAlerts.Severity.Warning;
-            }
-            else if(_criticalBattery){
-                _blink = true;
-                _severity = AscentAlerts.Severity.Critical;
-            }
-            else if(_batteryFailsafe){
-                 _blink = true;
-                _severity = AscentAlerts.Severity.Warning;
-            }
-            else{
-                _severity = AscentAlerts.Severity.Normal;
-                _noActionNeeded = true; 
-                _messageAvailable = false;
-                if(ascentAlerts.state == "open"){ascentAlerts.state ="minimized"}
-            }
-            
+            nextAlert()
         }
     }
 
     on_BatteryFailsafeChanged: {
         if(_batteryFailsafe){
-            _noActionNeeded = false
+            _noActionNeeded = false;
             _messageAvailable = true;
             _blink = true;
             _severity = AscentAlerts.Severity.Warning;
@@ -154,7 +176,10 @@ Item {
 
     on_LossOfLinkChanged: {
         if(_lossOfLink){
-            _noActionNeeded = false
+            if(!_activeVehicle.flying && !_activeVehicle.landing && (_batteryFailsafe || _criticalBattery)){
+                resetBatteryFailsafes();
+            }
+            _noActionNeeded = false;
             _messageAvailable = true;
             _blink = true;
             _severity = AscentAlerts.Severity.Critical;
@@ -165,15 +190,30 @@ Item {
             if(!_activeVehicle){
                 _severity = AscentAlerts.Severity.Critical;
                 _recovered = true;
-                _recoveredFrom = AscentAlerts.Alerts.LossOfLink
-               recoveryTimer.restart()
+                _recoveredFrom = AscentAlerts.Alerts.LossOfLink;
+               recoveryTimer.restart();
             }
             else{
                 _severity = AscentAlerts.Severity.Recovered;
                 _recovered = true;
-                _recoveredFrom = AscentAlerts.Alerts.LossOfLink
-                if(_activeVehicle.flightMode != "RTL" && _activeVehicle.flightMode != "Land"){recoveryTimer.restart()}
+                _recoveredFrom = AscentAlerts.Alerts.LossOfLink;
             }
+        }
+    }
+
+    on_RadioFailsafeChanged: {
+        if(_radioFailsafe){
+            _noActionNeeded = false
+            _messageAvailable = true;
+            _blink = true;
+            _severity = AscentAlerts.Severity.Critical;
+        }
+        else{
+            _messageAvailable = true;
+            _blink = false;
+            _severity = AscentAlerts.Severity.Recovered;
+            _recovered = true;
+            _recoveredFrom = AscentAlerts.Alerts.RadioFailsafe
         }
     }
 
@@ -234,10 +274,20 @@ Item {
         opacity:            0.9
     }
 
+    /*
+            FAILSAFE VIEWING PRIORITY
+            -------------------------
+            1) Loss of Link
+            2) EKF Failsafe
+            3) Radio Failsafe
+            4) GPS Glitch
+            5) Battery levels
+    */
+
     ColumnLayout { id: batteryFailsafeView
         anchors.fill: alertWindow
         anchors.margins: _margins
-        visible: (_batteryFailsafe || _criticalBattery) && !_lossOfLink && !_gpsGlitch && !_ekfFailsafe && !_recovered
+        visible: (_batteryFailsafe || _criticalBattery) && !_lossOfLink && !_gpsGlitch && !_ekfFailsafe && !_radioFailsafe && !_recovered
         QGCLabel{
             text: _criticalBattery ? qsTr("CRITICALLY LOW\nBATTERY") : qsTr("LOW BATTERY")
             color:       _accentColor
@@ -248,18 +298,14 @@ Item {
             Layout.fillWidth: true
         }
         QGCLabel{
-            text: qsTr("Current Flight Mode: ")
+            text: _activeVehicle ? (_activeVehicle.flightMode == "RTL" ? qsTr("Vehicle Returning Home") : 
+                                   (_activeVehicle.flightMode == "Land" ? qsTr("Vehicle Landing") : 
+                                   (_criticalBattery ? qsTr("Land immediately") :  
+                                    qsTr("Return Home")))) : ""
             font.underline: true
             font.pointSize: ScreenTools.mediumFontPointSize
             horizontalAlignment: Text.AlignHCenter
             Layout.fillWidth: true
-            visible: _activeVehicle ? (_activeVehicle.flightMode == "RTL" || _activeVehicle.flightMode == "Land") : false
-        }
-        QGCLabel{
-            text: _flightMode
-            horizontalAlignment: Text.AlignHCenter
-            Layout.fillWidth: true
-            visible: _activeVehicle ? (_activeVehicle.flightMode == "RTL" || _activeVehicle.flightMode == "Land") : false
         }
         SliderSwitch{
             confirmText:    qsTr("Slide To Cancel")
@@ -271,20 +317,6 @@ Item {
                 if(ascentAlerts.state == "open"){ascentAlerts.state ="minimized"}
                 _messageAvailable = false;
             }
-        }
-        QGCLabel{
-            text: qsTr("Please consider returning")
-            horizontalAlignment: Text.AlignHCenter
-            Layout.fillWidth: true
-            font.pointSize: ScreenTools.mediumFontPointSize
-            visible: _activeVehicle ? (_activeVehicle.flightMode != "RTL" && _activeVehicle.flightMode != "Land" && !_criticalBattery) : true
-        }
-        QGCLabel{
-            text: qsTr("PLEASE CONSIDER LANDING")
-            horizontalAlignment: Text.AlignHCenter
-            Layout.fillWidth: true
-            font.pointSize: ScreenTools.mediumFontPointSize
-            visible: _activeVehicle ? (_activeVehicle.flightMode != "RTL" && _activeVehicle.flightMode != "Land" && _criticalBattery) : false
         }
     }
 
@@ -301,12 +333,53 @@ Item {
             font.bold: true
             Layout.fillWidth: true
         }
+        QGCLabel{
+            text: (!_activeVehicle.flying && !_activeVehicle.landing) ?  qsTr("Vehicle on Ground") :
+                 (_gcsFailsafe == 5 ? qsTr("Vehicle Landing") : 
+                 (_gcsFailsafe == 4 ? qsTr("Vehicle Either Landing or SmartRTLing") : 
+                 (_gcsFailsafe == 3 ? qsTr("Vehicle Returning Home") : 
+                 (_gcsFailsafe == 2 ? qsTr("Vehicle Returning Home") : 
+                 (_gcsFailsafe == 1 ? qsTr("Vehicle Returning Home") : 
+                 (_gcsFailsafe == 0 ? qsTr("No Failsafe set") : ""))))))
+            horizontalAlignment: Text.AlignHCenter
+            font.family: ScreenTools.demiboldFontFamily
+            font.bold: true
+            Layout.fillWidth: true
+        }
+    }
+
+    ColumnLayout { id: radioFailsafeView
+        anchors.fill: alertWindow
+        anchors.margins: _margins
+        visible: _radioFailsafe && !_lossOfLink && !_ekfFailsafe && !_recovered
+        QGCLabel{
+            text: qsTr("RADIO LINK LOST")
+            color:       _accentColor
+            horizontalAlignment: Text.AlignHCenter
+            font.pointSize: ScreenTools.largeFontPointSize
+            font.family: ScreenTools.demiboldFontFamily
+            font.bold: true
+            Layout.fillWidth: true
+        }
+        QGCLabel{
+            text: (!_activeVehicle.flying && !_activeVehicle.landing) ?  qsTr("Vehicle on Ground") :
+                 (_thrFailsafe == 5 ? qsTr("Vehicle Either\nLanding or SmartRTL") : 
+                 (_thrFailsafe == 4 ? qsTr("Vehicle Either RTL\nor SmartRTL") : 
+                 (_thrFailsafe == 3 ? qsTr("Vehicle Landing") : 
+                 (_thrFailsafe == 2 ? qsTr("Vehicle Continuing\nMission") : 
+                 (_thrFailsafe == 1 ? qsTr("Vehicle Returning Home") : 
+                 (_thrFailsafe == 0 ? qsTr("No Failsafe set") : ""))))))
+            horizontalAlignment: Text.AlignHCenter
+            font.family: ScreenTools.demiboldFontFamily
+            font.bold: true
+            Layout.fillWidth: true
+        }
     }
 
     ColumnLayout { id: gpsGlitchView
         anchors.fill: alertWindow
         anchors.margins: _margins
-        visible: _gpsGlitch && !_ekfFailsafe && !_lossOfLink && !_recovered
+        visible: _gpsGlitch && !_ekfFailsafe && !_lossOfLink && !_radioFailsafe && !_recovered
         QGCLabel{
             text: qsTr("GPS FAILING")
             color:       _accentColor
@@ -347,7 +420,7 @@ Item {
         anchors.margins: _margins
         visible: _ekfFailsafe && !_lossOfLink && !_recovered
         QGCLabel{
-            text: qsTr("POSITION LOST")
+            text: qsTr("VEHICLE POSITION\nUNCERTAIN")
             color:       _accentColor
             horizontalAlignment: Text.AlignHCenter
             font.pointSize: ScreenTools.largeFontPointSize
@@ -356,7 +429,7 @@ Item {
             Layout.fillWidth: true
         }
         QGCLabel{
-            text: qsTr("IMMEDIATE ACTION REQUIRED")
+            text: qsTr("Pilot Take Control")
             font.underline: true
             font.pointSize: ScreenTools.mediumFontPointSize
             horizontalAlignment: Text.AlignHCenter
@@ -364,7 +437,7 @@ Item {
         }
         Item{Layout.fillHeight: true}
         QGCLabel{
-            text: _activeVehicle ? (_activeVehicle.flightMode == "Altitude Hold" ? qsTr("TAKE CONTROL AND RETURN") : qsTr("TAKE CONTROL AND LAND")) : qsTr("TAKE CONTROL AND LAND")
+            text: _activeVehicle ? (_activeVehicle.flightMode == "Altitude Hold" ? qsTr("Flight mode switched to: Alt Hold") : qsTr("Flight mode switched to: Land")) : qsTr("Flight mode switched to: Land")
             font.underline: true
             font.pointSize: ScreenTools.mediumFontPointSize
             horizontalAlignment: Text.AlignHCenter
@@ -376,7 +449,7 @@ Item {
     Item { id: recoveryView
         anchors.fill: alertWindow
         visible: _recovered
-        ColumnLayout{
+        ColumnLayout{ //Loss of Link Recovery
             anchors.fill: parent
             anchors.margins: _margins
             visible: _recoveredFrom === AscentAlerts.Alerts.LossOfLink
@@ -389,33 +462,68 @@ Item {
                 font.bold: true
                 Layout.fillWidth: true
             }
+            QGCLabel{
+                text: qsTr("Current Flight Mode: ")
+                font.underline: true
+                font.pointSize: ScreenTools.mediumFontPointSize
+                horizontalAlignment: Text.AlignHCenter
+                Layout.fillWidth: true
+                visible: _activeVehicle
+            }
+            QGCLabel{
+                text: _flightMode
+                horizontalAlignment: Text.AlignHCenter
+                Layout.fillWidth: true
+                visible: _activeVehicle
+            }
             QGCButton{
                 text: qsTr("Accept")
                 Layout.alignment: Qt.AlignHCenter
-                visible: _activeVehicle ? (_activeVehicle.flightMode == "RTL" || _activeVehicle.flightMode == "Land") : false
+                visible: _activeVehicle
                 onClicked: {
-                    _severity = AscentAlerts.Severity.Normal
-                    _recovered = false;
-                    _noActionNeeded = true; 
-                    if(ascentAlerts.state == "open"){ascentAlerts.state ="minimized"}
-                }
-            }
-            SliderSwitch{
-                confirmText:    _activeVehicle ? (_activeVehicle.flightMode == "RTL" ? qsTr("Cancel RTL") : qsTr("Cancel Landing")) : qsTr("Cancel")
-                Layout.preferredWidth: parent.width * 0.9
-                Layout.alignment: Qt.AlignHCenter
-                visible: _activeVehicle ? (_activeVehicle.flightMode == "RTL" || _activeVehicle.flightMode == "Land") : false
-                onAccept: {
-                    _activeVehicle.flightMode = _lastFlightMode
-                    _severity = AscentAlerts.Severity.Normal
-                    _recovered = false;
-                    _noActionNeeded = true; 
-                    _messageAvailable = false;
-                    if(ascentAlerts.state == "open"){ascentAlerts.state ="minimized"}
+                    nextAlert()
                 }
             }
         }
-        ColumnLayout{
+
+        ColumnLayout{ //Radio Failsafe Recovery
+            anchors.fill: parent
+            anchors.margins: _margins
+            visible: _recoveredFrom === AscentAlerts.Alerts.RadioFailsafe
+            QGCLabel{
+                text: qsTr("RADIO LINK\nRECOVERED")
+                color:       _accentColor
+                horizontalAlignment: Text.AlignHCenter
+                font.pointSize: ScreenTools.largeFontPointSize
+                font.family: ScreenTools.demiboldFontFamily
+                font.bold: true
+                Layout.fillWidth: true
+            }
+            QGCLabel{
+                text: qsTr("Current Flight Mode: ")
+                font.underline: true
+                font.pointSize: ScreenTools.mediumFontPointSize
+                horizontalAlignment: Text.AlignHCenter
+                Layout.fillWidth: true
+                visible: _activeVehicle
+            }
+            QGCLabel{
+                text: _flightMode
+                horizontalAlignment: Text.AlignHCenter
+                Layout.fillWidth: true
+                visible: _activeVehicle
+            }
+            QGCButton{
+                text: qsTr("Accept")
+                Layout.alignment: Qt.AlignHCenter
+                visible: _activeVehicle
+                onClicked: {
+                    nextAlert()
+                }
+            }
+        }
+
+        ColumnLayout{ //GPS Glitch Recovery
             anchors.fill: parent
             anchors.margins: _margins
             visible: _recoveredFrom === AscentAlerts.Alerts.GpsGlitch
@@ -429,12 +537,12 @@ Item {
                 Layout.fillWidth: true
             }
         }
-        ColumnLayout{
+        ColumnLayout{ //EKF Failsafe Recovery
             anchors.fill: parent
             anchors.margins: _margins
             visible: _recoveredFrom === AscentAlerts.Alerts.EkfFailsafe
             QGCLabel{
-                text: qsTr("Position Recovered")
+                text: qsTr("Vehicle Position\nRecovered")
                 color:       _accentColor
                 horizontalAlignment: Text.AlignHCenter
                 font.pointSize: ScreenTools.largeFontPointSize
@@ -443,12 +551,12 @@ Item {
                 Layout.fillWidth: true
             }
             QGCLabel{
-            text: qsTr("All Flight Modes Available")
-            font.underline: true
-            font.pointSize: ScreenTools.mediumFontPointSize
-            horizontalAlignment: Text.AlignHCenter
-            Layout.fillWidth: true
-        }
+                text: qsTr("All Flight Modes Available")
+                font.underline: true
+                font.pointSize: ScreenTools.mediumFontPointSize
+                horizontalAlignment: Text.AlignHCenter
+                Layout.fillWidth: true
+            }
         }
     }
 

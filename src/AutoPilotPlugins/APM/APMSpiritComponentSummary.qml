@@ -24,7 +24,7 @@ Item {
     property Fact _payloadWeight: controller.getParameterFact(-1, "SPIRIT_PAYLD_WT")
     property Fact _camType:    controller.getParameterFact(-1, "SPIRIT_CAM_TYPE", false)
 
-    property var cameraModels: [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR") , qsTr("Z40K") , qsTr("Z40TIR") , qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye")]
+    property var cameraModels: [ qsTr("None"), qsTr("Q10F"), qsTr("Q10T"), qsTr("Z10TIR") , qsTr("Z40K") , qsTr("Z40TIR") , qsTr("H30T"), qsTr("Z10TIR Mini"), qsTr("NightHawk"), qsTr("DragonEye"), qsTr("Raptor")]
     Column {
         anchors.fill:       parent
 

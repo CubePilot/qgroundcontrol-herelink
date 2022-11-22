@@ -19,15 +19,13 @@ void AscentAlertsController::_setActiveVehicle(Vehicle* vehicle)
 }
 
 void AscentAlertsController::_handleTextMessage(int uasid, int componentid, int severity, QString text) {
-    if(text.contains(QStringLiteral("Battery Failsafe"))){
-        if(!_batteryFailsafe){
-            _batteryFailsafe = true;
-            emit batteryFailsafeChanged(_batteryFailsafe);
-        }
-        else{
-            _critBatteryFailsafe = true;
-            emit critBatteryFailsafeChanged(_critBatteryFailsafe);
-        }
+    if(text.contains(QStringLiteral("Battery")) && text.contains(QStringLiteral(" low "))){ //Note: space before low necessary to avoid catching the work "below"
+        _batteryFailsafe = true;
+        emit batteryFailsafeChanged(_batteryFailsafe);
+    }
+    else if(text.contains(QStringLiteral("Battery")) && text.contains(QStringLiteral(" critical "))){ //Note: case sensitive; if landed, there is a Battery Critical message
+        _critBatteryFailsafe = true;
+        emit critBatteryFailsafeChanged(_critBatteryFailsafe);
     }
     else if(text.contains(QStringLiteral("GPS Glitch cleared"))){
         _gpsFailsafe = false;
@@ -44,5 +42,13 @@ void AscentAlertsController::_handleTextMessage(int uasid, int componentid, int 
     else if(text.contains(QStringLiteral("EKF Failsafe Cleared")) || text.contains(QStringLiteral("is using GPS"))){
         _ekfFailsafe = false;
         emit ekfFailsafeChanged(_ekfFailsafe);
-    }   
+    }
+    else if(text.contains(QStringLiteral("Radio Failsafe Cleared"))){
+        _radioFailsafe = false;
+        emit radioFailsafeChanged(_radioFailsafe);
+    }
+    else if(text.contains(QStringLiteral("Radio Failsafe"))){
+        _radioFailsafe = true;
+        emit radioFailsafeChanged(_radioFailsafe);
+    }      
 }
