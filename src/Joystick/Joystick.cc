@@ -1077,25 +1077,27 @@ void Joystick::_buildActionList(Vehicle* activeVehicle)
             _assignableButtonActions.append(new AssignableButtonAction(this, mode));
         }
     }
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionVTOLFixedWing));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionVTOLMultiRotor));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionContinuousZoomIn, true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionContinuousZoomOut, true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStepZoomIn,  true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStepZoomOut, true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNextStream));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionPreviousStream));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNextCamera));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionPreviousCamera));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionTriggerCamera));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStartVideoRecord));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStopVideoRecord));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionToggleVideoRecord));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalDown,    true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalUp,      true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalLeft,    true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalRight,   true));
-    _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalCenter));
+    
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionVTOLFixedWing));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionVTOLMultiRotor));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionContinuousZoomIn, true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionContinuousZoomOut, true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStepZoomIn,  true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStepZoomOut, true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNextStream));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionPreviousStream));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionNextCamera));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionPreviousCamera));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionTriggerCamera));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStartVideoRecord));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionStopVideoRecord));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionToggleVideoRecord));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalDown,    true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalUp,      true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalLeft,    true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalRight,   true));
+    // _assignableButtonActions.append(new AssignableButtonAction(this, _buttonActionGimbalCenter));
+
     for(int i = 0; i < _assignableButtonActions.count(); i++) {
         AssignableButtonAction* p = qobject_cast<AssignableButtonAction*>(_assignableButtonActions[i]);
         _availableActionTitles << p->action();

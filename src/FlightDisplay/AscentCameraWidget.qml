@@ -59,8 +59,8 @@ Item{
     }
 
     function toggleRecording(){
-        //if(!_recording){controller.record()}
-        //else if(_recording){controller.stopRecording()}
+        if(!_recording){controller.record()}
+        else if(_recording){controller.stopRecording()}
         _recording = !_recording
         min = 0
         sec = 0
