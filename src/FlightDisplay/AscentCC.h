@@ -8,6 +8,8 @@
 #include "QGCMAVLink.h"
 #include "Vehicle.h"
 
+#define MAV_CMD_ASCENT_PAYLOAD 48000
+
 class Vehicle;
 
 class AscentCC : public QObject

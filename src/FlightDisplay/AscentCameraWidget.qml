@@ -83,7 +83,7 @@ Item{
 
         else if(irPage.visible){
             irPage.visible              = false
-            if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye"){
+            if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor"){
                 nextVisionPage.visible  = true
                 _currentPage            = qsTr("NextVision Controls")  
             }
@@ -123,7 +123,7 @@ Item{
                 debugPage.visible       = true
                 _currentPage            = qsTr("Debug")
             }
-            else if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye"){
+            else if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor"){
                 nextVisionPage.visible  = true
                 _currentPage            = qsTr("NextVision Controls") 
             }
@@ -147,7 +147,7 @@ Item{
         }
         else if(debugPage.visible){
             debugPage.visible       = false
-            if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye"){
+            if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor"){
                 nextVisionPage.visible  = true
                 _currentPage            = qsTr("NextVision Controls") 
             }
@@ -454,13 +454,13 @@ Item{
                 Item{Layout.fillWidth: true}
             }
             RowLayout {
-                visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye") ? false : true
+                visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") ? false : true
                 Item{Layout.fillWidth: true}
                 QGCLabel{text: qsTr("Digital Zoom")}
                 Item{Layout.fillWidth: true}
             }
             RowLayout {
-                visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye") ? false : true
+                visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") ? false : true
                 Layout.fillHeight: true
                 Item{Layout.fillWidth: true}
                 QGCButton{
@@ -576,7 +576,7 @@ Item{
             }
 
 
-            else if((cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye") && _trackingPoint.mouseX >= nextVisPipX && _trackingPoint.mouseY >= nextVisPipY){
+            else if((cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") && _trackingPoint.mouseX >= nextVisPipX && _trackingPoint.mouseY >= nextVisPipY){
                 if (_eoIsMain) {
                     console.log("Activate IR_EO")
                     controller.ireo()

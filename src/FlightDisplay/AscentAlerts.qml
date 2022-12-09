@@ -133,8 +133,6 @@ Item {
         else{
             _severity = AscentAlerts.Severity.Normal;
             _noActionNeeded = true; 
-                _noActionNeeded = true; 
-            _noActionNeeded = true; 
             _messageAvailable = false;
             if(ascentAlerts.state == "open"){ascentAlerts.state ="minimized"}
         }

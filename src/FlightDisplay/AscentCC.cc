@@ -230,13 +230,11 @@ void AscentCC::_centerOnPixel(int x, int y){
     }
 }
 
-//IMPLEMENTING DO_GRIPPER 
-
 void AscentCC::_centerCam(){
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            17,
                                            NAN,
                                            NAN,
@@ -255,7 +253,7 @@ void AscentCC::_takePicture() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            0,
                                            NAN,
                                            NAN,
@@ -274,7 +272,7 @@ void AscentCC::_record() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            1,
                                            NAN,
                                            NAN,
@@ -293,7 +291,7 @@ void AscentCC::_stopRecording() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            2,
                                            NAN,
                                            NAN,
@@ -312,7 +310,7 @@ void AscentCC::_ir(){
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            4,
                                            NAN,
                                            NAN,
@@ -331,7 +329,7 @@ void AscentCC::_eo() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            3,
                                            NAN,
                                            NAN,
@@ -350,7 +348,7 @@ void AscentCC::_eoir() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            5,
                                            NAN,
                                            NAN,
@@ -369,7 +367,7 @@ void AscentCC::_ireo() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            6,
                                            NAN,
                                            NAN,
@@ -388,7 +386,7 @@ void AscentCC::_nextPallette() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            7,
                                            NAN,
                                            NAN,
@@ -407,7 +405,7 @@ void AscentCC::_toggleHeat() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            22,
                                            NAN,
                                            NAN,
@@ -426,7 +424,7 @@ void AscentCC::_digiZoom1() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            8,
                                            NAN,
                                            NAN,
@@ -445,7 +443,7 @@ void AscentCC::_digiZoom2() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            9,
                                            NAN,
                                            NAN,
@@ -464,7 +462,7 @@ void AscentCC::_digiZoom4() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            10,
                                            NAN,
                                            NAN,
@@ -483,7 +481,7 @@ void AscentCC::_digiZoom8() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            11,
                                            NAN,
                                            NAN,
@@ -502,7 +500,7 @@ void AscentCC::_digiZoom16() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            12,
                                            NAN,
                                            NAN,
@@ -521,7 +519,7 @@ void AscentCC::_trackPoint(int x, int y) {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            15,
                                            x,
                                            y,
@@ -540,7 +538,7 @@ void AscentCC::_stopTracking() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            16,
                                            NAN,
                                            NAN,
@@ -559,7 +557,7 @@ void AscentCC::_lookDown() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            20,
                                            NAN,
                                            NAN,
@@ -578,7 +576,7 @@ void AscentCC::_debug() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            99,
                                            NAN,
                                            NAN,
@@ -605,7 +603,7 @@ void AscentCC::_nuc() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
-        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_DO_GRIPPER, 0,
+        mavlink_msg_command_long_pack_chan(1, 0, priority_link->mavlinkChannel(), &message, 1, _vehicle->defaultComponentId(), MAV_CMD_ASCENT_PAYLOAD, 0,
                                            21,
                                            NAN,
                                            NAN,
