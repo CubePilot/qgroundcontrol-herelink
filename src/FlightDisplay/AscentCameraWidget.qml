@@ -412,7 +412,7 @@ Item{
                 QGCButton{
                     text: qsTr("Picture in\n  Picture")
                     backRadius: height/8
-                    pointSize: ScreenTools.defaultFontPointSize * 2
+                    pointSize: ScreenTools.defaultFontPointSize * 1.75
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     Layout.preferredWidth: ScreenTools.defaultFontPixelHeight * (3)

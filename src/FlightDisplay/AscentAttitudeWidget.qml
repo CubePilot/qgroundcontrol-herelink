@@ -18,10 +18,29 @@ Item {
     property real _rollAngle:   vehicle ? vehicle.roll.rawValue  : 0
     property real _pitchAngle:  vehicle ? vehicle.pitch.rawValue : 0
     property int _cameraYawAngle:     0
-    property bool _camera:      true
+    property var cameraModels:  [qsTr("~Waiting~"),     //0
+                                qsTr("Q10F"),           //1
+                                qsTr("Q10T"),           //2
+                                qsTr("Z10TIR") ,        //3
+                                qsTr("Z40K") ,          //4
+                                qsTr("Z40TIR") ,        //5
+                                qsTr("H30T"),           //6
+                                qsTr("Z10TIR Mini"),    //7
+                                qsTr("NightHawk"),      //8 
+                                qsTr("DragonEye"),      //9
+                                qsTr("Raptor")]         //10
+    property int _cameraType:   vehicle ? vehicle.cameraType : 0
+    property bool _camera:   false   
 
     width:  size
     height: size
+
+    on_CameraTypeChanged: {
+        _cameraType == 0 ? _camera = false : (
+        _cameraType == 8 ? _camera = false : (
+        _cameraType == 9 ? _camera = false : (
+        _cameraType == 10 ? _camera = false : _camera = true)))
+    }
 
     Item {
         id:             instrument

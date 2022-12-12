@@ -38,8 +38,15 @@ MapQuickItem {
     property bool   _multiVehicle:  QGroundControl.multiVehicleManager.vehicles.count > 1
 
     property int    _cameraYawAngle:          0
-    property bool   _camera:                  true                  
-    property int    camType:                  activeVehicle ? activeVehicle.cameraType : 0
+    property bool   _camera:                  false                  
+    property int    _cameraType:              _activeVehicle ? _activeVehicle.cameraType : 0
+
+    on_CameraTypeChanged: {
+        _cameraType == 0 ? _camera = false : (
+        _cameraType == 8 ? _camera = false : (
+        _cameraType == 9 ? _camera = false : (
+        _cameraType == 10 ? _camera = false : _camera = true)))
+    }
 
     sourceItem: Item {
         id:         vehicleItem

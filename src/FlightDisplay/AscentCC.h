@@ -20,6 +20,8 @@ public:
     AscentCC(void);
     Q_PROPERTY(int cameraYaw READ cameraYaw NOTIFY cameraYawChanged)
     Q_PROPERTY(int cameraType READ cameraType NOTIFY cameraTypeChanged)
+    Q_PROPERTY(bool isPiP READ isPiP WRITE setIsPiP NOTIFY isPiPChanged)
+    Q_PROPERTY(bool eoIsMain READ eoIsMain WRITE setEOIsMain NOTIFY eoIsMainChanged)
     Q_INVOKABLE void sendSpeeds(int pitch, int yaw){_sendSpeeds(pitch, yaw);}
     Q_INVOKABLE void zoomSpeed(int speed){_zoomSpeed(speed);}
     Q_INVOKABLE void updateZoomLevel(){_updateZoomLevel();}
@@ -32,7 +34,7 @@ public:
     Q_INVOKABLE void ir(){_ir();}    
     Q_INVOKABLE void eoir(){_eoir();}    
     Q_INVOKABLE void ireo(){_ireo();}    
-    Q_INVOKABLE void nextPallette(){_nextPallette();}
+    Q_INVOKABLE void nextPalette(){_nextPalette();}
     Q_INVOKABLE void toggleHeat(){_toggleHeat();}                 
     Q_INVOKABLE void digiZoom1(){_digiZoom1();}    
     Q_INVOKABLE void digiZoom2(){_digiZoom2();}    
@@ -86,7 +88,7 @@ private:
     void _eo();
     void _eoir();
     void _ireo();
-    void _nextPallette();
+    void _nextPalette();
     void _toggleHeat();
     void _digiZoom1();
     void _digiZoom2();

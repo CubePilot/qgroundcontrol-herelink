@@ -382,7 +382,7 @@ void AscentCC::_ireo() {
     }
 }
 
-void AscentCC::_nextPallette() {
+void AscentCC::_nextPalette() {
     if(_vehicle) {
         auto priority_link = _vehicle->priorityLink();
         mavlink_message_t message;
@@ -397,7 +397,7 @@ void AscentCC::_nextPallette() {
         _vehicle->sendMessageOnLink(priority_link, message);
     }
     else{
-        qWarning() << "_nextPallette: No Active Vehicle";
+        qWarning() << "_nextPalette: No Active Vehicle";
     }
 }
 
@@ -616,4 +616,14 @@ void AscentCC::_nuc() {
     else{
         qWarning() << "_NUC: No Active Vehicle";
     }
+}
+
+void AscentCC::setIsPiP(bool pip) {
+    _isPiP = pip;
+    emit isPiPChanged(pip);
+}
+
+void AscentCC::setEOIsMain(bool eo) {
+    _eoIsMain = eo;
+    emit eoIsMainChanged(eo);
 }

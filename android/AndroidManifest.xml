@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<manifest package="org.mavlink.qgroundcontrolvideomod" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.2-4-g8f23c948c" android:versionCode="654008000" android:installLocation="auto">
+<manifest package="org.mavlink.qgroundcontrolvideomod" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="1.0.2-5-gf82b755d5" android:versionCode="654008000" android:installLocation="auto">
     <application android:hardwareAccelerated="true" android:name="org.qtproject.qt5.android.bindings.QtApplication" android:label="AscentQ" android:icon="@drawable/icon" >
         <activity android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|locale|fontScale|keyboard|keyboardHidden|navigation" android:name="org.mavlink.qgroundcontrol.QGCActivity" android:label="AscentQ" android:screenOrientation="sensorLandscape" android:launchMode="singleTask" android:keepScreenOn="true">
             <intent-filter>

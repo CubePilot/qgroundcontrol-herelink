@@ -32,8 +32,8 @@ Item {
 
     property bool _recovered:                   false
     property int  _recoveredFrom:               AscentAlerts.Alerts.Normal
-    property int  _gcsFailsafe:                 _activeVehicle.gcsFS
-    property int  _thrFailsafe:                 _activeVehicle.thrFS
+    property int  _gcsFailsafe:                 _activeVehicle ? _activeVehicle.gcsFS : 0
+    property int  _thrFailsafe:                 _activeVehicle ? _activeVehicle.thrFS : 0
     property bool _blink:                       false
     property bool _blinkFlag:                   false
     property bool _messageAvailable:            false

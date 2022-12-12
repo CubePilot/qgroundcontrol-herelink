@@ -56,8 +56,7 @@ FlightMap {
     property bool   _keepVehicleCentered:       mainIsMap ? false : true
     property bool   _pipping:                   false
 
-    property int    _cameraYawAngle:            0
-    property bool   _camera:                    true                    
+    property int    _cameraYawAngle:            0                
 
     function updateAirspace(reset) {
         if(_airspaceEnabled) {
@@ -254,7 +253,6 @@ FlightMap {
                     z:              QGroundControl.zOrderVehicles
 
                     _cameraYawAngle:      flightMap._cameraYawAngle
-                    _camera:              _camera
                 }
     }
 

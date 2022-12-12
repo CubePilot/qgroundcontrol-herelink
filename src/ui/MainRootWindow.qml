@@ -403,7 +403,7 @@ ApplicationWindow {
     Popup{
         id:                 toolSelect
         width:              ScreenTools.defaultFontPixelHeight * (11)
-        height:             ScreenTools.defaultFontPixelHeight * (16)
+        height:             mainWindow.height * 0.6
         modal:              true
         focus:              true
         x:                  Math.round((mainWindow.width  - width)  * 0.5)

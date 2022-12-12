@@ -350,7 +350,6 @@ Item {
                 scaleState:                 (mainIsMap && flyViewOverlay.item) ? (flyViewOverlay.item.scaleState ? flyViewOverlay.item.scaleState : "bottomMode") : "bottomMode"
 
                 _cameraYawAngle: ascentCam._yawAngle
-                _camera:         (camType == 0 || camType == 8 || camType == 9) ? false : true
 
                 Component.onCompleted: {
                     mainWindow.flightDisplayMap = _fMap
