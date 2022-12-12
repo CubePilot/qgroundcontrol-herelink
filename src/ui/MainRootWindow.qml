@@ -471,7 +471,42 @@ ApplicationWindow {
                     toolSelect.close()
                 }
             }
+
             Item { Layout.fillHeight: true }
+
+            QGCLabel {
+                id:                     versionLabel
+                text:                   qsTr("AscentQ Version 1.1.0")
+                font.pointSize:         ScreenTools.smallFontPointSize
+                wrapMode:               QGCLabel.WordWrap
+                Layout.maximumWidth:    parent.width
+                Layout.alignment:       Qt.AlignHCenter
+
+                MouseArea {
+                    anchors.fill: parent
+
+                    onClicked: {
+                        if(!QGroundControl.corePlugin.showAdvancedUI) {
+                            advancedModeConfirmation.open()
+                        } else {
+                            QGroundControl.corePlugin.showAdvancedUI = false
+                        }
+                    }
+                }
+            }
+
+            Item { Layout.fillHeight: true }
+
+            MessageDialog {
+                        id:                 advancedModeConfirmation
+                        title:              qsTr("Advanced Mode")
+                        text:               QGroundControl.corePlugin.showAdvancedUIMessage
+                        standardButtons:    StandardButton.Yes | StandardButton.No
+                        onYes: {
+                            QGroundControl.corePlugin.showAdvancedUI = true
+                            advancedModeConfirmation.close()
+                        }
+            }
         }
     }
     //-------------------------------------------------------------------------
