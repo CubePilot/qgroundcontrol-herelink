@@ -195,6 +195,7 @@ Item {
                 _severity = AscentAlerts.Severity.Recovered;
                 _recovered = true;
                 _recoveredFrom = AscentAlerts.Alerts.LossOfLink;
+                recoveryTimer.restart()
             }
         }
     }
@@ -212,6 +213,7 @@ Item {
             _severity = AscentAlerts.Severity.Recovered;
             _recovered = true;
             _recoveredFrom = AscentAlerts.Alerts.RadioFailsafe
+            recoveryTimer.restart()
         }
     }
 
@@ -474,14 +476,6 @@ Item {
                 Layout.fillWidth: true
                 visible: _activeVehicle
             }
-            QGCButton{
-                text: qsTr("Accept")
-                Layout.alignment: Qt.AlignHCenter
-                visible: _activeVehicle
-                onClicked: {
-                    nextAlert()
-                }
-            }
         }
 
         ColumnLayout{ //Radio Failsafe Recovery
@@ -510,14 +504,6 @@ Item {
                 horizontalAlignment: Text.AlignHCenter
                 Layout.fillWidth: true
                 visible: _activeVehicle
-            }
-            QGCButton{
-                text: qsTr("Accept")
-                Layout.alignment: Qt.AlignHCenter
-                visible: _activeVehicle
-                onClicked: {
-                    nextAlert()
-                }
             }
         }
 
