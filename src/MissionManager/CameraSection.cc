@@ -198,16 +198,18 @@ void CameraSection::appendSectionItems(QList<MissionItem*>& items, QObject* miss
 
         case TakePhoto:
             item = new MissionItem(nextSequenceNumber++,
-                                   MAV_CMD_IMAGE_START_CAPTURE,
-                                   MAV_FRAME_MISSION,
-                                   0,                           // Reserved (Set to 0)
-                                   0,                           // Interval (none)
-                                   1,                           // Take 1 photo
-                                   0,                           // No sequence number specified
-                                   qQNaN(), qQNaN(), qQNaN(),   // reserved
-                                   true,                        // autoContinue
-                                   false,                       // isCurrentItem
-                                   missionItemParent);
+                                    MAV_CMD_DO_DIGICAM_CONTROL,
+                                    MAV_FRAME_MISSION,
+                                    1,                                   // Reserved (Set to 0)
+                                    0,                                   // Interval (none)
+                                    0,                                   // Take 1 photo
+                                    0, 
+                                    1, 
+                                    0, 
+                                    0,  // param 4-7 reserved
+                                    true,                                // autoContinue
+                                    false,                               // isCurrentItem
+                                    missionItemParent);
             break;
         }
         if (item) {

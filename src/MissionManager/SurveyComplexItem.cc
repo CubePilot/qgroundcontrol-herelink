@@ -687,12 +687,15 @@ void SurveyComplexItem::_buildAndAppendMissionItems(QList<MissionItem*>& items, 
             items.append(item);
             if (hoverAndCaptureEnabled()) {
                 item = new MissionItem(seqNum++,
-                                       MAV_CMD_IMAGE_START_CAPTURE,
+                                       MAV_CMD_DO_DIGICAM_CONTROL,
                                        MAV_FRAME_MISSION,
-                                       0,                                   // Reserved (Set to 0)
+                                       1,                                   // Reserved (Set to 0)
                                        0,                                   // Interval (none)
-                                       1,                                   // Take 1 photo
-                                       qQNaN(), qQNaN(), qQNaN(), qQNaN(),  // param 4-7 reserved
+                                       0,                                   // Take 1 photo
+                                       0, 
+                                       1, 
+                                       0, 
+                                       0,  // param 4-7 reserved
                                        true,                                // autoContinue
                                        false,                               // isCurrentItem
                                        missionItemParent);
