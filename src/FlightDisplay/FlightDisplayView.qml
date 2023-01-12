@@ -81,6 +81,11 @@ Item {
 
     property bool vehicleFlying: activeVehicle ? activeVehicle.flying || activeVehicle.landing : false
     property bool vehicleGrounded: activeVehicle ? !activeVehicle.flying && !activeVehicle.landing : false
+    property var _flightMode: _activeVehicle ? _activeVehicle.flightMode : qsTr("No Active Vehicle")
+
+    on_FlightModeChanged: {
+        (_flightMode == "RTL" || _flightMode == "Land") && vehicleFlying ? landRTLAnnouncer.running = true : landRTLAnnouncer.running = false
+    }
 
     onVehicleGroundedChanged: {
         if(vehicleGrounded && !vehicleFlying && ascentCam._recording){ //Redundancy in here just in case the value "changes" upon booting
@@ -90,6 +95,15 @@ Item {
 
     on_ParametersReady: {
         showPreflightChecklistIfNeeded()
+    }
+
+    Timer 
+    {
+        id: landRTLAnnouncer
+        running: false
+        repeat: true
+        interval: 5000
+        onTriggered: _activeVehicle.announceLandRTL()
     }
 
     Timer {

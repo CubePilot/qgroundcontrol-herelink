@@ -789,6 +789,7 @@ public:
     Q_PROPERTY(int thrFS READ thrFS NOTIFY thrFSChanged)
     Q_INVOKABLE void requestCamType(){_requestCamType();}
     Q_INVOKABLE void requestNumBatt(){_requestNumBatt();}
+    Q_INVOKABLE void announceLandRTL(){_announceLandRTL();}
     int cameraType(void){return (int)_cam_type;}
     int numBatt(void){return (int)_num_batt;}
     int gcsType(void){return (int)_gcs_type;}
@@ -1643,6 +1644,7 @@ private:
     //Helpers for Ascent UI
     void _requestCamType();
     void _requestNumBatt();
+    void _announceLandRTL();
     int _cam_type = 0;
     int _num_batt = 0;
     int _gcs_type = 0;

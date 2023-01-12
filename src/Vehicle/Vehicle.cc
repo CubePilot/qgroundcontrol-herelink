@@ -1072,6 +1072,16 @@ void Vehicle::_requestNumBatt()
     _waiting_for_num_batt = true;
 }
 
+void Vehicle::_announceLandRTL()
+{
+    if(flightMode() == QStringLiteral("RTL")){
+        qgcApp()->toolbox()->audioOutput()->say("Returning to Launch");
+    }
+    else if(flightMode() == QStringLiteral("Land")){
+        qgcApp()->toolbox()->audioOutput()->say("Landing");
+    }
+}
+
 void Vehicle::_handleFenceStatus(const mavlink_message_t& message)
 {
     mavlink_fence_status_t fenceStatus;
