@@ -28,7 +28,6 @@ Item{
     property int _currentCamera:                _activeVehicle ? _activeVehicle.cameraType : 0
     property int _yawAngle:                     _activeVehicle ? controller.cameraYaw : 0
     property int _pitchAngle:                   0
-    property bool _selectingFollowTarget:       false
     property bool _recording:                   false
     property real _margins:                     ScreenTools.defaultFontPixelWidth / 2
     property var _currentPage:                  qsTr("Common Controls")
@@ -45,7 +44,6 @@ Item{
     Component.onCompleted: {
         commonControls.visible      = true
         irPage.visible              = false
-        nextVisionPage.visible      = false
         debugPage.visible           = false
         _currentPage            = qsTr("Common Controls")
     }
@@ -83,22 +81,6 @@ Item{
 
         else if(irPage.visible){
             irPage.visible              = false
-            if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor"){
-                nextVisionPage.visible  = true
-                _currentPage            = qsTr("NextVision Controls")  
-            }
-            else if(debugMode){
-                debugPage.visible       = true
-                _currentPage            = qsTr("Debug")
-            }
-            else{
-                commonControls.visible  = true
-                _currentPage            = qsTr("Common Controls")
-            }
-        }
-
-        else if(nextVisionPage.visible){
-            nextVisionPage.visible = false
             if(debugMode){
                 debugPage.visible       = true
                 _currentPage            = qsTr("Debug")
@@ -123,10 +105,6 @@ Item{
                 debugPage.visible       = true
                 _currentPage            = qsTr("Debug")
             }
-            else if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor"){
-                nextVisionPage.visible  = true
-                _currentPage            = qsTr("NextVision Controls") 
-            }
             else if(cameraModels[_currentCamera] == "Q10F"){
                 //Can't go anywhere
             }
@@ -140,18 +118,9 @@ Item{
             commonControls.visible  = true
             _currentPage            = qsTr("Common Controls")
         }
-        else if(nextVisionPage.visible){
-            nextVisionPage.visible = false
-            irPage.visible = true
-            _currentPage = qsTr("IR")
-        }
         else if(debugPage.visible){
             debugPage.visible       = false
-            if(cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor"){
-                nextVisionPage.visible  = true
-                _currentPage            = qsTr("NextVision Controls") 
-            }
-            else if(cameraModels[_currentCamera] == "Q10F"){
+            if(cameraModels[_currentCamera] == "Q10F"){
                 commonControls.visible  = true
                 _currentPage            = qsTr("Common Controls")
             }
@@ -350,18 +319,6 @@ Item{
                 }
                 Item{Layout.fillWidth: true}
             }
-
-            //Implement later for Non tracking cameras (hacked follow)
-            RowLayout {
-                Layout.fillHeight: true
-                visible: false
-                QGCButton{
-                    text:                       _selectingFollowTarget ? qsTr("Cancel") : qsTr("Follow")
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    onClicked:                  _selectingFollowTarget = !_selectingFollowTarget
-                }
-            }
         }
 
         //////////////////////
@@ -370,11 +327,11 @@ Item{
         ColumnLayout { id: irPage
             anchors.fill: parent
             anchors.margins: _margins * 2
-            RowLayout {
+
+            RowLayout { //EO and IR Buttons
                 Layout.fillHeight: true
                 Item{Layout.fillWidth: true}
                 QGCButton{
-                    id: eoButton
                     text: qsTr("Day")
                     backRadius: height/8
                     pointSize: ScreenTools.defaultFontPointSize * 2
@@ -390,7 +347,6 @@ Item{
                     }
                 }
                 QGCButton{
-                    id: irButton
                     text: qsTr("IR")
                     backRadius: height/8
                     pointSize: ScreenTools.defaultFontPointSize * 2
@@ -406,7 +362,9 @@ Item{
                 }
                 Item{Layout.fillWidth: true}
             }
-            RowLayout {
+
+            RowLayout { //PiP and Color Palette Button
+                visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") ? false : true
                 Layout.fillHeight: true
                 Item{Layout.fillWidth: true}
                 QGCButton{
@@ -453,13 +411,40 @@ Item{
                 }
                 Item{Layout.fillWidth: true}
             }
-            RowLayout {
+
+            RowLayout { //Toggle Heat and NUC Buttons
+                Layout.fillHeight: true
+                visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") ? true : false
+                Item{Layout.fillWidth: true}
+                QGCButton{
+                    text: qsTr("Invert Heat")
+                    backRadius: height/8
+                    pointSize: ScreenTools.defaultFontPointSize * 2
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: ScreenTools.defaultFontPixelHeight * (3)
+                    onClicked: controller.toggleHeat()
+                }
+                QGCButton{
+                    text: qsTr("NUC")
+                    backRadius: height/8
+                    pointSize: ScreenTools.defaultFontPointSize * 2
+                    Layout.fillHeight: true
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: ScreenTools.defaultFontPixelHeight * (3)
+                    onClicked: controller.nuc();
+                }
+                Item{Layout.fillWidth: true}
+            }
+
+            RowLayout { //Digital Zoom Header
                 visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") ? false : true
                 Item{Layout.fillWidth: true}
                 QGCLabel{text: qsTr("Digital Zoom")}
                 Item{Layout.fillWidth: true}
             }
-            RowLayout {
+
+            RowLayout { //Digital Zoom Buttons
                 visible: (cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") ? false : true
                 Layout.fillHeight: true
                 Item{Layout.fillWidth: true}
@@ -491,41 +476,6 @@ Item{
             }
         }
 
-
-        //////////////////////////////
-        // NextVision CONTROLS PAGE //
-        //////////////////////////////
-        ColumnLayout { id: nextVisionPage
-            anchors.fill: parent
-            anchors.margins: _margins * 2
-            RowLayout {
-                Layout.fillHeight: true
-                Item{Layout.fillWidth: true}
-                QGCButton{
-                    text: qsTr("Toggle Heat")
-                    backRadius: height/8
-                    pointSize: ScreenTools.defaultFontPointSize * 2
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    onClicked: controller.toggleHeat()
-                }
-                Item{Layout.fillWidth: true}
-            }
-            RowLayout {
-                Layout.fillHeight: true
-                Item{Layout.fillWidth: true}
-                QGCButton{
-                    text: qsTr("NUC")
-                    backRadius: height/8
-                    pointSize: ScreenTools.defaultFontPointSize * 2
-                    Layout.fillHeight: true
-                    Layout.fillWidth: true
-                    onClicked: controller.nuc();
-                }
-                Item{Layout.fillWidth: true}
-            }
-        }
-
         ////////////////////
         // DEBUGGING PAGE //
         ////////////////////
@@ -547,7 +497,6 @@ Item{
                     Layout.fillWidth: true
                     onClicked: {
                        controller.debug()
-                       //console.log(_yawAngle)
                     }
                 }
                 Item{Layout.fillWidth: true}
@@ -574,7 +523,6 @@ Item{
                 console.log("X = ", _trackingPoint.mouseX,", Y = " ,_trackingPoint.mouseY)
                 controller.trackPoint(_trackingPoint.mouseX, _trackingPoint.mouseY)
             }
-
 
             else if((cameraModels[_currentCamera] == "NightHawk" || cameraModels[_currentCamera] == "DragonEye" || cameraModels[_currentCamera] == "Raptor") && _trackingPoint.mouseX >= nextVisPipX && _trackingPoint.mouseY >= nextVisPipY){
                 if (_eoIsMain) {
@@ -608,31 +556,4 @@ Item{
             }
         }
     }
-
-    //Select Target Prompt (Feature for non tracking cameras)
-    Item{
-        anchors.horizontalCenter:       parent.horizontalCenter
-        anchors.top:                    parent.bottom
-        anchors.margins:                _margins
-        width:                          parent.width
-        height:                         parent.height/4
-        visible:                        _selectingFollowTarget
-        Rectangle{
-            anchors.fill:                       parent
-            color:                              qgcPal.window
-            opacity:                            0.6
-            border.color:                       qgcPal.colorRed
-            border.width:                       2
-        }
-        QGCLabel{
-            text:                               qsTr("Select your target")
-            color:                              qgcPal.colorRed
-            anchors.verticalCenter:             parent.verticalCenter
-            anchors.horizontalCenter:           parent.horizontalCenter
-            font.pointSize:                     ScreenTools.mediumFontPointSize * 0.8
-            font.family:                        ScreenTools.demiboldFontFamily
-            font.bold:                          true
-        }
-    }
-
 }

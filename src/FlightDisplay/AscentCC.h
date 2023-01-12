@@ -22,10 +22,6 @@ public:
     Q_PROPERTY(int cameraType READ cameraType NOTIFY cameraTypeChanged)
     Q_PROPERTY(bool isPiP READ isPiP WRITE setIsPiP NOTIFY isPiPChanged)
     Q_PROPERTY(bool eoIsMain READ eoIsMain WRITE setEOIsMain NOTIFY eoIsMainChanged)
-    Q_INVOKABLE void sendSpeeds(int pitch, int yaw){_sendSpeeds(pitch, yaw);}
-    Q_INVOKABLE void zoomSpeed(int speed){_zoomSpeed(speed);}
-    Q_INVOKABLE void updateZoomLevel(){_updateZoomLevel();}
-    Q_INVOKABLE void centerOnPixel(int x, int y){_centerOnPixel(x, y);}
     Q_INVOKABLE void centerCam(){_centerCam();}
     Q_INVOKABLE void takePicture(){_takePicture();}
     Q_INVOKABLE void record(){_record();}
@@ -73,13 +69,6 @@ protected:
     MAVLinkProtocol*    _mavlink;
     
 private:
-
-    void _sendGimbalSpeeds(int pitch, int yaw);
-    void _sendSpeeds(int pitch, int yaw);
-    void _zoomSpeed(int speed);
-    void _updateZoomLevel();
-    void _centerOnPixel(int x, int y);
-
     void _centerCam();
     void _takePicture();
     void _record();
