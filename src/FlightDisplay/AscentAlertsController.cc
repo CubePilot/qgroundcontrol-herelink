@@ -27,7 +27,7 @@ void AscentAlertsController::_handleTextMessage(int uasid, int componentid, int 
         _critBatteryFailsafe = true;
         emit critBatteryFailsafeChanged(_critBatteryFailsafe);
     }
-    else if(text.contains(QStringLiteral("GPS Glitch cleared"))){
+    else if(text.contains(QStringLiteral("Glitch cleared"))){
         _gpsFailsafe = false;
         emit gpsFailsafeChanged(_gpsFailsafe);
     }
