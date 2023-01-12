@@ -1215,7 +1215,7 @@ void Vehicle::_handleStatusText(mavlink_message_t& message, bool longVersion)
     else if(messageText.contains(QStringLiteral("Battery")) && messageText.contains(QStringLiteral(" critical "))){
         qgcApp()->toolbox()->audioOutput()->say("Critically Low Battery");
     }
-    else if(messageText.contains(QStringLiteral("GPS Glitch cleared"))){
+    else if(messageText.contains(QStringLiteral("Glitch cleared"))){
         qgcApp()->toolbox()->audioOutput()->say("GPS Signal Recovered");
     }
     else if(messageText.contains(QStringLiteral("GPS Glitch"))){
