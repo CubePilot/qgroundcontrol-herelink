@@ -548,29 +548,21 @@ Item {
         anchors.fill: parent
         anchors.margins: _margins
         visible: _noActionNeeded
-        QGCLabel{
-            text: qsTr("No Action Needed")
-            color:       _accentColor
-            horizontalAlignment: Text.AlignHCenter
-            font.pointSize: ScreenTools.largeFontPointSize
-            font.family: ScreenTools.demiboldFontFamily
-            font.bold: true
-            Layout.fillWidth: true
-        }
     }
 
     //////////////////////////
     //Minimize Window Button//
     //////////////////////////
     Rectangle {
-        anchors.bottom:         parent.top
-        anchors.horizontalCenter: ascentAlerts.horizontalCenter
-        height:             parent.height / 6
-        width:              height * 2
-        color:              qgcPal.brandingPurple
+        anchors.bottom:             parent.top
+        anchors.horizontalCenter:   scentAlerts.horizontalCenter
+        height:                     parent.height / 6
+        width:                      height * 2
+        color:                      qgcPal.brandingPurple
         opacity: 0.75
-        border.color:       _accentColor
-        border.width:       3
+        border.color:               _accentColor
+        border.width:               3
+        visible:                    !_noActionNeeded
         MouseArea {
             anchors.fill:       parent
             onClicked: {
