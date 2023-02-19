@@ -27,7 +27,9 @@
 #include <QDir>
 #include <QDateTime>
 #include <QSysInfo>
+#if defined(__android__)
 #include <AndroidInterface.h>
+#endif
 
 QGC_LOGGING_CATEGORY(VideoReceiverLog, "VideoReceiverLog")
 
@@ -603,7 +605,9 @@ VideoReceiver::_handleStateChanged() {
 void
 VideoReceiver::_handleRecordingChanged() {
     if(!_recording && !_videoFile.isEmpty()) {
+#if defined(__android__)
         AndroidInterface::triggerMediaScannerScanFile(_videoFile);
+#endif
     }
 }
 #endif
@@ -731,7 +735,9 @@ VideoReceiver::startRecording(const QString &videoFile)
     if(videoFile.isEmpty()) {
         QString savePath;
         if (_videoSettings->saveSdCardEnable()->rawValue().toBool()) {
+#if defined(__android__)
             savePath = AndroidInterface::getSdcardPath();
+#endif
             if (!savePath.isEmpty()) {
                 savePath = savePath + "/QGroundControl/Video";
                 QDir savePathDir(savePath);
