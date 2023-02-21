@@ -46,6 +46,7 @@ jobs:
         GSTREAMER_NAME: ${{ matrix.config.GSTREAMER_NAME }}
         GSTREAMER_VERSION: 1.14.4
         ANDROID_HOME: /usr/local/lib/android/sdk
+        ANDROID_NDK_PLATFORM: android-29
       run: |
         set -o xtrace
         
@@ -56,19 +57,7 @@ jobs:
         git submodule update --init --recursive
                 
         rm -rf /tmp/shadow_build_dir
-        
-        export sdk_version=sdk-tools-linux-4333796.zip
-        
-        #sudo mkdir -p ${ANDROID_SDK_ROOT} 
-        #sudo curl --silent --show-error --location --fail --retry 3 --output /tmp/${sdk_version} https://dl.google.com/android/repository/${sdk_version} 
-        #sudo unzip -q /tmp/${sdk_version} -d ${ANDROID_SDK_ROOT} 
-        #sudo rm /tmp/${sdk_version}
-        
-        #mkdir ~/.android && echo '### User Sources for Android SDK Manager' > ~/.android/repositories.cfg
-        #sudo yes | sdkmanager --licenses && sdkmanager --update
-        
-        #sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-30" "platforms;android-29" "build-tools;30.0.0"
-        sudo $ANDROID_HOME/tools/bin/sdkmanager --uninstall "platforms;android-31" "platforms;android-30" "platforms;android-29" "platforms;android-32" "platforms;android-33" "build-tools;31.0.0" "build-tools;30.0.0" "build-tools;32.0.0" "build-tools;33.0.0" > /dev/null
+
         sudo $ANDROID_HOME/tools/bin/sdkmanager "build-tools;25.0.3" "platforms;android-29" "platform-tools" > /dev/null
         
         wget --quiet https://gstreamer.freedesktop.org/data/pkg/android/${GSTREAMER_VERSION}/gstreamer-1.0-android-universal-${GSTREAMER_VERSION}.tar.bz2 &&
@@ -99,8 +88,6 @@ jobs:
             export PATH=/tmp/Qt5.12-android_armv7/5.12.6/android_armv7/bin:$PATH
         fi
         
-        #git remote set-branches origin 'master' 
-        #git fetch --tags origin master 
         ./tools/update_android_version.sh ${BITNESS} notmaster
         
         java -version
@@ -109,9 +96,6 @@ jobs:
         ./gradlew --version
         cd ..
         
-        #rm android/debug.keystore
-        #keytool -genkey -v -keystore android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -keysize 2048 -validity 10000               
-        
         mkdir -p ${SHADOW_BUILD_DIR} 
         cd ${SHADOW_BUILD_DIR}
         
@@ -119,7 +103,7 @@ jobs:
         
         qmake -r $GITHUB_WORKSPACE/qgroundcontrol.pro CONFIG+=${CONFIG} CONFIG+=${STABLE_OR_DAILY} CONFIG+=ccache -spec ${SPEC}
                
-        make -j16 VERBOSE=1 install INSTALL_ROOT=./release/android-build/
+        make VERBOSE=1 install INSTALL_ROOT=./release/android-build/
         
         ccache -s
 
