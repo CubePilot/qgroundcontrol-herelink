@@ -373,12 +373,12 @@ VideoReceiver::start()
             }
         }
 
-        if ((queue1 = gst_element_factory_make("videoflip", nullptr)) == nullptr) {
+        if ((queue1 = gst_element_factory_make("queue", nullptr)) == nullptr) {
             qCritical() << "VideoReceiver::start() failed. Error with gst_element_factory_make('queue') [1]";
             break;
         }
         
-        g_object_set(G_OBJECT(queue1),"method ",4,NULL);
+        g_object_set(G_OBJECT(queue1),"leaky ",2,NULL);
         g_object_set(G_OBJECT(_videoSink),"sync ",false,NULL);
         g_object_set(static_cast<gpointer>(parser), "config-interval", -1, nullptr);
 
