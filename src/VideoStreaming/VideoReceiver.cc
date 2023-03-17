@@ -414,7 +414,7 @@ VideoReceiver::start()
             g_signal_connect(demux, "pad-added", G_CALLBACK(newPadCB), parser);
         } else {
             g_signal_connect(dataSource, "pad-added", G_CALLBACK(newPadCB), demux);
-            if(!gst_element_link_many(demux, parser, _tee, queue, decoder, _videoSink, NULL)) {
+            if(!gst_element_link_many(demux, parser, _tee, queue, decoder, queue1, _videoSink, NULL)) {
                 qCritical() << "Unable to link RTSP elements.";
                 break;
             }
