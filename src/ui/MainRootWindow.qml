@@ -20,6 +20,7 @@ import QGroundControl.Controls      1.0
 import QGroundControl.ScreenTools   1.0
 import QGroundControl.FlightDisplay 1.0
 import QGroundControl.FlightMap     1.0
+import QGroundControl.FactSystem    1.0
 
 /// @brief Native QML top level window
 /// All properties defined here are visible to all QML pages.
@@ -45,6 +46,7 @@ ApplicationWindow {
     readonly property real      _topBottomMargins:          ScreenTools.defaultFontPixelHeight * 0.5
     readonly property string    _mainToolbar:               QGroundControl.corePlugin.options.mainToolbarUrl
     readonly property string    _planToolbar:               QGroundControl.corePlugin.options.planToolbarUrl
+    property Fact               _showMenuNavWidget:         QGroundControl.settingsManager.igcSettings.showMenuNavWidget
 
     //-------------------------------------------------------------------------
     //-- Global Scope Variables
@@ -104,6 +106,7 @@ ApplicationWindow {
         setupWindow.visible     = false
         analyzeWindow.visible   = false
         flightView.visible      = false
+        menuNavWidget.visible   = false
         planViewLoader.visible  = false
         if(isPlanView) {
             toolbar.source  = _planToolbar
@@ -119,6 +122,7 @@ ApplicationWindow {
 
         viewSwitch(false)
         flightView.visible = true
+        menuNavWidget.visible = _showMenuNavWidget.rawValue;
     }
 
     function showPlanView() {
@@ -334,6 +338,7 @@ ApplicationWindow {
         visible: QGroundControl.settingsManager.flyViewSettings.showLogReplayStatusBar.rawValue
     }
 
+
     //-------------------------------------------------------------------------
     /// Fly View
     FlightDisplayView {
@@ -382,6 +387,14 @@ ApplicationWindow {
         anchors.fill:   parent
         visible:        false
         source:         "AnalyzeView.qml"
+    }
+
+    Loader {
+        id:             menuNavWidget
+        visible:        false
+        anchors.fill:   parent
+        source:         "MenuNavWidget.qml"
+
     }
 
     //-------------------------------------------------------------------------

@@ -348,6 +348,7 @@ protected slots:
     virtual void    _requestStorageInfo     ();
     virtual void    _downloadFinished       ();
     virtual void    _mavCommandResult       (int vehicleId, int component, int command, int result, bool noReponseFromVehicle);
+    virtual void    _wirisCommandResult     (QString command, QString commandFull, QString response);
     virtual void    _dataReady              (QByteArray data);
     virtual void    _paramDone              ();
     virtual void    _streamTimeout          ();
@@ -370,6 +371,21 @@ private:
     void    _updateRanges                   (Fact* pFact);
     void    _httpRequest                    (const QString& url);
     void    _handleDefinitionFile           (const QString& url);
+
+    bool    _isEthernetCommEnabled          ();
+
+    // eth requests
+    void    _requestCaptureStatusEth        ();
+    void    _requestStorageInfoEth          ();
+    void    _requestVideoStatusEth          ();
+
+    // eth response handlers
+    void    _handleTotalMemoryResultEth     (QString command, QString commandFull, QString response);
+    void    _handleFreeMemoryResultEth      (QString command, QString commandFull, QString response);
+    void    _handleRecordStartResultEth     (QString command, QString commandFull, QString response);
+    void    _handleRecordStopResultEth      (QString command, QString commandFull, QString response);
+    void    _handleIsRecordingResultEth     (QString command, QString commandFull, QString response);
+    void    _handlePhotoCaptureResultEth    (QString command, QString commandFull, QString response);
 
     QStringList     _loadExclusions         (QDomNode option);
     QStringList     _loadUpdates            (QDomNode option);
@@ -425,4 +441,5 @@ protected:
     QStringList                         _streamLabels;
     ThermalViewMode                     _thermalMode        = THERMAL_BLEND;
     double                              _thermalOpacity     = 85.0;
+    bool                                _wirisBound;
 };

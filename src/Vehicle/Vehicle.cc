@@ -244,6 +244,8 @@ Vehicle::Vehicle(LinkInterface*             link,
     _commonInit();
     _autopilotPlugin = _firmwarePlugin->autopilotPlugin(this);
 
+    _wiris = new Worksbetter();
+
     // PreArm Error self-destruct timer
     connect(&_prearmErrorTimer, &QTimer::timeout, this, &Vehicle::_prearmErrorTimeout);
     _prearmErrorTimer.setInterval(_prearmErrorTimeoutMSecs);
@@ -974,6 +976,13 @@ void Vehicle::_handleCameraImageCaptured(const mavlink_message_t& message)
     }
 }
 
+void Vehicle::triggerCameraPoint()
+{
+    // add a camera trigger point on the next GPS response
+    _pendingGpsTriggers++;
+    qCWarning(VehicleLog) << "Manual trigger point " << _pendingGpsTriggers;
+}
+
 void Vehicle::_handleStatusText(mavlink_message_t& message, bool longVersion)
 {
     QByteArray  b;
@@ -1240,6 +1249,23 @@ void Vehicle::_handleGlobalPositionInt(mavlink_message_t& message)
     _altitudeRelativeFact.setRawValue(globalPositionInt.relative_alt / 1000.0);
     _altitudeAMSLFact.setRawValue(globalPositionInt.alt / 1000.0);
 
+    // if GPS triggers have been manually requested, add them for the current position (even if they are 0,0)
+    if (_pendingGpsTriggers > 0) {
+        QGeoCoordinate position(globalPositionInt.lat  / (double)1E7, globalPositionInt.lon / (double)1E7, globalPositionInt.alt  / 1000.0);
+
+        int maxAttempts = 10;
+        while (_pendingGpsTriggers > 0 && maxAttempts > 0) {
+            qCWarning(VehicleLog) << "Handle GPS trigger point";
+            maxAttempts--;
+            _cameraTriggerPoints.append(new QGCQGeoCoordinate(position, this));
+            _pendingGpsTriggers--;
+
+            if (maxAttempts == 0) {
+                qCWarning(VehicleLog) << "GPS Trigger Loop Breaker Hit";
+            }
+        }
+    }
+
     // ArduPilot sends bogus GLOBAL_POSITION_INT messages with lat/lat 0/0 even when it has no gps signal
     // Apparently, this is in order to transport relative altitude information.
     if (globalPositionInt.lat == 0 && globalPositionInt.lon == 0) {
@@ -1414,6 +1440,7 @@ void Vehicle::_handleAutopilotVersion(LinkInterface *link, mavlink_message_t& me
     }
     emit gitHashChanged(_gitHash);
 
+    qCDebug(VehicleLog) << "Set Capabilities for sysid:" << message.sysid << "compid:" << message.compid;
     _setCapabilities(autopilotVersion.capabilities);
     _startPlanRequest();
 }
@@ -2057,6 +2084,17 @@ void Vehicle::_sendMessageOnLink(LinkInterface* link, mavlink_message_t message)
     // Write message into buffer, prepending start sign
     uint8_t buffer[MAVLINK_MAX_PACKET_LEN];
     int len = mavlink_msg_to_send_buffer(buffer, &message);
+
+    if (message.msgid == MAVLINK_MSG_ID_COMMAND_LONG) {
+        mavlink_command_long_t command;
+        mavlink_msg_command_long_decode(&message, &command);
+
+        QString commandStr = qgcApp()->toolbox()->missionCommandTree()->friendlyName(static_cast<MAV_CMD>(command.command));
+        qCDebug(VehicleLog) << "^^ MAV >> Write bytes: msgid:" << message.msgid << commandStr;
+    }
+    else {
+        qCDebug(VehicleLog) << "^^ MAV >> Write bytes: msgid:" << message.msgid;
+    }
 
     link->writeBytesSafe((const char*)buffer, len);
     _messagesSent++;
@@ -3382,6 +3420,8 @@ void Vehicle::_sendMavCommandAgain()
             _handleUnsupportedRequestProtocolVersion();
         }
 
+        qCWarning(VehicleLog) << "Vehicle did not respond: " << _toolbox->missionCommandTree()->friendlyName(queuedCommand.command);
+
         emit mavCommandResult(_id, queuedCommand.component, queuedCommand.command, MAV_RESULT_FAILED, true /* noResponsefromVehicle */);
         if (queuedCommand.showError) {
             qgcApp()->showMessage(tr("Vehicle did not respond to command: %1").arg(_toolbox->missionCommandTree()->friendlyName(queuedCommand.command)));
@@ -3402,7 +3442,7 @@ void Vehicle::_sendMavCommandAgain()
 
     _mavCommandAckTimer.start();
 
-    qCDebug(VehicleLog) << "_sendMavCommandAgain sending" << queuedCommand.command;
+    qCDebug(VehicleLog) << "_sendMavCommandAgain sending sysid:" << _id << "compid:" << queuedCommand.component << "cmd:" << queuedCommand.command;
 
     mavlink_message_t       msg;
     if (queuedCommand.commandInt) {
@@ -3500,11 +3540,15 @@ void Vehicle::_handleCommandAck(mavlink_message_t& message)
     mavlink_command_ack_t ack;
     mavlink_msg_command_ack_decode(&message, &ack);
 
-    qCDebug(VehicleLog) << QStringLiteral("_handleCommandAck command(%1) result(%2)").arg(ack.command).arg(ack.result);
+    qCDebug(VehicleLog) << "_handleCommandAck command:" << ack.command << "result:" << ack.result << "sysid:" << message.sysid << "compid:" << message.compid;
 
     if (ack.command == MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES && ack.result != MAV_RESULT_ACCEPTED) {
-        qCDebug(VehicleLog) << QStringLiteral("Vehicle responded to MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES with error(%1). Setting no capabilities.").arg(ack.result);
-        _handleUnsupportedRequestAutopilotCapabilities();
+        if (!_capabilityBitsKnown) {
+            qCDebug(VehicleLog) << QStringLiteral("Vehicle responded to MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES with error(%1). Setting no capabilities.").arg(ack.result);
+            _handleUnsupportedRequestAutopilotCapabilities();
+        } else {
+            qCDebug(VehicleLog) <<  "Vehicle responded to MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES with error(" << ack.result << "), but capabilities have already been set. Ignoring.";
+        }
     }
 
     if (ack.command == MAV_CMD_REQUEST_PROTOCOL_VERSION) {

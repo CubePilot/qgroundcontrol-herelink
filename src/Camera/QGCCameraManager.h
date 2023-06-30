@@ -50,6 +50,7 @@ public:
     virtual QGCVideoStreamInfo* currentStreamInstance();
     //-- Current thermal stream
     virtual QGCVideoStreamInfo* thermalStreamInstance();
+    Q_INVOKABLE virtual void                requestCameraInfo();
 
 signals:
     void    camerasChanged          ();

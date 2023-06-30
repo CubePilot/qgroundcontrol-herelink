@@ -70,6 +70,11 @@ QGCCameraManager::_mavlinkMessageReceived(const mavlink_message_t& message)
 {
     //-- Only pay attention to camera components, as identified by their compId
     if(message.sysid == _vehicle->id() && (message.compid >= MAV_COMP_ID_CAMERA && message.compid <= MAV_COMP_ID_CAMERA6)) {
+
+        if (message.msgid != MAVLINK_MSG_ID_HEARTBEAT) {
+            qCDebug(CameraManagerLog) << "^^ MAV << " << message.sysid << "compid: " << message.compid << "msgid: " << message.msgid;
+        }
+
         switch (message.msgid) {
             case MAVLINK_MSG_ID_CAMERA_CAPTURE_STATUS:
                 _handleCaptureStatus(message);
@@ -144,6 +149,45 @@ QGCCameraManager::_handleHeartbeat(const mavlink_message_t &message)
             }
         } else {
             qWarning() << "_cameraInfoRequest[" << sCompID << "] is null";
+        }
+    }
+}
+
+void
+QGCCameraManager::requestCameraInfo() {
+    qCDebug(CameraManagerLog) << "Manual request camera info";
+
+    if (_cameraInfoRequest.contains("100")) {
+        qCDebug(CameraManagerLog) << "reset request camera info";
+
+
+        CameraStruct* pInfo = _cameraInfoRequest["100"];
+        pInfo->infoReceived = false;
+        pInfo->tryCount = 0;
+        pInfo->gaveUp = false;
+
+        QGCCameraControl* pCamera = _findCamera(pInfo->compID);
+        if(pCamera) {
+            qWarning() << "Camera" << pCamera->modelName() << "manually removing from list.";
+            int idx = _cameraLabels.indexOf(pCamera->modelName());
+            if(idx >= 0) {
+                _cameraLabels.removeAt(idx);
+            }
+            idx = _cameras.indexOf(pCamera);
+            if(idx >= 0) {
+                _cameras.removeAt(idx);
+            }
+            pCamera->deleteLater();
+            delete pInfo;
+        }
+        _cameraInfoRequest.remove("100");
+        emit cameraLabelsChanged();
+        //-- If we have another camera, switch current camera.
+        if(_cameras.count()) {
+            setCurrentCamera(0);
+        } else {
+            //-- We're out of cameras
+            emit camerasChanged();
         }
     }
 }

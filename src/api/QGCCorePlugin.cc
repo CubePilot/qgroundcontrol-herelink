@@ -85,6 +85,7 @@ public:
     QmlComponentInfo* pMAVLink                  = nullptr;
     QmlComponentInfo* pConsole                  = nullptr;
     QmlComponentInfo* pHelp                     = nullptr;
+    QmlComponentInfo* pIGC                     = nullptr;
 #if defined(QT_DEBUG)
     QmlComponentInfo* pMockLink                 = nullptr;
     QmlComponentInfo* pDebug                    = nullptr;
@@ -251,6 +252,9 @@ QVariantList &QGCCorePlugin::settingsPages()
         _p->pHelp = new QmlComponentInfo(tr("Help"),
             QUrl::fromUserInput("qrc:/qml/HelpSettings.qml"));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pHelp)));
+        _p->pIGC = new QmlComponentInfo(tr("IGC"),
+            QUrl::fromUserInput("qrc:/qml/IGCSettings.qml"));
+        _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pIGC)));
 #if defined(QT_DEBUG)
         //-- These are always present on Debug builds
         _p->pMockLink = new QmlComponentInfo(tr("Mock Link"),

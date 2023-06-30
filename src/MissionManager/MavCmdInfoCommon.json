@@ -987,7 +987,12 @@
         { "id": 500, "rawName": "MAV_CMD_START_RX_PAIR", "friendlyName": "Bind Spektrum receiver" },
         { "id": 510, "rawName": "MAV_CMD_GET_MESSAGE_INTERVAL", "friendlyName": "Get message interval" },
         { "id": 511, "rawName": "MAV_CMD_SET_MESSAGE_INTERVAL", "friendlyName": "Set message interval" },
+        { "id": 519, "rawName": "MAV_CMD_REQUEST_PROTOCOL_VERSION", "friendlyName": "Request protocol version" },
         { "id": 520, "rawName": "MAV_CMD_REQUEST_AUTOPILOT_CAPABILITIES", "friendlyName": "Get capabilities" },
+        { "id": 521, "rawName": "MAV_CMD_REQUEST_CAMERA_INFORMATION", "friendlyName": "Request camera information" },
+        { "id": 522, "rawName": "MAV_CMD_REQUEST_CAMERA_SETTINGS", "friendlyName": "Request camera settings" },
+        { "id": 525, "rawName": "MAV_CMD_REQUEST_STORAGE_INFORMATION", "friendlyName": "Request storage information" },
+        { "id": 527, "rawName": "MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS", "friendlyName": "Request camera capture status" },
         {
             "id":           530,
             "rawName":      "MAV_CMD_SET_CAMERA_MODE",

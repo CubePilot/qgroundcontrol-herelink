@@ -1,0 +1,30 @@
+[
+{
+    "name":             "isEthernetCommEnabled",
+    "shortDescription": "Enable ethernet communication with the camera.",
+    "longDescription":  "If this option is enabled, camera commands will communicat eover ethernet to the specified IP address.",
+    "type":             "bool",
+    "defaultValue":     false
+},
+{
+    "name":             "cameraIpAddress",
+    "shortDescription": "Camera IP address.",
+    "longDescription":  "IP address of the camera to communicate with over ethernet.",
+    "type":             "string",
+    "defaultValue":     "192.168.144.230"
+},
+{
+    "name":             "cameraInfoUri",
+    "shortDescription": "Camera info uri.",
+    "longDescription":  "The uri that returns camera info (must be http://).",
+    "type":             "string",
+    "defaultValue":     "http://sw.workswell.cz/WWP_definition_v02.xml"
+},
+{
+    "name":             "showMenuNavWidget",
+    "shortDescription": "Show the menu nav widget.",
+    "longDescription":  "Show the menu mav widget.",
+    "type":             "bool",
+    "defaultValue":     false
+}
+]

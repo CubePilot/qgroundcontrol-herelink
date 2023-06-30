@@ -31,6 +31,8 @@
 #include <AndroidInterface.h>
 #endif
 
+#include "IGCSettings.h"
+
 QGC_LOGGING_CATEGORY(VideoReceiverLog, "VideoReceiverLog")
 
 #if defined(QGC_GST_STREAMING)
@@ -686,6 +688,11 @@ VideoReceiver::_cleanupOldVideos()
 }
 #endif
 
+bool VideoReceiver::_isEthernetCommEnabled() {
+    IGCSettings* igcSettings = qgcApp()->toolbox()->settingsManager()->igcSettings();
+    return igcSettings->isEthernetCommEnabled()->rawValue().toBool();
+}
+
 //-----------------------------------------------------------------------------
 // When we finish our pipeline will look like this:
 //
@@ -704,6 +711,13 @@ VideoReceiver::startRecording(const QString &videoFile)
 #if defined(QGC_GST_STREAMING)
 
     qCDebug(VideoReceiverLog) << "startRecording()";
+
+    if (_isEthernetCommEnabled())
+    {
+        qCDebug(VideoReceiverLog) << "ethernet is enabled";
+    }
+
+
     // exit immediately if we are already recording
     if(_pipeline == nullptr || _recording) {
         qCDebug(VideoReceiverLog) << "Already recording!";

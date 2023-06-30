@@ -23,6 +23,9 @@
 #include "SettingsFact.h"
 #include "QGCMapCircle.h"
 
+// Custom Workswell camera class
+#include "worksbetter.h"
+
 class UAS;
 class UASInterface;
 class FirmwarePlugin;
@@ -530,6 +533,9 @@ public:
     };
     Q_ENUM(CheckList)
 
+    // Custom Workswell class
+    Q_PROPERTY(Worksbetter*          wiris                  MEMBER _wiris                                               CONSTANT)
+
     Q_PROPERTY(int                  id                      READ id                                                     CONSTANT)
     Q_PROPERTY(AutoPilotPlugin*     autopilot               MEMBER _autopilotPlugin                                     CONSTANT)
     Q_PROPERTY(QGeoCoordinate       coordinate              READ coordinate                                             NOTIFY coordinateChanged)
@@ -764,6 +770,9 @@ public:
     Q_INVOKABLE int versionCompare(QString& compare);
     Q_INVOKABLE int versionCompare(int major, int minor, int patch);
 
+    /// Force a triggered camera point (for cameras that are not communicating over mavlink)
+    Q_INVOKABLE void triggerCameraPoint();
+
     /// Test motor
     ///     @param motor Motor number, 1-based
     ///     @param percent 0-no power, 100-full power
@@ -837,6 +846,9 @@ public:
 
     /// Provides access to uas from vehicle. Temporary workaround until UAS is fully phased out.
     UAS* uas() { return _uas; }
+
+    /// Provides access to wiris from viehicle.
+    Worksbetter* wiris() { return _wiris; }
 
     /// Provides access to uas from vehicle. Temporary workaround until AutoPilotPlugin is fully phased out.
     AutoPilotPlugin* autopilotPlugin() { return _autopilotPlugin; }
@@ -1354,6 +1366,9 @@ private:
     bool    _active;
     bool    _offlineEditingVehicle; ///< This Vehicle is a "disconnected" vehicle for ui use while offline editing
 
+    //custom Workswell class
+    Worksbetter*         _wiris;
+
     MAV_AUTOPILOT       _firmwareType;
     MAV_TYPE            _vehicleType;
     FirmwarePlugin*     _firmwarePlugin;
@@ -1486,6 +1501,7 @@ private:
     QTimer                          _flightTimeUpdater;
     TrajectoryPoints*               _trajectoryPoints;
     QmlObjectListModel              _cameraTriggerPoints;
+    int                             _pendingGpsTriggers = 0;
     //QMap<QString, ADSBVehicle*>     _trafficVehicleMap;
 
     // Toolbox references

@@ -131,6 +131,8 @@ protected:
     virtual void                _shutdownPipeline       ();
     virtual void                _cleanupOldVideos       ();
 
+    bool _isEthernetCommEnabled();
+
     GstElement*     _pipeline;
     GstElement*     _pipelineStopRec;
     GstElement*     _videoSink;

@@ -7,15 +7,19 @@
 
 #include "QGCCameraControl.h"
 #include "QGCCameraIO.h"
+#include "QGCApplication.h"
+#include "IGCSettings.h"
 #include "SettingsManager.h"
 #include "VideoManager.h"
 #include "QGCMapEngine.h"
 #include "QGCCameraManager.h"
+#include "MissionCommandTree.h"
 
 #include <QDir>
 #include <QStandardPaths>
 #include <QDomDocument>
 #include <QDomNodeList>
+#include <QRegularExpression>
 
 QGC_LOGGING_CATEGORY(CameraControlLog, "CameraControlLog")
 QGC_LOGGING_CATEGORY(CameraControlVerboseLog, "CameraControlVerboseLog")
@@ -160,6 +164,7 @@ QGCCameraControl::QGCCameraControl(const mavlink_camera_information_t *info, Veh
 {
     QQmlEngine::setObjectOwnership(this, QQmlEngine::CppOwnership);
     memcpy(&_info, info, sizeof(mavlink_camera_information_t));
+
     connect(this, &QGCCameraControl::dataReady, this, &QGCCameraControl::_dataReady);
     _vendor = QString(reinterpret_cast<const char*>(info->vendor_name));
     _modelName = QString(reinterpret_cast<const char*>(info->model_name));
@@ -169,6 +174,7 @@ QGCCameraControl::QGCCameraControl(const mavlink_camera_information_t *info, Veh
         _vendor.toStdString().c_str(),
         _modelName.toStdString().c_str(),
         ver);
+
     if(info->cam_definition_uri[0] != 0) {
         //-- Process camera definition file
         _handleDefinitionFile(info->cam_definition_uri);
@@ -183,6 +189,7 @@ QGCCameraControl::QGCCameraControl(const mavlink_camera_information_t *info, Veh
     _thermalMode     = static_cast<ThermalViewMode>(settings.value(kThermalMode, static_cast<uint32_t>(THERMAL_BLEND)).toUInt());
     _recTimer.setSingleShot(false);
     _recTimer.setInterval(333);
+
     connect(&_recTimer, &QTimer::timeout, this, &QGCCameraControl::_recTimerHandler);
 }
 
@@ -212,6 +219,16 @@ QGCCameraControl::_initWhenReady()
     }
     connect(_vehicle, &Vehicle::mavCommandResult, this, &QGCCameraControl::_mavCommandResult);
     connect(&_captureStatusTimer, &QTimer::timeout, this, &QGCCameraControl::_requestCaptureStatus);
+
+    // TODO: fix this if setting changes
+    qCDebug(CameraControlLog) << "Ethernet comm is enabled? " << _isEthernetCommEnabled();
+    if (_isEthernetCommEnabled()) {
+        qCWarning(CameraControlLog) << "Bind ethernet command results";
+        connect(_vehicle->wiris(), &Worksbetter::commandResult, this, &QGCCameraControl::_wirisCommandResult);
+        _setPhotoStatus(PHOTO_CAPTURE_IDLE);
+        _vehicle->wiris()->connect();
+    }
+
     _captureStatusTimer.setSingleShot(true);
     QTimer::singleShot(2500, this, &QGCCameraControl::_requestStorageInfo);
     _captureStatusTimer.start(2750);
@@ -378,13 +395,17 @@ QGCCameraControl::takePhoto()
     }
     if(!_resetting) {
         if(capturesPhotos()) {
-            _vehicle->sendMavCommand(
-                _compID,                                                                    // Target component
-                MAV_CMD_IMAGE_START_CAPTURE,                                                // Command id
-                false,                                                                      // ShowError
-                0,                                                                          // Reserved (Set to 0)
-                static_cast<float>(_photoMode == PHOTO_CAPTURE_SINGLE ? 0 : _photoLapse),   // Duration between two consecutive pictures (in seconds--ignored if single image)
-                _photoMode == PHOTO_CAPTURE_SINGLE ? 1 : _photoLapseCount);                 // Number of images to capture total - 0 for unlimited capture
+            if (_isEthernetCommEnabled()) {
+                _vehicle->wiris()->CPTR();
+            } else {
+                _vehicle->sendMavCommand(
+                    _compID,                                                                    // Target component
+                    MAV_CMD_IMAGE_START_CAPTURE,                                                // Command id
+                    false,                                                                      // ShowError
+                    0,                                                                          // Reserved (Set to 0)
+                    static_cast<float>(_photoMode == PHOTO_CAPTURE_SINGLE ? 0 : _photoLapse),   // Duration between two consecutive pictures (in seconds--ignored if single image)
+                    _photoMode == PHOTO_CAPTURE_SINGLE ? 1 : _photoLapseCount);                 // Number of images to capture total - 0 for unlimited capture
+            }
             _setPhotoStatus(PHOTO_CAPTURE_IN_PROGRESS);
             _captureInfoRetries = 0;
             //-- Capture local image as well
@@ -434,12 +455,16 @@ QGCCameraControl::startVideo()
             return false;
         }
         if(videoStatus() != VIDEO_CAPTURE_STATUS_RUNNING) {
-            _vehicle->sendMavCommand(
-                _compID,                                    // Target component
-                MAV_CMD_VIDEO_START_CAPTURE,                // Command id
-                false,                                      // Don't Show Error (handle locally)
-                0,                                          // Reserved (Set to 0)
-                0);                                         // CAMERA_CAPTURE_STATUS Frequency
+            if (_isEthernetCommEnabled()) {
+                _vehicle->wiris()->RCRS();
+            } else {
+                _vehicle->sendMavCommand(
+                    _compID,                                    // Target component
+                    MAV_CMD_VIDEO_START_CAPTURE,                // Command id
+                    false,                                      // Don't Show Error (handle locally)
+                    0,                                          // Reserved (Set to 0)
+                    0);                                         // CAMERA_CAPTURE_STATUS Frequency
+            }
             return true;
         }
     }
@@ -453,11 +478,15 @@ QGCCameraControl::stopVideo()
     if(!_resetting) {
         qCDebug(CameraControlLog) << "stopVideo()";
         if(videoStatus() == VIDEO_CAPTURE_STATUS_RUNNING) {
-            _vehicle->sendMavCommand(
-                _compID,                                    // Target component
-                MAV_CMD_VIDEO_STOP_CAPTURE,                 // Command id
-                false,                                      // Don't Show Error (handle locally)
-                0);                                         // Reserved (Set to 0)
+            if (_isEthernetCommEnabled()) {
+                _vehicle->wiris()->RCRF();
+            } else {
+                _vehicle->sendMavCommand(
+                    _compID,                                    // Target component
+                    MAV_CMD_VIDEO_STOP_CAPTURE,                 // Command id
+                    false,                                      // Don't Show Error (handle locally)
+                    0);                                         // Reserved (Set to 0)
+            }
             return true;
         }
     }
@@ -622,12 +651,20 @@ QGCCameraControl::stepZoom(int direction)
 {
     qCDebug(CameraControlLog) << "stepZoom()" << direction;
     if(_vehicle && hasZoom()) {
+        if (_isEthernetCommEnabled()) {
+            if (direction < 0) {
+                _vehicle->wiris()->SZOT();
+            } else {
+                _vehicle->wiris()->SZIN();
+            }
+        } else {
         _vehicle->sendMavCommand(
             _compID,                                // Target component
             MAV_CMD_SET_CAMERA_ZOOM,                // Command id
             false,                                  // ShowError
             ZOOM_TYPE_STEP,                         // Zoom type
             direction);                             // Direction (-1 wide, 1 tele)
+        }
     }
 }
 
@@ -666,11 +703,44 @@ void
 QGCCameraControl::_requestCaptureStatus()
 {
     qCDebug(CameraControlLog) << "_requestCaptureStatus()";
-    _vehicle->sendMavCommand(
-        _compID,                                // target component
-        MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS,  // command id
-        false,                                  // showError
-        1);                                     // Do Request
+
+    if(_vehicle) {
+        if (_isEthernetCommEnabled()) {
+            _requestCaptureStatusEth();
+        } else {
+            _vehicle->sendMavCommand(
+                _compID,                                // target component
+                MAV_CMD_REQUEST_CAMERA_CAPTURE_STATUS,  // command id
+                false,                                  // showError
+                1);                                     // Do Request
+        }
+    }
+}
+
+void
+QGCCameraControl::_requestCaptureStatusEth()
+{
+    // check and update recording time
+//    if(cap.recording_time_ms) {
+//        _recordTime = cap.recording_time_ms;
+//        _recTime = _recTime.addMSecs(_recTime.elapsed() - static_cast<int>(cap.recording_time_ms));
+//        emit recordTimeChanged();
+//    }
+
+    _requestStorageInfoEth();
+    _requestVideoStatusEth();
+}
+
+void
+QGCCameraControl::_requestVideoStatusEth()
+{
+
+}
+
+bool
+QGCCameraControl::_isEthernetCommEnabled() {
+    IGCSettings* igcSettings = qgcApp()->toolbox()->settingsManager()->igcSettings();
+    return igcSettings->isEthernetCommEnabled()->rawValue().toBool();
 }
 
 //-----------------------------------------------------------------------------
@@ -693,6 +763,10 @@ QGCCameraControl::_mavCommandResult(int vehicleId, int component, int command, i
         //-- Do Nothing
         qCDebug(CameraControlLog) << "In progress response for" << command;
     }else if(!noReponseFromVehicle && result == MAV_RESULT_ACCEPTED) {
+
+        QString commandStr = qgcApp()->toolbox()->missionCommandTree()->friendlyName(static_cast<MAV_CMD>(command));
+        qCWarning(CameraControlLog) << "^^ MAV << Result accepted for " << command << commandStr;
+
         switch(command) {
             case MAV_CMD_RESET_CAMERA_SETTINGS:
                 _resetting = false;
@@ -723,6 +797,9 @@ QGCCameraControl::_mavCommandResult(int vehicleId, int component, int command, i
         }
     } else {
         if(noReponseFromVehicle || result == MAV_RESULT_TEMPORARILY_REJECTED || result == MAV_RESULT_FAILED) {
+
+            qCWarning(CameraControlLog) << "^^ MAV << error: " << command;
+
             if(noReponseFromVehicle) {
                 qCDebug(CameraControlLog) << "No response for" << command;
             } else if (result == MAV_RESULT_TEMPORARILY_REJECTED) {
@@ -759,6 +836,155 @@ QGCCameraControl::_mavCommandResult(int vehicleId, int component, int command, i
             qCDebug(CameraControlLog) << "Bad response for" << command << result;
         }
     }
+}
+
+void
+QGCCameraControl::_wirisCommandResult(QString command, QString commandFull, QString response)
+{
+    qCWarning(CameraControlLog) << "** ETH << " << commandFull << " -> " << response;
+
+    // assume image capture is idle unless an error is encountered
+    PhotoStatus status = PHOTO_CAPTURE_IDLE;
+
+    if (command == "GVRC") { // get recorded visible video in seconds
+        qCWarning(CameraControlLog) << "GVRC: " << response;
+    } else if (command == "GTRC") { // get recorded radiometric video in seconds
+        qCWarning(CameraControlLog) << "GTRC: " << response;
+    } else if (command == "GMSI") { // get total memory size
+        _handleTotalMemoryResultEth(command, commandFull,  response);
+    } else if (command == "GMFR") { // get total memory free in %
+        _handleFreeMemoryResultEth(command, commandFull, response);
+    } else if (command == "RCRS") {
+        _handleRecordStartResultEth(command, commandFull, response);
+    } else if (command == "RCRF") {
+        _handleRecordStopResultEth(command, commandFull, response);
+    } else if (command == "IRCR") {
+        _handleIsRecordingResultEth(command, commandFull, response);
+    } else if (command == "CPTR") {
+        _handlePhotoCaptureResultEth(command, commandFull, response);
+    }
+
+    // handle video recording result
+    // update recording time
+
+
+    //_setVideoStatus(static_cast<VideoStatus>(vs));
+    //_setPhotoStatus(static_cast<PhotoStatus>(ps));
+    _setPhotoStatus(status);
+
+
+
+     //-- Keep asking for it once in a while when recording
+     if(videoStatus() == VIDEO_CAPTURE_STATUS_RUNNING) {
+        _captureStatusTimer.start(5000);
+     }
+//    //-- Same while (single) image capture is busy
+//    } else if(photoStatus() != PHOTO_CAPTURE_IDLE && photoMode() == PHOTO_CAPTURE_SINGLE) {
+//        _captureStatusTimer.start(1000);
+//    }
+}
+
+void
+QGCCameraControl::_handleTotalMemoryResultEth(QString command, QString commandFull, QString response)
+{
+    QRegularExpression regex("SSD (\\d+)");
+    QRegularExpressionMatch match = regex.match(response);
+    QString numStr = match.captured(1);
+    QString modifiedStr = numStr.left(numStr.length() - 6);
+
+    bool ok;
+    unsigned int storageTotal = modifiedStr.toUInt(&ok);
+
+    if(_storageTotal != storageTotal) {
+        _storageTotal = storageTotal;
+        emit storageTotalChanged();
+    }
+
+    if (_storageStatus != STORAGE_READY) {
+        _storageStatus = STORAGE_READY;
+        emit storageStatusChanged();
+    }
+    //if(_storageStatus != static_cast<StorageStatus>(st.status)) {
+    //    _storageStatus = static_cast<StorageStatus>(st.status);
+    //    emit storageStatusChanged();
+    //}
+}
+
+void
+QGCCameraControl::_handleFreeMemoryResultEth(QString command, QString commandFull, QString response)
+{
+    if (_storageTotal <= 0) {
+        _storageFree = 0;
+        return;
+    }
+
+    QRegularExpression regex("SSD (\\d+\\.\\d+)");
+    QRegularExpressionMatch match2 = regex.match(response);
+
+    bool ok;
+    QString decimalStr = match2.captured(1);
+    double value = decimalStr.toDouble(&ok) * .01;
+
+    double result = _storageTotal * value;
+    unsigned int storageFree = static_cast<unsigned int>(result);
+
+    qCWarning(CameraControlLog) << "handle mem: new free: " << storageFree;
+
+    if(_storageFree != storageFree) {
+        _storageFree = storageFree;
+        emit storageFreeChanged();
+    }
+    if (_storageStatus != STORAGE_READY) {
+        _storageStatus = STORAGE_READY;
+        emit storageStatusChanged();
+    }
+}
+
+void
+QGCCameraControl::_handleRecordStartResultEth(QString command, QString commandFull, QString response)
+{
+    if (response != "OK") {
+        qCWarning(CameraControlLog) << "Record start failure: " << response;
+        return;
+    }
+
+    _setVideoStatus(VIDEO_CAPTURE_STATUS_RUNNING);
+    _captureStatusTimer.start(1000);
+}
+
+void
+QGCCameraControl::_handleRecordStopResultEth(QString command, QString commandFull, QString response)
+{
+    if (response != "OK") {
+        qCWarning(CameraControlLog) << "Record stop failure: " << response;
+        return;
+    }
+
+    _setVideoStatus(VIDEO_CAPTURE_STATUS_STOPPED);
+    _captureStatusTimer.start(1000);
+}
+
+void
+QGCCameraControl::_handleIsRecordingResultEth(QString command, QString commandFull, QString response)
+{
+    if (response == "TRUE") {
+        _setVideoStatus(VIDEO_CAPTURE_STATUS_RUNNING);
+    } else {
+        _setVideoStatus(VIDEO_CAPTURE_STATUS_STOPPED);
+    }
+}
+
+void
+QGCCameraControl::_handlePhotoCaptureResultEth(QString command, QString commandFull, QString response)
+{
+    if (response != "OK") {
+        qCWarning(CameraControlLog) << "Capture failure: " << response;
+        return;
+    }
+    // request GPS via mavlink to create a trigger point
+    _vehicle->triggerCameraPoint();
+
+    _captureStatusTimer.start(1000);
 }
 
 //-----------------------------------------------------------------------------
@@ -1448,14 +1674,27 @@ QGCCameraControl::_requestStorageInfo()
 {
     qCDebug(CameraControlLog) << "_requestStorageInfo()";
     if(_vehicle) {
-        _vehicle->sendMavCommand(
-            _compID,                                // Target component
-            MAV_CMD_REQUEST_STORAGE_INFORMATION,    // command id
-            false,                                  // showError
-            0,                                      // Storage ID (0 for all, 1 for first, 2 for second, etc.)
-            1);                                     // Do Request
+        if (_isEthernetCommEnabled()) {
+            _requestStorageInfoEth();
+        } else {
+            _vehicle->sendMavCommand(
+                _compID,                                // Target component
+                MAV_CMD_REQUEST_STORAGE_INFORMATION,    // command id
+                false,                                  // showError
+                0,                                      // Storage ID (0 for all, 1 for first, 2 for second, etc.)
+                1);                                     // Do Request
+        }
     }
 }
+
+void
+QGCCameraControl::_requestStorageInfoEth()
+{
+    // request storage info
+    _vehicle->wiris()->GMSI();
+    _vehicle->wiris()->GMFR();
+}
+
 
 //-----------------------------------------------------------------------------
 void
@@ -1703,11 +1942,15 @@ void
 QGCCameraControl::_requestStreamInfo(uint8_t streamID)
 {
     qCDebug(CameraControlLog) << "Requesting video stream info for:" << streamID;
-    _vehicle->sendMavCommand(
-        _compID,                                            // Target component
-        MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION,           // Command id
-        false,                                              // ShowError
-        streamID);                                          // Stream ID
+    //if (_isEthernetCommEnabled()) {
+
+    //} else {
+        _vehicle->sendMavCommand(
+            _compID,                                            // Target component
+            MAV_CMD_REQUEST_VIDEO_STREAM_INFORMATION,           // Command id
+            false,                                              // ShowError
+            streamID);                                          // Stream ID
+    //}
 }
 
 //-----------------------------------------------------------------------------
@@ -1715,12 +1958,16 @@ void
 QGCCameraControl::_requestStreamStatus(uint8_t streamID)
 {
     qCDebug(CameraControlLog) << "Requesting video stream status for:" << streamID;
-    _vehicle->sendMavCommand(
-        _compID,                                            // Target component
-        MAV_CMD_REQUEST_VIDEO_STREAM_STATUS,                // Command id
-        false,                                              // ShowError
-        streamID);                                          // Stream ID
-    _streamStatusTimer.start(1000);                         // Wait up to a second for it
+    //if (_isEthernetCommEnabled()) {
+
+    //} else {
+        _vehicle->sendMavCommand(
+            _compID,                                            // Target component
+            MAV_CMD_REQUEST_VIDEO_STREAM_STATUS,                // Command id
+            false,                                              // ShowError
+            streamID);                                          // Stream ID
+        _streamStatusTimer.start(1000);                         // Wait up to a second for it
+    //}
 }
 
 //-----------------------------------------------------------------------------
@@ -1768,6 +2015,8 @@ QGCCameraControl::_streamTimeout()
 {
     _requestCount++;
     int count = _expectedCount * 3;
+
+    qCDebug(CameraControlLog) << "_streamTimeout requestCount: " << _requestCount;
     if(_requestCount > count) {
         qCWarning(CameraControlLog) << "Giving up requesting video stream info";
         _streamInfoTimer.stop();
@@ -1781,6 +2030,7 @@ QGCCameraControl::_streamTimeout()
     for(uint8_t i = 0; i < _expectedCount; i++) {
         //-- Stream ID starts at 1
         if(!_findStream(i+1, false)) {
+            qCDebug(CameraControlLog) << "_streamTimeout Find Stream " << i+1;
             _requestStreamInfo(i+1);
             return;
         }

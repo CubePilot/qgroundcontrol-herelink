@@ -120,6 +120,12 @@ void VideoStreamControl::_handleHeartbeatInfo(LinkInterface* link, mavlink_messa
     mavlink_heartbeat_t heartbeat;
     mavlink_msg_heartbeat_decode(&message, &heartbeat);
 
+    // ignore cameras with no streams
+    // this is not 100% accurate fix, but should work for most cases
+    // TODO: test dropping and readding streams on single camera
+    int cameraCount = heartbeat.custom_mode >> 24;
+    if (cameraCount == 0) { return; }
+
     if (message.sysid == _systemId) {
         if (heartbeat.custom_mode == _cameraServiceUid) {
             _connectionActive();
