@@ -824,9 +824,8 @@ VideoManager::_restartVideo(unsigned id)
 
     if (_videoStarted[id]) {
         _stopReceiver(id);
-    } else {
-        _startReceiver(id);
     }
+    _startReceiver(id);
 #endif
 }
 
