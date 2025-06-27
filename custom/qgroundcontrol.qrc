@@ -7,6 +7,7 @@
 		<file alias="BatteryIndicator.qml">../src/ui/toolbar/BatteryIndicator.qml</file>
 		<file alias="GPSIndicator.qml">../src/ui/toolbar/GPSIndicator.qml</file>
 		<file alias="GPSRTKIndicator.qml">../src/ui/toolbar/GPSRTKIndicator.qml</file>
+                <file alias="FlapIndicator.qml">../src/ui/toolbar/FlapIndicator.qml</file>
 		<file alias="JoystickIndicator.qml">../src/ui/toolbar/JoystickIndicator.qml</file>
 		<file alias="LinkIndicator.qml">../src/ui/toolbar/LinkIndicator.qml</file>
 		<file alias="MainToolBarIndicators.qml">../src/ui/toolbar/MainToolBarIndicators.qml</file>

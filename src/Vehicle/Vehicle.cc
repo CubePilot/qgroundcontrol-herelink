@@ -207,6 +207,8 @@ Vehicle::Vehicle(LinkInterface*             link,
 
     connect(this, &Vehicle::remoteControlRSSIChanged,   this, &Vehicle::_remoteControlRSSIChanged);
 
+    connect(this, &Vehicle::rcFlapStatus,   this, &Vehicle::_rcFlapStatus);
+
     _commonInit();
 
     _vehicleLinkManager->_addLink(link);
@@ -1911,8 +1913,17 @@ void Vehicle::_handleRCChannels(mavlink_message_t& message)
 
     emit remoteControlRSSIChanged(channels.rssi);
     emit rcChannelsChanged(channels.chancount, pwmValues);
+    emit rcFlapStatus(channels.chancount, pwmValues);
 }
+void Vehicle::_rcFlapStatus(int channelCount, int pwmValues[cMaxRcChannels])
+{
+    if (channelCount >=5)
+    {
+        _rcFlap = pwmValues[4];
+        emit rcFlapChanged(_rcFlap);
+    }
 
+}
 // Pop warnings ignoring for mavlink headers for both GCC/Clang and MSVC
 #ifdef __GNUC__
 #if defined(__clang__)

@@ -182,6 +182,7 @@ public:
     Q_PROPERTY(QString              formattedMessages           READ formattedMessages                                              NOTIFY formattedMessagesChanged)
     Q_PROPERTY(bool                 joystickEnabled             READ joystickEnabled            WRITE setJoystickEnabled            NOTIFY joystickEnabledChanged)
     Q_PROPERTY(int                  flowImageIndex              READ flowImageIndex                                                 NOTIFY flowImageIndexChanged)
+    Q_PROPERTY(int                  rcFlap                      READ rcFlap                                                         NOTIFY rcFlapChanged)
     Q_PROPERTY(int                  rcRSSI                      READ rcRSSI                                                         NOTIFY rcRSSIChanged)
     Q_PROPERTY(bool                 px4Firmware                 READ px4Firmware                                                    NOTIFY firmwareTypeChanged)
     Q_PROPERTY(bool                 apmFirmware                 READ apmFirmware                                                    NOTIFY firmwareTypeChanged)
@@ -602,6 +603,7 @@ public:
     float           latitude                    () { return static_cast<float>(_coordinate.latitude()); }
     float           longitude                   () { return static_cast<float>(_coordinate.longitude()); }
     bool            mavPresent                  () { return _mav != nullptr; }
+    int             rcFlap                      () { return _rcFlap; }
     int             rcRSSI                      () const{ return _rcRSSI; }
     bool            px4Firmware                 () const { return _firmwareType == MAV_AUTOPILOT_PX4; }
     bool            apmFirmware                 () const { return _firmwareType == MAV_AUTOPILOT_ARDUPILOTMEGA; }
@@ -969,6 +971,7 @@ signals:
     void flowImageIndexChanged          ();
     void rcRSSIChanged                  (int rcRSSI);
     void telemetryRRSSIChanged          (int value);
+    void rcFlapChanged                   (int rcFlap);
     void telemetryLRSSIChanged          (int value);
     void telemetryRXErrorsChanged       (unsigned int value);
     void telemetryFixedChanged          (unsigned int value);
@@ -1002,6 +1005,9 @@ signals:
 
     /// Remote control RSSI changed  (0% - 100%)
     void remoteControlRSSIChanged       (uint8_t rssi);
+
+    /// return rc 5 with flap value
+    void rcFlapStatus       (int channelCount, int pwmValues[cMaxRcChannels]);
 
     void mavlinkRawImu                  (mavlink_message_t message);
     void mavlinkScaledImu1              (mavlink_message_t message);
@@ -1037,6 +1043,7 @@ private slots:
     void _sendMessageMultipleNext           ();
     void _parametersReady                   (bool parametersReady);
     void _remoteControlRSSIChanged          (uint8_t rssi);
+    void _rcFlapStatus                      (int channelCount, int pwmValues[cMaxRcChannels]);
     void _handleFlightModeChanged           (const QString& flightMode);
     void _announceArmedChanged              (bool armed);
     void _offlineCruiseSpeedSettingChanged  (QVariant value);
@@ -1164,6 +1171,7 @@ private:
     int             _updateCount = 0;
     int             _rcRSSI = 255;
     double          _rcRSSIstore = 255;
+    int             _rcFlap = 1500; ///need initial value??
     bool            _flying = false;
     bool            _landing = false;
     bool            _vtolInFwdFlight = false;
