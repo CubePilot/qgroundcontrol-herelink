@@ -24,7 +24,7 @@ Item {
 
     QGCPalette { id: qgcPal }
 
-    visible: true
+    visible: true//customPlugin.getThicknessGaugeEnabled
 
     Component.onCompleted: {
     }
@@ -32,8 +32,6 @@ Item {
     Rectangle {
         id: mainThicknessRectangle
         
-        property real thicknessReading: 0.00
-
         x: 140
         y: 100
         color: Qt.rgba(255,255,255,255)
@@ -42,7 +40,7 @@ Item {
         height: 240
         clip: true
 
-        border.color: Qt.rgba(0, 100, 100, 255)
+        border.color: customPlugin.getBorderColor
         border.width: 8
 
         MouseArea {

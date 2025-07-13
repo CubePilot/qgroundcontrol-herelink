@@ -10,3 +10,6 @@
 [submodule "libs/gst-plugins-good"]
 	path = libs/gst-plugins-good
 	url = https://github.com/mavlink/gst-plugins-good.git
+[submodule "utg10_uart_comm"]
+	path = utg10_uart_comm
+	url = git@github.com:dwaipayanb1994/utg10_uart_comm.git

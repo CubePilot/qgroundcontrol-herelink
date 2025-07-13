@@ -889,7 +889,7 @@ void Vehicle::_handleThicknessReading(const mavlink_message_t& message)
     buf[10] = '\0';
     QString name = QString(buf);
 
-    if (name == "ThicknessG" && debug.value)
+    if (name == "ThicknessG")
     {
         emit thicknessReadingChanged(debug.value);
     }
