@@ -1,0 +1,240 @@
+[
+{
+    "name":             "enabled",
+    "shortDescription": "Enable UTG",
+    "longDescription":  "Enable Ultrasonic Thickness Gauge functionality",
+    "type":             "bool",
+    "defaultValue":     false
+},
+{
+    "name":             "serialPort",
+    "shortDescription": "Serial Port",
+    "longDescription":  "Serial port for UTG communication",
+    "type":             "string",
+    "defaultValue":     ""
+},
+{
+    "name":             "baudRate",
+    "shortDescription": "Baud Rate",
+    "longDescription":  "Serial communication baud rate",
+    "type":             "uint32",
+    "enumStrings":      "1200,2400,4800,9600,19200,38400,57600,115200",
+    "enumValues":       "1200,2400,4800,9600,19200,38400,57600,115200",
+    "defaultValue":     9600
+},
+{
+    "name":             "dataBits",
+    "shortDescription": "Data Bits",
+    "longDescription":  "Number of data bits",
+    "type":             "uint32",
+    "enumStrings":      "5,6,7,8",
+    "enumValues":       "5,6,7,8",
+    "defaultValue":     8
+},
+{
+    "name":             "stopBits",
+    "shortDescription": "Stop Bits",
+    "longDescription":  "Number of stop bits",
+    "type":             "uint32",
+    "enumStrings":      "1,2",
+    "enumValues":       "1,2",
+    "defaultValue":     1
+},
+{
+    "name":             "parity",
+    "shortDescription": "Parity",
+    "longDescription":  "Parity checking mode",
+    "type":             "uint32",
+    "enumStrings":      "None,Even,Odd",
+    "enumValues":       "0,2,3",
+    "defaultValue":     0
+},
+{
+    "name":             "flowControl",
+    "shortDescription": "Flow Control",
+    "longDescription":  "Hardware flow control",
+    "type":             "bool",
+    "defaultValue":     false
+},
+{
+    "name":             "autoConnect",
+    "shortDescription": "Auto Connect",
+    "longDescription":  "Automatically connect to UTG on startup",
+    "type":             "bool",
+    "defaultValue":     false
+},
+{
+    "name":             "measurementUnit",
+    "shortDescription": "Measurement Unit",
+    "longDescription":  "Unit for thickness measurements",
+    "type":             "uint32",
+    "enumStrings":      "mm,inch,mil",
+    "enumValues":       "0,1,2",
+    "defaultValue":     0
+},
+{
+    "name":             "measurementMode",
+    "shortDescription": "Measurement Mode",
+    "longDescription":  "UTG measurement mode",
+    "type":             "uint32",
+    "enumStrings":      "Pulse-Echo,Through-Transmission,Echo-Echo",
+    "enumValues":       "0,1,2",
+    "defaultValue":     0
+},
+{
+    "name":             "soundVelocity",
+    "shortDescription": "Sound Velocity",
+    "longDescription":  "Sound velocity in material (m/s)",
+    "type":             "double",
+    "defaultValue":     5920.0,
+    "min":              1000.0,
+    "max":              15000.0,
+    "decimalPlaces":    1
+},
+{
+    "name":             "zeroOffset",
+    "shortDescription": "Zero Offset",
+    "longDescription":  "Zero offset calibration value",
+    "type":             "double",
+    "defaultValue":     0.0,
+    "min":              -10.0,
+    "max":              10.0,
+    "decimalPlaces":    3
+},
+{
+    "name":             "gain",
+    "shortDescription": "Gain",
+    "longDescription":  "Signal amplification gain (%)",
+    "type":             "uint32",
+    "defaultValue":     50,
+    "min":              0,
+    "max":              100
+},
+{
+    "name":             "threshold",
+    "shortDescription": "Threshold",
+    "longDescription":  "Detection threshold (%)",
+    "type":             "uint32",
+    "defaultValue":     50,
+    "min":              0,
+    "max":              100
+},
+{
+    "name":             "pulseWidth",
+    "shortDescription": "Pulse Width",
+    "longDescription":  "Ultrasonic pulse width (ns)",
+    "type":             "uint32",
+    "defaultValue":     100,
+    "min":              50,
+    "max":              1000
+},
+{
+    "name":             "frequency",
+    "shortDescription": "Frequency",
+    "longDescription":  "Ultrasonic frequency (MHz)",
+    "type":             "double",
+    "defaultValue":     5.0,
+    "min":              1.0,
+    "max":              20.0,
+    "decimalPlaces":    1
+},
+{
+    "name":             "displayPrecision",
+    "shortDescription": "Display Precision",
+    "longDescription":  "Number of decimal places to display",
+    "type":             "uint32",
+    "defaultValue":     2,
+    "min":              0,
+    "max":              4
+},
+{
+    "name":             "logMeasurements",
+    "shortDescription": "Log Measurements",
+    "longDescription":  "Enable measurement logging",
+    "type":             "bool",
+    "defaultValue":     true
+},
+{
+    "name":             "logFilePath",
+    "shortDescription": "Log File Path",
+    "longDescription":  "Path for measurement log files",
+    "type":             "string",
+    "defaultValue":     ""
+},
+{
+    "name":             "autoSaveMeasurements",
+    "shortDescription": "Auto Save",
+    "longDescription":  "Automatically save measurements",
+    "type":             "bool",
+    "defaultValue":     false
+},
+{
+    "name":             "calibrationMode",
+    "shortDescription": "Calibration Mode",
+    "longDescription":  "Calibration method",
+    "type":             "uint32",
+    "enumStrings":      "One Point,Two Point,Velocity",
+    "enumValues":       "0,1,2",
+    "defaultValue":     0
+},
+{
+    "name":             "calibrationValue",
+    "shortDescription": "Calibration Value",
+    "longDescription":  "Reference thickness for calibration",
+    "type":             "double",
+    "defaultValue":     10.0,
+    "min":              0.1,
+    "max":              1000.0,
+    "decimalPlaces":    3
+},
+{
+    "name":             "temperatureCompensation",
+    "shortDescription": "Temperature Compensation",
+    "longDescription":  "Enable temperature compensation",
+    "type":             "bool",
+    "defaultValue":     false
+},
+{
+    "name":             "materialType",
+    "shortDescription": "Material Type",
+    "longDescription":  "Material type for preset velocity",
+    "type":             "uint32",
+    "enumStrings":      "Steel,Aluminum,Copper,Plastic,Custom",
+    "enumValues":       "0,1,2,3,4",
+    "defaultValue":     0
+},
+{
+    "name":             "minThicknessAlert",
+    "shortDescription": "Min Thickness Alert",
+    "longDescription":  "Minimum thickness alert threshold",
+    "type":             "double",
+    "defaultValue":     0.0,
+    "min":              0.0,
+    "max":              1000.0,
+    "decimalPlaces":    3
+},
+{
+    "name":             "maxThicknessAlert",
+    "shortDescription": "Max Thickness Alert",
+    "longDescription":  "Maximum thickness alert threshold",
+    "type":             "double",
+    "defaultValue":     100.0,
+    "min":              0.0,
+    "max":              1000.0,
+    "decimalPlaces":    3
+},
+{
+    "name":             "alertEnabled",
+    "shortDescription": "Enable Alerts",
+    "longDescription":  "Enable thickness alerts",
+    "type":             "bool",
+    "defaultValue":     false
+},
+{
+    "name":             "alertSound",
+    "shortDescription": "Alert Sound",
+    "longDescription":  "Enable alert sound notifications",
+    "type":             "bool",
+    "defaultValue":     true
+}
+]

@@ -16,6 +16,8 @@ add_library(Vehicle
 	MultiVehicleManager.h
 	TrajectoryPoints.cc
 	TrajectoryPoints.h
+	UTGManager.cc
+	UTGManager.h
 	Vehicle.cc
 	Vehicle.h
 	VehicleObjectAvoidance.cc
