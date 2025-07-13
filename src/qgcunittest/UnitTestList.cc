@@ -45,6 +45,9 @@
 #include "TransectStyleComplexItemTest.h"
 #include "CameraCalcTest.h"
 #include "FWLandingPatternTest.h"
+#include "UTGSettingsTest.h"
+#include "UTGManagerTest.h"
+#include "UTGIntegrationTest.h"
 
 UT_REGISTER_TEST(FactSystemTestGeneric)
 UT_REGISTER_TEST(FactSystemTestPX4)
@@ -77,6 +80,9 @@ UT_REGISTER_TEST(TransectStyleComplexItemTest)
 UT_REGISTER_TEST(QGCMapPolylineTest)
 UT_REGISTER_TEST(CameraCalcTest)
 UT_REGISTER_TEST(FWLandingPatternTest)
+UT_REGISTER_TEST(UTGSettingsTest)
+UT_REGISTER_TEST(UTGManagerTest)
+UT_REGISTER_TEST(UTGIntegrationTest)
 
 // List of unit test which are currently disabled.
 // If disabling a new test, include reason in comment.

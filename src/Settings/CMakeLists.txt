@@ -30,6 +30,8 @@ add_library(Settings
 	UnitsSettings.h
 	UTGSettings.cc
 	UTGSettings.h
+	UTGSettingsTest.cc
+	UTGSettingsTest.h
 	VideoSettings.cc
 	VideoSettings.h
 )

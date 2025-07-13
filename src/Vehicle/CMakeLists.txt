@@ -18,6 +18,10 @@ add_library(Vehicle
 	TrajectoryPoints.h
 	UTGManager.cc
 	UTGManager.h
+	UTGManagerTest.cc
+	UTGManagerTest.h
+	UTGIntegrationTest.cc
+	UTGIntegrationTest.h
 	Vehicle.cc
 	Vehicle.h
 	VehicleObjectAvoidance.cc

@@ -8,6 +8,7 @@ add_library(qgcunittest
 	#MainWindowTest.cc
 	MavlinkLogTest.cc
 	#MessageBoxTest.cc
+	MockUTGDevice.cc
 	MultiSignalSpy.cc
 	#RadioConfigTest.cc
 	TCPLinkTest.cc
