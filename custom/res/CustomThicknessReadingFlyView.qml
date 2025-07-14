@@ -567,14 +567,14 @@ Item {
                     spacing: ScreenTools.defaultFontPixelWidth
 
                     QGCButton {
-                        text: _hasUnsavedChanges ? "Save *" : "Save"
+                        text: settingsDialog._hasUnsavedChanges ? "Save *" : "Save"
                         width: ScreenTools.defaultFontPixelWidth * 8
                         height: ScreenTools.defaultFontPixelHeight * 2
                         onClicked: {
                             console.log("Save button clicked")
                             settingsDialog.saveSettings()
                         }
-                        primary: _hasUnsavedChanges
+                        primary: settingsDialog._hasUnsavedChanges
                     }
 
                     QGCButton {
