@@ -21,12 +21,8 @@
 #endif
 #include <QQueue>
 #include <QMutex>
-#include <QMetaType>
 #include "QGCLoggingCategory.h"
 #include "UTGSettings.h"
-
-// We use QSerialPort::SerialPortError in signals so we must declare it as a meta type
-Q_DECLARE_METATYPE(QSerialPort::SerialPortError)
 
 Q_DECLARE_LOGGING_CATEGORY(UTGManagerLog)
 
