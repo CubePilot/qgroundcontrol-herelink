@@ -18,7 +18,7 @@ Item {
     property bool _utgConnected:    _utgManager ? _utgManager.connected : false
     property real _currentThickness: _utgManager ? _utgManager.currentThickness : 0.0
     property bool _measuring:       _utgManager ? _utgManager.measuring : false
-    property bool _minimized:       false
+
 
 
     Connections {
@@ -48,8 +48,8 @@ Item {
         y: 100
         color: qgcPal.window
         radius: 12
-        width: _minimized ? Math.min(parent.width * 0.25, 200) : Math.min(parent.width * 0.35, 350)
-        height: _minimized ? Math.min(parent.height * 0.15, 100) : Math.min(parent.height * 0.6, 350)
+        width: Math.min(parent.width * 0.45, 400)
+        height: Math.min(parent.height * 0.7, 400)
         clip: true
 
         border.color: _utgConnected ? qgcPal.colorGreen : (_utgEnabled ? qgcPal.colorOrange : qgcPal.colorGrey)
@@ -86,30 +86,15 @@ Item {
                     anchors.verticalCenter: parent.verticalCenter
                 }
 
-                Item { width: ScreenTools.defaultFontPixelWidth; height: 1 } // Spacer
 
-                QGCButton {
-                    text: "−"  // Minimize symbol
-                    width: ScreenTools.defaultFontPixelHeight * 1.5
-                    height: ScreenTools.defaultFontPixelHeight * 1.5
-                    anchors.verticalCenter: parent.verticalCenter
-                    visible: !_minimized
-                    onClicked: _minimized = true
-                }
             }
 
             // Main reading display
             Rectangle {
                 width: parent.width
-                height: _minimized ? parent.height - 40 : 80
+                height: 80
                 color: qgcPal.windowShade
                 radius: 6
-
-                MouseArea {
-                    anchors.fill: parent
-                    enabled: _minimized
-                    onClicked: _minimized = false
-                }
 
                 Column {
                     anchors.centerIn: parent
@@ -131,13 +116,7 @@ Item {
                         color: _utgConnected ? qgcPal.text : qgcPal.colorGrey
                     }
 
-                    QGCLabel {
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        text: "Click to expand"
-                        font.pointSize: ScreenTools.smallFontPointSize
-                        color: qgcPal.colorGrey
-                        visible: _minimized
-                    }
+
                 }
             }
 
@@ -162,7 +141,6 @@ Item {
                 columns: 2
                 columnSpacing: ScreenTools.defaultFontPixelWidth * 0.5
                 rowSpacing: ScreenTools.defaultFontPixelHeight * 0.3
-                visible: !_minimized
 
                 QGCButton {
                     text: _measuring ? "Stop" : "Measure"
@@ -205,7 +183,7 @@ Item {
                 columns: 4
                 columnSpacing: ScreenTools.defaultFontPixelWidth * 0.3
                 rowSpacing: ScreenTools.defaultFontPixelHeight * 0.2
-                visible: _utgConnected && !_minimized
+                visible: _utgConnected
 
                 QGCLabel {
                     text: "Gain:"
