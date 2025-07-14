@@ -31,6 +31,15 @@ Rectangle {
 
     QGCPalette { id: qgcPal; colorGroupEnabled: true }
 
+    // Debug: Check if UTG settings are available
+    Component.onCompleted: {
+        console.log("UTGSettings QML loaded")
+        console.log("UTG Settings available:", _utgSettings !== null)
+        if (_utgSettings) {
+            console.log("UTG Settings enabled fact:", _utgSettings.enabled !== null)
+        }
+    }
+
     QGCFlickable {
         clip:               true
         anchors.fill:       parent
@@ -44,6 +53,12 @@ Rectangle {
 
             QGCLabel {
                 text:           qsTr("UTG (Ultrasonic Thickness Gauge) Settings")
+                font.family:    ScreenTools.demiboldFontFamily
+            }
+
+            QGCLabel {
+                text:           "DEBUG: UTG Settings Page Loaded Successfully"
+                color:          "red"
                 font.family:    ScreenTools.demiboldFontFamily
             }
 
@@ -67,15 +82,15 @@ Rectangle {
 
                     FactCheckBox {
                         text:       qsTr("Enable UTG")
-                        fact:       _utgSettings.enabled
-                        visible:    _utgSettings.enabled.visible
+                        fact:       _utgSettings ? _utgSettings.enabled : null
+                        visible:    _utgSettings && _utgSettings.enabled ? _utgSettings.enabled.visible : false
                     }
 
                     FactCheckBox {
                         text:       qsTr("Auto Connect")
-                        fact:       _utgSettings.autoConnect
-                        visible:    _utgSettings.autoConnect.visible
-                        enabled:    _utgSettings.enabled.rawValue
+                        fact:       _utgSettings ? _utgSettings.autoConnect : null
+                        visible:    _utgSettings && _utgSettings.autoConnect ? _utgSettings.autoConnect.visible : false
+                        enabled:    _utgSettings && _utgSettings.enabled ? _utgSettings.enabled.rawValue : false
                     }
                 }
             }
