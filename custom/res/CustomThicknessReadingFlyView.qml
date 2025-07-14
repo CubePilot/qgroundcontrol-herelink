@@ -342,11 +342,11 @@ Item {
                 width: parent.width
 
                 QGCLabel {
-                    text: _hasUnsavedChanges ? qsTr("UTG Settings *") : qsTr("UTG Settings")
+                    text: settingsDialog._hasUnsavedChanges ? "UTG Settings *" : "UTG Settings"
                     font.family: ScreenTools.demiboldFontFamily
                     font.pointSize: ScreenTools.mediumFontPointSize
                     anchors.horizontalCenter: parent.horizontalCenter
-                    color: _hasUnsavedChanges ? qgcPal.warningText : qgcPal.text
+                    color: settingsDialog._hasUnsavedChanges ? qgcPal.warningText : qgcPal.text
                 }
 
                 Rectangle {
