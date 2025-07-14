@@ -46,8 +46,8 @@ Item {
         y: 100
         color: qgcPal.window
         radius: 12
-        width: 320
-        height: 280
+        width: Math.min(parent.width * 0.4, 400)
+        height: Math.min(parent.height * 0.6, 350)
         clip: true
 
         border.color: _utgConnected ? qgcPal.colorGreen : (_utgEnabled ? qgcPal.colorOrange : qgcPal.colorGrey)
@@ -61,8 +61,8 @@ Item {
 
         Column {
             anchors.fill: parent
-            anchors.margins: ScreenTools.defaultFontPixelWidth
-            spacing: ScreenTools.defaultFontPixelHeight * 0.5
+            anchors.margins: ScreenTools.defaultFontPixelWidth * 0.8
+            spacing: ScreenTools.defaultFontPixelHeight * 0.3
 
             // Header
             Row {
@@ -124,14 +124,18 @@ Item {
                 Item { Layout.fillWidth: true; height: 1 } // Spacer
             }
 
-            // Control buttons
-            Row {
+            // Control buttons - Compact grid layout
+            GridLayout {
                 width: parent.width
-                spacing: ScreenTools.defaultFontPixelWidth * 0.5
+                columns: 2
+                columnSpacing: ScreenTools.defaultFontPixelWidth * 0.5
+                rowSpacing: ScreenTools.defaultFontPixelHeight * 0.3
 
                 QGCButton {
                     text: _measuring ? qsTr("Stop") : qsTr("Measure")
                     enabled: _utgConnected
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
                     onClicked: {
                         if (_measuring) {
                             _utgManager.stopMeasurement()
@@ -144,29 +148,35 @@ Item {
                 QGCButton {
                     text: qsTr("Continuous")
                     enabled: _utgConnected && !_measuring
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
                     onClicked: _utgManager.startContinuousMeasurement()
                 }
 
                 QGCButton {
                     text: qsTr("Settings")
+                    Layout.fillWidth: true
+                    Layout.columnSpan: 2
+                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
                     onClicked: settingsDialog.open()
                 }
             }
 
-            // Quick settings
-            Row {
+            // Quick settings - Compact layout
+            GridLayout {
                 width: parent.width
-                spacing: ScreenTools.defaultFontPixelWidth * 0.5
+                columns: 4
+                columnSpacing: ScreenTools.defaultFontPixelWidth * 0.3
+                rowSpacing: ScreenTools.defaultFontPixelHeight * 0.2
                 visible: _utgConnected
 
                 QGCLabel {
                     text: qsTr("Gain:")
                     font.pointSize: ScreenTools.smallFontPointSize
-                    anchors.verticalCenter: parent.verticalCenter
                 }
 
                 QGCTextField {
-                    width: ScreenTools.defaultFontPixelWidth * 4
+                    Layout.preferredWidth: ScreenTools.defaultFontPixelWidth * 3.5
                     text: _utgSettings ? _utgSettings.gain.rawValue : "50"
                     inputMethodHints: Qt.ImhDigitsOnly
                     onEditingFinished: {
@@ -180,11 +190,10 @@ Item {
                 QGCLabel {
                     text: qsTr("Velocity:")
                     font.pointSize: ScreenTools.smallFontPointSize
-                    anchors.verticalCenter: parent.verticalCenter
                 }
 
                 QGCTextField {
-                    width: ScreenTools.defaultFontPixelWidth * 6
+                    Layout.preferredWidth: ScreenTools.defaultFontPixelWidth * 5
                     text: _utgSettings ? _utgSettings.soundVelocity.rawValue : "5920"
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     onEditingFinished: {
