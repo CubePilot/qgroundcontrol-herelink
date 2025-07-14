@@ -229,7 +229,7 @@ Item {
 
         MouseArea {
             anchors.fill: parent
-            onClicked: settingsDialog.visible = false
+            onClicked: settingsDialog.cancelSettings()
         }
     }
 
@@ -246,11 +246,31 @@ Item {
         radius: ScreenTools.defaultFontPixelHeight * 0.5
         z: 1000
 
-        function open() { visible = true }
+        // Backup variables to store original values
+        property var _originalGain: 50
+        property var _originalSoundVelocity: 5920
+        property var _originalZeroOffset: 0
+        property var _originalThreshold: 50
+        property var _originalMeasurementUnit: 0
+        property var _originalMeasurementMode: 0
+
+        function open() {
+            // Store original values before opening
+            if (_utgSettings) {
+                _originalGain = _utgSettings.gain ? _utgSettings.gain.rawValue : 50
+                _originalSoundVelocity = _utgSettings.soundVelocity ? _utgSettings.soundVelocity.rawValue : 5920
+                _originalZeroOffset = _utgSettings.zeroOffset ? _utgSettings.zeroOffset.rawValue : 0
+                _originalThreshold = _utgSettings.threshold ? _utgSettings.threshold.rawValue : 50
+                _originalMeasurementUnit = _utgSettings.measurementUnit ? _utgSettings.measurementUnit.rawValue : 0
+                _originalMeasurementMode = _utgSettings.measurementMode ? _utgSettings.measurementMode.rawValue : 0
+            }
+            visible = true
+        }
+
         function closeDialog() { visible = false }
 
-        function applySettings() {
-            // Apply settings
+        function saveSettings() {
+            // Apply settings to UTG manager
             if (_utgManager && _utgConnected && _utgSettings) {
                 if (_utgSettings.gain) _utgManager.setGain(_utgSettings.gain.rawValue)
                 if (_utgSettings.soundVelocity) _utgManager.setSoundVelocity(_utgSettings.soundVelocity.rawValue)
@@ -258,6 +278,19 @@ Item {
                 if (_utgSettings.threshold) _utgManager.setThreshold(_utgSettings.threshold.rawValue)
                 if (_utgSettings.measurementUnit) _utgManager.setMeasurementUnit(_utgSettings.measurementUnit.rawValue)
                 if (_utgSettings.measurementMode) _utgManager.setMeasurementMode(_utgSettings.measurementMode.rawValue)
+            }
+            settingsDialog.visible = false
+        }
+
+        function cancelSettings() {
+            // Restore original values
+            if (_utgSettings) {
+                if (_utgSettings.gain) _utgSettings.gain.rawValue = _originalGain
+                if (_utgSettings.soundVelocity) _utgSettings.soundVelocity.rawValue = _originalSoundVelocity
+                if (_utgSettings.zeroOffset) _utgSettings.zeroOffset.rawValue = _originalZeroOffset
+                if (_utgSettings.threshold) _utgSettings.threshold.rawValue = _originalThreshold
+                if (_utgSettings.measurementUnit) _utgSettings.measurementUnit.rawValue = _originalMeasurementUnit
+                if (_utgSettings.measurementMode) _utgSettings.measurementMode.rawValue = _originalMeasurementMode
             }
             settingsDialog.visible = false
         }
@@ -490,13 +523,13 @@ Item {
                     spacing: ScreenTools.defaultFontPixelWidth
 
                     QGCButton {
-                        text: qsTr("OK")
-                        onClicked: applySettings()
+                        text: qsTr("Save")
+                        onClicked: saveSettings()
                     }
 
                     QGCButton {
                         text: qsTr("Cancel")
-                        onClicked: settingsDialog.visible = false
+                        onClicked: cancelSettings()
                     }
                 }
             }
