@@ -18,6 +18,7 @@ Item {
     property bool _utgConnected:    _utgManager ? _utgManager.connected : false
     property real _currentThickness: _utgManager ? _utgManager.currentThickness : 0.0
     property bool _measuring:       _utgManager ? _utgManager.measuring : false
+    property bool _compactMode:     false
 
     Connections {
         target: QGroundControl.multiVehicleManager
@@ -46,8 +47,8 @@ Item {
         y: 100
         color: qgcPal.window
         radius: 12
-        width: Math.min(parent.width * 0.4, 400)
-        height: Math.min(parent.height * 0.6, 350)
+        width: _compactMode ? Math.min(parent.width * 0.25, 250) : Math.min(parent.width * 0.4, 400)
+        height: _compactMode ? Math.min(parent.height * 0.3, 180) : Math.min(parent.height * 0.6, 350)
         clip: true
 
         border.color: _utgConnected ? qgcPal.colorGreen : (_utgEnabled ? qgcPal.colorOrange : qgcPal.colorGrey)
@@ -82,6 +83,16 @@ Item {
                     radius: 6
                     color: _utgConnected ? qgcPal.colorGreen : (_utgEnabled ? qgcPal.colorOrange : qgcPal.colorGrey)
                     anchors.verticalCenter: parent.verticalCenter
+                }
+
+                Item { width: ScreenTools.defaultFontPixelWidth; height: 1 } // Spacer
+
+                QGCButton {
+                    text: _compactMode ? "+" : "-"
+                    width: ScreenTools.defaultFontPixelHeight * 1.5
+                    height: ScreenTools.defaultFontPixelHeight * 1.5
+                    anchors.verticalCenter: parent.verticalCenter
+                    onClicked: _compactMode = !_compactMode
                 }
             }
 
@@ -127,7 +138,7 @@ Item {
             // Control buttons - Compact grid layout
             GridLayout {
                 width: parent.width
-                columns: 2
+                columns: _compactMode ? 3 : 2
                 columnSpacing: ScreenTools.defaultFontPixelWidth * 0.5
                 rowSpacing: ScreenTools.defaultFontPixelHeight * 0.3
 
@@ -154,9 +165,9 @@ Item {
                 }
 
                 QGCButton {
-                    text: qsTr("Settings")
+                    text: _compactMode ? qsTr("Set") : qsTr("Settings")
                     Layout.fillWidth: true
-                    Layout.columnSpan: 2
+                    Layout.columnSpan: _compactMode ? 1 : 2
                     Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
                     onClicked: settingsDialog.open()
                 }
@@ -168,7 +179,7 @@ Item {
                 columns: 4
                 columnSpacing: ScreenTools.defaultFontPixelWidth * 0.3
                 rowSpacing: ScreenTools.defaultFontPixelHeight * 0.2
-                visible: _utgConnected
+                visible: _utgConnected && !_compactMode
 
                 QGCLabel {
                     text: qsTr("Gain:")
