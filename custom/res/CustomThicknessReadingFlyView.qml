@@ -165,7 +165,7 @@ Item {
                 visible: !_minimized
 
                 QGCButton {
-                    text: _measuring ? qsTr("Stop") : qsTr("Measure")
+                    text: _measuring ? "Stop" : "Measure"
                     enabled: _utgConnected
                     Layout.fillWidth: true
                     Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
@@ -179,7 +179,7 @@ Item {
                 }
 
                 QGCButton {
-                    text: qsTr("Continuous")
+                    text: "Continuous"
                     enabled: _utgConnected && !_measuring
                     Layout.fillWidth: true
                     Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
@@ -187,11 +187,14 @@ Item {
                 }
 
                 QGCButton {
-                    text: qsTr("Settings")
+                    text: "Settings"
                     Layout.fillWidth: true
                     Layout.columnSpan: 2
                     Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
-                    onClicked: settingsDialog.open()
+                    onClicked: {
+                        console.log("Settings button clicked")
+                        settingsDialog.open()
+                    }
                 }
             }
 
@@ -549,7 +552,7 @@ Item {
             Rectangle {
                 id: buttonSection
                 width: parent.width
-                height: ScreenTools.defaultFontPixelHeight * 3
+                height: ScreenTools.defaultFontPixelHeight * 4
                 color: "transparent"
 
                 Row {
@@ -557,14 +560,24 @@ Item {
                     spacing: ScreenTools.defaultFontPixelWidth
 
                     QGCButton {
-                        text: _hasUnsavedChanges ? qsTr("Save *") : qsTr("Save")
-                        onClicked: saveSettings()
+                        text: _hasUnsavedChanges ? "Save *" : "Save"
+                        width: ScreenTools.defaultFontPixelWidth * 8
+                        height: ScreenTools.defaultFontPixelHeight * 2
+                        onClicked: {
+                            console.log("Save button clicked")
+                            saveSettings()
+                        }
                         primary: _hasUnsavedChanges
                     }
 
                     QGCButton {
-                        text: qsTr("Cancel")
-                        onClicked: cancelSettings()
+                        text: "Cancel"
+                        width: ScreenTools.defaultFontPixelWidth * 8
+                        height: ScreenTools.defaultFontPixelHeight * 2
+                        onClicked: {
+                            console.log("Cancel button clicked")
+                            cancelSettings()
+                        }
                     }
                 }
             }
