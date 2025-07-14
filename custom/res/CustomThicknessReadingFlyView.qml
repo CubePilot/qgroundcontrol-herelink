@@ -232,7 +232,7 @@ Item {
         z: 1000
 
         function open() { visible = true }
-        function close() { visible = false }
+        function closeDialog() { visible = false }
 
         function applySettings() {
             // Apply settings
@@ -244,7 +244,7 @@ Item {
                 if (_utgSettings.measurementUnit) _utgManager.setMeasurementUnit(_utgSettings.measurementUnit.rawValue)
                 if (_utgSettings.measurementMode) _utgManager.setMeasurementMode(_utgSettings.measurementMode.rawValue)
             }
-            close()
+            settingsDialog.visible = false
         }
 
         Column {
@@ -481,7 +481,7 @@ Item {
 
                     QGCButton {
                         text: qsTr("Cancel")
-                        onClicked: close()
+                        onClicked: settingsDialog.visible = false
                     }
                 }
             }
