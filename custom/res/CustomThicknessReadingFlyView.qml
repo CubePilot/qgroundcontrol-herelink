@@ -1,9 +1,7 @@
 import QtQuick                  2.11
 import QtQuick.Controls         2.4
 import QtQuick.Layouts          1.11
-import QtQuick.Dialogs          1.3
-import Qt.labs.platform         1.1
-import Qt.labs.settings         1.0
+import QtQuick.Dialogs          1.2
 
 import QGroundControl               1.0
 import QGroundControl.FactSystem    1.0
@@ -200,17 +198,23 @@ Item {
         }
     }
 
-    // UTG Settings Dialog
-    Dialog {
+    // UTG Settings Popup
+    Rectangle {
         id: settingsDialog
-        title: qsTr("UTG Settings")
-        standardButtons: StandardButton.Ok | StandardButton.Cancel
-        modal: true
-
+        visible: false
+        anchors.centerIn: parent
         width: Math.min(parent.width * 0.8, ScreenTools.defaultFontPixelWidth * 50)
         height: Math.min(parent.height * 0.8, ScreenTools.defaultFontPixelHeight * 40)
+        color: qgcPal.window
+        border.color: qgcPal.text
+        border.width: 1
+        radius: ScreenTools.defaultFontPixelHeight * 0.5
+        z: 1000
 
-        onAccepted: {
+        function open() { visible = true }
+        function close() { visible = false }
+
+        function applySettings() {
             // Apply settings
             if (_utgManager && _utgConnected && _utgSettings) {
                 if (_utgSettings.gain) _utgManager.setGain(_utgSettings.gain.rawValue)
@@ -218,16 +222,43 @@ Item {
                 if (_utgSettings.zeroOffset) _utgManager.setZeroOffset(_utgSettings.zeroOffset.rawValue)
                 if (_utgSettings.threshold) _utgManager.setThreshold(_utgSettings.threshold.rawValue)
                 if (_utgSettings.measurementUnit) _utgManager.setMeasurementUnit(_utgSettings.measurementUnit.rawValue)
-                _utgManager.setMeasurementMode(_utgSettings.measurementMode.rawValue)
+                if (_utgSettings.measurementMode) _utgManager.setMeasurementMode(_utgSettings.measurementMode.rawValue)
             }
+            close()
         }
 
-        ScrollView {
+        Column {
             anchors.fill: parent
+            anchors.margins: ScreenTools.defaultFontPixelHeight
 
+            // Title
             Column {
+                id: titleSection
                 width: parent.width
-                spacing: ScreenTools.defaultFontPixelHeight
+
+                QGCLabel {
+                    text: qsTr("UTG Settings")
+                    font.family: ScreenTools.demiboldFontFamily
+                    font.pointSize: ScreenTools.mediumFontPointSize
+                    anchors.horizontalCenter: parent.horizontalCenter
+                }
+
+                Rectangle {
+                    width: parent.width
+                    height: 1
+                    color: qgcPal.text
+                }
+            }
+
+            // Content
+            ScrollView {
+                width: parent.width
+                height: parent.height - titleSection.height - buttonSection.height
+                clip: true
+
+                Column {
+                    width: parent.width
+                    spacing: ScreenTools.defaultFontPixelHeight
 
                 GroupBox {
                     title: qsTr("Connection")
@@ -407,6 +438,29 @@ Item {
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            // Buttons
+            Rectangle {
+                id: buttonSection
+                width: parent.width
+                height: ScreenTools.defaultFontPixelHeight * 3
+                color: "transparent"
+
+                Row {
+                    anchors.centerIn: parent
+                    spacing: ScreenTools.defaultFontPixelWidth
+
+                    QGCButton {
+                        text: qsTr("OK")
+                        onClicked: applySettings()
+                    }
+
+                    QGCButton {
+                        text: qsTr("Cancel")
+                        onClicked: close()
                     }
                 }
             }
