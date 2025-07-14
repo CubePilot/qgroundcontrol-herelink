@@ -25,18 +25,23 @@ Rectangle {
     anchors.margins:    ScreenTools.defaultFontPixelWidth
 
     property var _activeVehicle:    QGroundControl.multiVehicleManager.activeVehicle
-    property var _utgSettings:      QGroundControl.settingsManager.utgSettings
+    property var _utgSettings:      null
     property real _margins:         ScreenTools.defaultFontPixelHeight
     property real _panelWidth:      _root.width * 0.8
 
     QGCPalette { id: qgcPal; colorGroupEnabled: true }
 
-    // Debug: Check if UTG settings are available
+    // Safely get UTG settings
     Component.onCompleted: {
         console.log("UTGSettings QML loaded")
-        console.log("UTG Settings available:", _utgSettings !== null)
-        if (_utgSettings) {
-            console.log("UTG Settings enabled fact:", _utgSettings.enabled !== null)
+        try {
+            _utgSettings = QGroundControl.settingsManager.utgSettings
+            console.log("UTG Settings available:", _utgSettings !== null)
+            if (_utgSettings) {
+                console.log("UTG Settings enabled fact:", _utgSettings.enabled !== null)
+            }
+        } catch (error) {
+            console.log("Error accessing UTG settings:", error)
         }
     }
 
@@ -62,10 +67,17 @@ Rectangle {
                 font.family:    ScreenTools.demiboldFontFamily
             }
 
+            QGCLabel {
+                text:           _utgSettings ? "UTG Settings Available" : "UTG Settings NOT Available"
+                color:          _utgSettings ? "green" : "red"
+                font.family:    ScreenTools.demiboldFontFamily
+            }
+
             Rectangle {
                 width:  _panelWidth
                 height: enabledColumn.height + (_margins * 2)
                 color:  qgcPal.windowShade
+                visible: _utgSettings !== null
 
                 Column {
                     id:                 enabledColumn
@@ -356,6 +368,35 @@ Rectangle {
                             fact: _utgSettings.autoSaveMeasurements
                             enabled: _utgSettings.logMeasurements.rawValue
                         }
+                    }
+                }
+            }
+
+            // Fallback message when UTG settings are not available
+            Rectangle {
+                width:  _panelWidth
+                height: fallbackColumn.height + (_margins * 2)
+                color:  qgcPal.windowShade
+                visible: _utgSettings === null
+
+                Column {
+                    id:                 fallbackColumn
+                    anchors.margins:    _margins
+                    anchors.top:        parent.top
+                    anchors.left:       parent.left
+                    anchors.right:      parent.right
+                    spacing:            _margins
+
+                    QGCLabel {
+                        text:           qsTr("UTG Settings Not Available")
+                        font.family:    ScreenTools.demiboldFontFamily
+                        color:          qgcPal.warningText
+                    }
+
+                    QGCLabel {
+                        text:           qsTr("UTG settings could not be loaded. This may indicate a build configuration issue.")
+                        wrapMode:       Text.WordWrap
+                        width:          parent.width
                     }
                 }
             }
