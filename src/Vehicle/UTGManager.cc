@@ -35,7 +35,16 @@ UTGManager::UTGManager(Vehicle* vehicle, QObject* parent)
     , _measuring(false)
     , _cachedBaudRate(9600)
 {
-    _settings = qgcApp()->toolbox()->settingsManager()->utgSettings();
+    // Safely get UTG settings with null checks
+    QGCApplication* app = qgcApp();
+    if (app && app->toolbox() && app->toolbox()->settingsManager()) {
+        _settings = app->toolbox()->settingsManager()->utgSettings();
+    }
+
+    if (!_settings) {
+        qCCritical(UTGManagerLog) << "Failed to get UTGSettings - UTGManager will be disabled";
+        return;
+    }
     
     // Setup timers
     _connectionTimer->setSingleShot(true);
@@ -81,16 +90,21 @@ QString UTGManager::statusText() const
 
 void UTGManager::setEnabled(bool enabled)
 {
+    if (!_settings) {
+        qCWarning(UTGManagerLog) << "Cannot set enabled state - settings not available";
+        return;
+    }
+
     if (_enabled != enabled) {
         _enabled = enabled;
         _settings->enabled()->setRawValue(enabled);
-        
+
         if (enabled && _settings->autoConnect()->rawValue().toBool()) {
             connectToUTG();
         } else if (!enabled) {
             disconnectFromUTG();
         }
-        
+
         emit enabledChanged(_enabled);
     }
 }
