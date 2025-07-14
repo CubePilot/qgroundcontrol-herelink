@@ -352,13 +352,13 @@ Item {
                         columns: 2
                         width: parent.width
 
-                        QGCLabel { text: qsTr("Status:") }
+                        QGCLabel { text: "Status:" }
                         QGCLabel {
-                            text: _utgManager ? _utgManager.statusText : qsTr("No UTG")
+                            text: _utgManager ? _utgManager.statusText : "No UTG"
                             color: _utgConnected ? qgcPal.colorGreen : qgcPal.colorOrange
                         }
 
-                        QGCLabel { text: qsTr("Serial Port:") }
+                        QGCLabel { text: "Serial Port:" }
                         QGCComboBox {
                             Layout.fillWidth: true
                             model: QGroundControl.linkManager.serialPortStrings
@@ -375,8 +375,9 @@ Item {
                         }
 
                         QGCButton {
-                            text: _utgConnected ? qsTr("Disconnect") : qsTr("Connect")
+                            text: _utgConnected ? "Disconnect" : "Connect"
                             Layout.columnSpan: 2
+                            Layout.fillWidth: true
                             onClicked: {
                                 if (_utgManager) {
                                     if (_utgConnected) {
