@@ -441,6 +441,7 @@ Item {
                     }
                 }
             }
+            }
 
             // Buttons
             Rectangle {
