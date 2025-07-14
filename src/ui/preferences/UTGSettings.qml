@@ -113,7 +113,7 @@ Rectangle {
                 width:  _panelWidth
                 height: serialColumn.height + (_margins * 2)
                 color:  qgcPal.windowShade
-                visible: _utgSettings.enabled.rawValue
+                visible: _utgSettings && _utgSettings.enabled ? _utgSettings.enabled.rawValue : false
 
                 Column {
                     id:                 serialColumn
@@ -184,7 +184,7 @@ Rectangle {
                 width:  _panelWidth
                 height: measurementColumn.height + (_margins * 2)
                 color:  qgcPal.windowShade
-                visible: _utgSettings.enabled.rawValue
+                visible: _utgSettings && _utgSettings.enabled ? _utgSettings.enabled.rawValue : false
 
                 Column {
                     id:                 measurementColumn
@@ -265,7 +265,7 @@ Rectangle {
                 width:  _panelWidth
                 height: materialColumn.height + (_margins * 2)
                 color:  qgcPal.windowShade
-                visible: _utgSettings.enabled.rawValue
+                visible: _utgSettings && _utgSettings.enabled ? _utgSettings.enabled.rawValue : false
 
                 Column {
                     id:                 materialColumn
@@ -315,7 +315,7 @@ Rectangle {
                 width:  _panelWidth
                 height: alertColumn.height + (_margins * 2)
                 color:  qgcPal.windowShade
-                visible: _utgSettings.enabled.rawValue
+                visible: _utgSettings && _utgSettings.enabled ? _utgSettings.enabled.rawValue : false
 
                 Column {
                     id:                 alertColumn
