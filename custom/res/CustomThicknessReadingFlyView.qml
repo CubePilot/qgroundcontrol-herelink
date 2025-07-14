@@ -111,20 +111,33 @@ Item {
                     onClicked: _minimized = false
                 }
 
-                QGCLabel {
-                    id: readingValue
+                Column {
                     anchors.centerIn: parent
-                    text: {
-                        if (!_utgEnabled) return qsTr("Disabled")
-                        if (!_utgConnected) return qsTr("Disconnected")
-                        if (!_utgSettings) return qsTr("No Settings")
-                        var unit = _utgSettings.measurementUnit ? _utgSettings.measurementUnit.enumStringValue : "mm"
-                        var precision = _utgSettings.displayPrecision ? _utgSettings.displayPrecision.rawValue : 2
-                        return _currentThickness.toFixed(precision) + " " + unit
+                    spacing: ScreenTools.defaultFontPixelHeight * 0.2
+
+                    QGCLabel {
+                        id: readingValue
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: {
+                            if (!_utgEnabled) return qsTr("Disabled")
+                            if (!_utgConnected) return qsTr("Disconnected")
+                            if (!_utgSettings) return qsTr("No Settings")
+                            var unit = _utgSettings.measurementUnit ? _utgSettings.measurementUnit.enumStringValue : "mm"
+                            var precision = _utgSettings.displayPrecision ? _utgSettings.displayPrecision.rawValue : 2
+                            return _currentThickness.toFixed(precision) + " " + unit
+                        }
+                        font.pointSize: ScreenTools.largeFontPointSize
+                        font.bold: true
+                        color: _utgConnected ? qgcPal.text : qgcPal.colorGrey
                     }
-                    font.pointSize: ScreenTools.largeFontPointSize
-                    font.bold: true
-                    color: _utgConnected ? qgcPal.text : qgcPal.colorGrey
+
+                    QGCLabel {
+                        anchors.horizontalCenter: parent.horizontalCenter
+                        text: qsTr("Click to expand")
+                        font.pointSize: ScreenTools.smallFontPointSize
+                        color: qgcPal.colorGrey
+                        visible: _minimized
+                    }
                 }
             }
 
