@@ -119,9 +119,9 @@ Item {
                         id: readingValue
                         anchors.horizontalCenter: parent.horizontalCenter
                         text: {
-                            if (!_utgEnabled) return qsTr("Disabled")
-                            if (!_utgConnected) return qsTr("Disconnected")
-                            if (!_utgSettings) return qsTr("No Settings")
+                            if (!_utgEnabled) return "Disabled"
+                            if (!_utgConnected) return "Disconnected"
+                            if (!_utgSettings) return "No Settings"
                             var unit = _utgSettings.measurementUnit ? _utgSettings.measurementUnit.enumStringValue : "mm"
                             var precision = _utgSettings.displayPrecision ? _utgSettings.displayPrecision.rawValue : 2
                             return _currentThickness.toFixed(precision) + " " + unit
@@ -133,7 +133,7 @@ Item {
 
                     QGCLabel {
                         anchors.horizontalCenter: parent.horizontalCenter
-                        text: qsTr("Click to expand")
+                        text: "Click to expand"
                         font.pointSize: ScreenTools.smallFontPointSize
                         color: qgcPal.colorGrey
                         visible: _minimized
@@ -147,7 +147,7 @@ Item {
                 spacing: ScreenTools.defaultFontPixelWidth
 
                 QGCLabel {
-                    text: _utgManager ? _utgManager.statusText : qsTr("No UTG")
+                    text: _utgManager ? _utgManager.statusText : "No UTG"
                     font.pointSize: ScreenTools.smallFontPointSize
                     color: qgcPal.colorGrey
                     anchors.verticalCenter: parent.verticalCenter
@@ -208,7 +208,7 @@ Item {
                 visible: _utgConnected && !_minimized
 
                 QGCLabel {
-                    text: qsTr("Gain:")
+                    text: "Gain:"
                     font.pointSize: ScreenTools.smallFontPointSize
                 }
 
@@ -225,7 +225,7 @@ Item {
                 }
 
                 QGCLabel {
-                    text: qsTr("Velocity:")
+                    text: "Velocity:"
                     font.pointSize: ScreenTools.smallFontPointSize
                 }
 
