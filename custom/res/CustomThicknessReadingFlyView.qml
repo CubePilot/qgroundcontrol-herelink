@@ -358,7 +358,7 @@ Item {
             // Content
             ScrollView {
                 width: parent.width
-                height: parent.height - titleSection.height - buttonSection.height
+                height: parent.height - titleSection.height - buttonSection.height - ScreenTools.defaultFontPixelHeight
                 clip: true
 
                 Column {
@@ -546,6 +546,12 @@ Item {
                     }
                 }
             }
+            }
+
+            // Spacer
+            Item {
+                width: parent.width
+                height: ScreenTools.defaultFontPixelHeight * 0.5
             }
 
             // Buttons
