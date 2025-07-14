@@ -35,13 +35,8 @@ Rectangle {
 
     // Safely get UTG settings
     Component.onCompleted: {
-        console.log("UTGSettings QML loaded")
         try {
             _utgSettings = QGroundControl.settingsManager.utgSettings
-            console.log("UTG Settings available:", _utgSettings !== null)
-            if (_utgSettings) {
-                console.log("UTG Settings enabled fact:", _utgSettings.enabled !== null)
-            }
         } catch (error) {
             console.log("Error accessing UTG settings:", error)
         }
@@ -63,17 +58,7 @@ Rectangle {
                 font.family:    ScreenTools.demiboldFontFamily
             }
 
-            QGCLabel {
-                text:           "DEBUG: UTG Settings Page Loaded Successfully"
-                color:          "red"
-                font.family:    ScreenTools.demiboldFontFamily
-            }
 
-            QGCLabel {
-                text:           _utgSettings ? "UTG Settings Available" : "UTG Settings NOT Available"
-                color:          _utgSettings ? "green" : "red"
-                font.family:    ScreenTools.demiboldFontFamily
-            }
 
             Rectangle {
                 width:  _panelWidth
