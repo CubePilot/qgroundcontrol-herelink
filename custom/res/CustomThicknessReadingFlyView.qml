@@ -218,6 +218,21 @@ Item {
         }
     }
 
+    // UTG Settings Popup Background
+    Rectangle {
+        id: settingsDialogBackground
+        visible: settingsDialog.visible
+        anchors.fill: parent
+        color: "black"
+        opacity: 0.5
+        z: 999
+
+        MouseArea {
+            anchors.fill: parent
+            onClicked: settingsDialog.visible = false
+        }
+    }
+
     // UTG Settings Popup
     Rectangle {
         id: settingsDialog
