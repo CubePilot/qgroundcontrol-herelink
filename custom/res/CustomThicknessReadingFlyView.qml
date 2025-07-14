@@ -492,11 +492,15 @@ Item {
                             }
                         }
 
-                        Row {
-                            spacing: ScreenTools.defaultFontPixelWidth
+                        GridLayout {
+                            width: parent.width
+                            columns: 2
+                            columnSpacing: ScreenTools.defaultFontPixelWidth * 0.5
+                            rowSpacing: ScreenTools.defaultFontPixelHeight * 0.3
 
                             QGCButton {
-                                text: qsTr("Zero Calibration")
+                                text: "Zero Cal"
+                                Layout.fillWidth: true
                                 onClicked: {
                                     if (_utgManager) {
                                         _utgManager.performZeroCalibration()
@@ -505,7 +509,8 @@ Item {
                             }
 
                             QGCButton {
-                                text: qsTr("Velocity Calibration")
+                                text: "Velocity Cal"
+                                Layout.fillWidth: true
                                 onClicked: {
                                     if (_utgManager && _utgSettings) {
                                         _utgManager.performVelocityCalibration(_utgSettings.calibrationValue.rawValue)
@@ -514,7 +519,9 @@ Item {
                             }
 
                             QGCButton {
-                                text: qsTr("Reset UTG")
+                                text: "Reset UTG"
+                                Layout.fillWidth: true
+                                Layout.columnSpan: 2
                                 onClicked: {
                                     if (_utgManager) {
                                         _utgManager.resetUTG()
