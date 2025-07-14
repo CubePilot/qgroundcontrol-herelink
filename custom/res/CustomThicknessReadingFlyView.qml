@@ -63,8 +63,8 @@ Item {
 
         Column {
             anchors.fill: parent
-            anchors.margins: ScreenTools.defaultFontPixelWidth * 0.8
-            spacing: ScreenTools.defaultFontPixelHeight * 0.3
+            anchors.margins: ScreenTools.defaultFontPixelWidth * 1.2
+            spacing: ScreenTools.defaultFontPixelHeight * 0.4
 
             // Header
             Row {
@@ -146,7 +146,7 @@ Item {
                     text: _measuring ? "Stop" : "Measure"
                     enabled: _utgConnected
                     Layout.fillWidth: true
-                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
+                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 2.2
                     onClicked: {
                         if (_measuring) {
                             _utgManager.stopMeasurement()
@@ -160,7 +160,7 @@ Item {
                     text: "Continuous"
                     enabled: _utgConnected && !_measuring
                     Layout.fillWidth: true
-                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
+                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 2.2
                     onClicked: _utgManager.startContinuousMeasurement()
                 }
 
