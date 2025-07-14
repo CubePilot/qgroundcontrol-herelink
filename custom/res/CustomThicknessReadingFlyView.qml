@@ -254,6 +254,17 @@ Item {
         property var _originalMeasurementUnit: 0
         property var _originalMeasurementMode: 0
 
+        // Check if settings have been modified
+        property bool _hasUnsavedChanges: {
+            if (!_utgSettings) return false
+            return (_utgSettings.gain && _utgSettings.gain.rawValue !== _originalGain) ||
+                   (_utgSettings.soundVelocity && _utgSettings.soundVelocity.rawValue !== _originalSoundVelocity) ||
+                   (_utgSettings.zeroOffset && _utgSettings.zeroOffset.rawValue !== _originalZeroOffset) ||
+                   (_utgSettings.threshold && _utgSettings.threshold.rawValue !== _originalThreshold) ||
+                   (_utgSettings.measurementUnit && _utgSettings.measurementUnit.rawValue !== _originalMeasurementUnit) ||
+                   (_utgSettings.measurementMode && _utgSettings.measurementMode.rawValue !== _originalMeasurementMode)
+        }
+
         function open() {
             // Store original values before opening
             if (_utgSettings) {
@@ -305,10 +316,11 @@ Item {
                 width: parent.width
 
                 QGCLabel {
-                    text: qsTr("UTG Settings")
+                    text: _hasUnsavedChanges ? qsTr("UTG Settings *") : qsTr("UTG Settings")
                     font.family: ScreenTools.demiboldFontFamily
                     font.pointSize: ScreenTools.mediumFontPointSize
                     anchors.horizontalCenter: parent.horizontalCenter
+                    color: _hasUnsavedChanges ? qgcPal.warningText : qgcPal.text
                 }
 
                 Rectangle {
@@ -523,8 +535,9 @@ Item {
                     spacing: ScreenTools.defaultFontPixelWidth
 
                     QGCButton {
-                        text: qsTr("Save")
+                        text: _hasUnsavedChanges ? qsTr("Save *") : qsTr("Save")
                         onClicked: saveSettings()
+                        primary: _hasUnsavedChanges
                     }
 
                     QGCButton {
