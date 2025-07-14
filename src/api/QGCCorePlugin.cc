@@ -56,6 +56,8 @@ public:
 #endif
         if(pMAVLink)
             delete pMAVLink;
+        if(pUTG)
+            delete pUTG;
         if(pConsole)
             delete pConsole;
 #if defined(QT_DEBUG)
@@ -83,6 +85,7 @@ public:
     QmlComponentInfo* pAirmap                   = nullptr;
 #endif
     QmlComponentInfo* pMAVLink                  = nullptr;
+    QmlComponentInfo* pUTG                      = nullptr;
     QmlComponentInfo* pConsole                  = nullptr;
     QmlComponentInfo* pHelp                     = nullptr;
 #if defined(QT_DEBUG)
@@ -245,6 +248,10 @@ QVariantList &QGCCorePlugin::settingsPages()
             QUrl::fromUserInput("qrc:/qml/MavlinkSettings.qml"),
             QUrl::fromUserInput("qrc:/res/waves.svg"));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pMAVLink)));
+        _p->pUTG = new QmlComponentInfo(tr("UTG"),
+            QUrl::fromUserInput("qrc:/qml/UTGSettings.qml"),
+            QUrl::fromUserInput("qrc:/res/gear-white.svg"));
+        _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pUTG)));
         _p->pConsole = new QmlComponentInfo(tr("Console"),
             QUrl::fromUserInput("qrc:/qml/QGroundControl/Controls/AppMessages.qml"));
         _p->settingsList.append(QVariant::fromValue(reinterpret_cast<QmlComponentInfo*>(_p->pConsole)));
