@@ -500,7 +500,11 @@ DebugBuild { PX4FirmwarePlugin { PX4FirmwarePluginFactory { APMFirmwarePlugin { 
         src/qgcunittest/TCPLinkTest.h \
         src/qgcunittest/TCPLoopBackServer.h \
         src/qgcunittest/UnitTest.h \
+        src/qgcunittest/MockUTGDevice.h \
+        src/Settings/UTGSettingsTest.h \
         src/Vehicle/SendMavCommandTest.h \
+        src/Vehicle/UTGManagerTest.h \
+        src/Vehicle/UTGIntegrationTest.h \
         #src/qgcunittest/RadioConfigTest.h \
         #src/AnalyzeView/LogDownloadTest.h \
         #src/qgcunittest/FileDialogTest.h \
@@ -543,7 +547,11 @@ DebugBuild { PX4FirmwarePlugin { PX4FirmwarePluginFactory { APMFirmwarePlugin { 
         src/qgcunittest/TCPLoopBackServer.cc \
         src/qgcunittest/UnitTest.cc \
         src/qgcunittest/UnitTestList.cc \
+        src/qgcunittest/MockUTGDevice.cc \
+        src/Settings/UTGSettingsTest.cc \
         src/Vehicle/SendMavCommandTest.cc \
+        src/Vehicle/UTGManagerTest.cc \
+        src/Vehicle/UTGIntegrationTest.cc \
         #src/qgcunittest/RadioConfigTest.cc \
         #src/AnalyzeView/LogDownloadTest.cc \
         #src/qgcunittest/FileDialogTest.cc \
@@ -662,6 +670,7 @@ HEADERS += \
     src/Settings/SettingsGroup.h \
     src/Settings/SettingsManager.h \
     src/Settings/UnitsSettings.h \
+    src/Settings/UTGSettings.h \
     src/Settings/VideoSettings.h \
     src/ShapeFileHelper.h \
     src/SHPFileHelper.h \
@@ -671,6 +680,7 @@ HEADERS += \
     src/Vehicle/MAVLinkLogManager.h \
     src/Vehicle/MultiVehicleManager.h \
     src/Vehicle/TrajectoryPoints.h \
+    src/Vehicle/UTGManager.h \
     src/Vehicle/Vehicle.h \
     src/Vehicle/VehicleObjectAvoidance.h \
     src/VehicleSetup/JoystickConfigController.h \
@@ -867,6 +877,7 @@ SOURCES += \
     src/Settings/SettingsGroup.cc \
     src/Settings/SettingsManager.cc \
     src/Settings/UnitsSettings.cc \
+    src/Settings/UTGSettings.cc \
     src/Settings/VideoSettings.cc \
     src/ShapeFileHelper.cc \
     src/SHPFileHelper.cc \
@@ -876,6 +887,7 @@ SOURCES += \
     src/Vehicle/MAVLinkLogManager.cc \
     src/Vehicle/MultiVehicleManager.cc \
     src/Vehicle/TrajectoryPoints.cc \
+    src/Vehicle/UTGManager.cc \
     src/Vehicle/Vehicle.cc \
     src/Vehicle/VehicleObjectAvoidance.cc \
     src/VehicleSetup/JoystickConfigController.cc \
