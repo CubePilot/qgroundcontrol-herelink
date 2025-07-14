@@ -14,7 +14,11 @@
 #include "Vehicle.h"
 #include "MultiSignalSpy.h"
 
+#ifdef __android__
+#include "qserialport.h"
+#else
 #include <QSerialPort>
+#endif
 
 /// Unit test for UTGManager
 class UTGManagerTest : public UnitTest

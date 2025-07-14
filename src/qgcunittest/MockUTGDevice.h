@@ -11,7 +11,11 @@
 
 #include <QObject>
 #include <QTimer>
+#ifdef __android__
+#include "qserialport.h"
+#else
 #include <QSerialPort>
+#endif
 #include <QQueue>
 #include "UTGManager.h"
 

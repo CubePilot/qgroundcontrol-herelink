@@ -12,7 +12,11 @@
 #include "QGCApplication.h"
 #include "SettingsManager.h"
 
+#ifdef __android__
+#include "qserialportinfo.h"
+#else
 #include <QSerialPortInfo>
+#endif
 #include <QDebug>
 
 Q_LOGGING_CATEGORY(UTGManagerLog, "UTGManagerLog")
