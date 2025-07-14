@@ -49,7 +49,7 @@ Item {
         color: qgcPal.window
         radius: 12
         width: _minimized ? Math.min(parent.width * 0.25, 200) : Math.min(parent.width * 0.35, 350)
-        height: _minimized ? Math.min(parent.height * 0.15, 100) : Math.min(parent.height * 0.5, 300)
+        height: _minimized ? Math.min(parent.height * 0.15, 100) : Math.min(parent.height * 0.6, 350)
         clip: true
 
         border.color: _utgConnected ? qgcPal.colorGreen : (_utgEnabled ? qgcPal.colorOrange : qgcPal.colorGrey)
@@ -190,7 +190,8 @@ Item {
                     text: "Settings"
                     Layout.fillWidth: true
                     Layout.columnSpan: 2
-                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 1.8
+                    Layout.preferredHeight: ScreenTools.defaultFontPixelHeight * 2.2
+                    Layout.minimumHeight: ScreenTools.defaultFontPixelHeight * 2
                     onClicked: {
                         console.log("Settings button clicked")
                         settingsDialog.open()
@@ -571,7 +572,7 @@ Item {
                         height: ScreenTools.defaultFontPixelHeight * 2
                         onClicked: {
                             console.log("Save button clicked")
-                            saveSettings()
+                            settingsDialog.saveSettings()
                         }
                         primary: _hasUnsavedChanges
                     }
@@ -582,7 +583,7 @@ Item {
                         height: ScreenTools.defaultFontPixelHeight * 2
                         onClicked: {
                             console.log("Cancel button clicked")
-                            cancelSettings()
+                            settingsDialog.cancelSettings()
                         }
                     }
                 }
