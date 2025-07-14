@@ -6,6 +6,8 @@ import Qt.labs.platform         1.1
 import Qt.labs.settings         1.0
 
 import QGroundControl               1.0
+import QGroundControl.FactSystem    1.0
+import QGroundControl.FactControls  1.0
 import QGroundControl.Palette       1.0
 import QGroundControl.Controls      1.0
 import QGroundControl.ScreenTools   1.0
@@ -98,8 +100,9 @@ Item {
                     text: {
                         if (!_utgEnabled) return qsTr("Disabled")
                         if (!_utgConnected) return qsTr("Disconnected")
-                        var unit = _utgSettings.measurementUnit.enumStringValue
-                        var precision = _utgSettings.displayPrecision.rawValue
+                        if (!_utgSettings) return qsTr("No Settings")
+                        var unit = _utgSettings.measurementUnit ? _utgSettings.measurementUnit.enumStringValue : "mm"
+                        var precision = _utgSettings.displayPrecision ? _utgSettings.displayPrecision.rawValue : 2
                         return _currentThickness.toFixed(precision) + " " + unit
                     }
                     font.pointSize: ScreenTools.largeFontPointSize
@@ -169,7 +172,7 @@ Item {
                     text: _utgSettings ? _utgSettings.gain.rawValue : "50"
                     inputMethodHints: Qt.ImhDigitsOnly
                     onEditingFinished: {
-                        if (_utgManager && text !== "") {
+                        if (_utgManager && _utgSettings && _utgSettings.gain && text !== "") {
                             _utgManager.setGain(parseInt(text))
                             _utgSettings.gain.rawValue = parseInt(text)
                         }
@@ -187,7 +190,7 @@ Item {
                     text: _utgSettings ? _utgSettings.soundVelocity.rawValue : "5920"
                     inputMethodHints: Qt.ImhFormattedNumbersOnly
                     onEditingFinished: {
-                        if (_utgManager && text !== "") {
+                        if (_utgManager && _utgSettings && _utgSettings.soundVelocity && text !== "") {
                             _utgManager.setSoundVelocity(parseFloat(text))
                             _utgSettings.soundVelocity.rawValue = parseFloat(text)
                         }
@@ -209,12 +212,12 @@ Item {
 
         onAccepted: {
             // Apply settings
-            if (_utgManager && _utgConnected) {
-                _utgManager.setGain(_utgSettings.gain.rawValue)
-                _utgManager.setSoundVelocity(_utgSettings.soundVelocity.rawValue)
-                _utgManager.setZeroOffset(_utgSettings.zeroOffset.rawValue)
-                _utgManager.setThreshold(_utgSettings.threshold.rawValue)
-                _utgManager.setMeasurementUnit(_utgSettings.measurementUnit.rawValue)
+            if (_utgManager && _utgConnected && _utgSettings) {
+                if (_utgSettings.gain) _utgManager.setGain(_utgSettings.gain.rawValue)
+                if (_utgSettings.soundVelocity) _utgManager.setSoundVelocity(_utgSettings.soundVelocity.rawValue)
+                if (_utgSettings.zeroOffset) _utgManager.setZeroOffset(_utgSettings.zeroOffset.rawValue)
+                if (_utgSettings.threshold) _utgManager.setThreshold(_utgSettings.threshold.rawValue)
+                if (_utgSettings.measurementUnit) _utgManager.setMeasurementUnit(_utgSettings.measurementUnit.rawValue)
                 _utgManager.setMeasurementMode(_utgSettings.measurementMode.rawValue)
             }
         }
