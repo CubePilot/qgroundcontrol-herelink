@@ -108,6 +108,9 @@ void VideoManager::init(QQuickWindow *window)
     (void) connect(_videoSettings->udpUrl(), &Fact::rawValueChanged, this, &VideoManager::_videoSourceChanged);
     (void) connect(_videoSettings->rtspUrl(), &Fact::rawValueChanged, this, &VideoManager::_videoSourceChanged);
     (void) connect(_videoSettings->tcpUrl(), &Fact::rawValueChanged, this, &VideoManager::_videoSourceChanged);
+    (void) connect(_videoSettings->herelinkActiveSource(), &Fact::rawValueChanged, this, &VideoManager::_videoSourceChanged);
+    (void) connect(_videoSettings->herelinkRtsp1Url(), &Fact::rawValueChanged, this, &VideoManager::_videoSourceChanged);
+    (void) connect(_videoSettings->herelinkRtsp2Url(), &Fact::rawValueChanged, this, &VideoManager::_videoSourceChanged);
     (void) connect(_videoSettings->aspectRatio(), &Fact::rawValueChanged, this, &VideoManager::aspectRatioChanged);
     (void) connect(_videoSettings->lowLatencyMode(), &Fact::rawValueChanged, this, [this](const QVariant &value) { Q_UNUSED(value); _restartAllVideos(); });
     (void) connect(MultiVehicleManager::instance(), &MultiVehicleManager::activeVehicleChanged, this, &VideoManager::_setActiveVehicle);
@@ -552,7 +555,25 @@ bool VideoManager::_updateSettings(VideoReceiver *receiver)
     } else if (source == VideoSettings::videoSourceYuneecMantisG) {
         settingsChanged |= _updateVideoUri(receiver, QStringLiteral("rtsp://192.168.42.1:554/live"));
     } else if (source == VideoSettings::videoSourceHerelinkAirUnit) {
-        settingsChanged |= _updateVideoUri(receiver, QStringLiteral("rtsp://192.168.0.10:8554/H264Video"));
+        QString uri;
+        const uint32_t activeSource = _videoSettings->herelinkActiveSource()->rawValue().toUInt();
+        switch (activeSource) {
+        case 0:
+        case 1:
+            // HDMI 1 / HDMI 2 — Air Unit multiplexes the chosen HDMI into this fixed RTSP URL
+            uri = QStringLiteral("rtsp://192.168.0.10:8554/H264Video");
+            break;
+        case 2:
+            uri = _videoSettings->herelinkRtsp1Url()->rawValue().toString();
+            break;
+        case 3:
+            uri = _videoSettings->herelinkRtsp2Url()->rawValue().toString();
+            break;
+        default:
+            uri = QStringLiteral("rtsp://192.168.0.10:8554/H264Video");
+            break;
+        }
+        settingsChanged |= _updateVideoUri(receiver, uri);
     } else if (source == VideoSettings::videoSourceHerelinkHotspot) {
         settingsChanged |= _updateVideoUri(receiver, QStringLiteral("rtsp://192.168.43.1:8554/fpv_stream"));
     } else if ((source == VideoSettings::videoDisabled) || (source == VideoSettings::videoSourceNoVideo)) {

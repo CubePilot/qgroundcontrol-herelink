@@ -82,6 +82,38 @@ SettingsPage {
 
     SettingsGroupLayout {
         Layout.fillWidth:   true
+        heading:            qsTr("Herelink Sources")
+        visible:            QGroundControl.corePlugin.isHerelink
+
+        FactCheckBoxSlider {
+            Layout.fillWidth:   true
+            text:               qsTr("HDMI 1")
+            fact:               _videoSettings.herelinkHdmi1Enabled
+        }
+
+        FactCheckBoxSlider {
+            Layout.fillWidth:   true
+            text:               qsTr("HDMI 2")
+            fact:               _videoSettings.herelinkHdmi2Enabled
+        }
+
+        LabelledFactTextField {
+            Layout.fillWidth:           true
+            textFieldPreferredWidth:    _urlFieldWidth
+            label:                      qsTr("RTSP 1 URL")
+            fact:                       _videoSettings.herelinkRtsp1Url
+        }
+
+        LabelledFactTextField {
+            Layout.fillWidth:           true
+            textFieldPreferredWidth:    _urlFieldWidth
+            label:                      qsTr("RTSP 2 URL")
+            fact:                       _videoSettings.herelinkRtsp2Url
+        }
+    }
+
+    SettingsGroupLayout {
+        Layout.fillWidth:   true
         heading:            qsTr("Settings")
         visible:            !_videoSourceDisabled
 

@@ -39,6 +39,12 @@ public:
     DEFINE_SETTINGFACT(cameraId)
     // Herelink resolution switching
     DEFINE_SETTINGFACT(resolution)
+    // Herelink multi-source (HDMI 1/2 + RTSP 1/2) switching
+    DEFINE_SETTINGFACT(herelinkHdmi1Enabled)
+    DEFINE_SETTINGFACT(herelinkHdmi2Enabled)
+    DEFINE_SETTINGFACT(herelinkRtsp1Url)
+    DEFINE_SETTINGFACT(herelinkRtsp2Url)
+    DEFINE_SETTINGFACT(herelinkActiveSource)
 
     Q_PROPERTY(bool     streamConfigured        READ streamConfigured       NOTIFY streamConfiguredChanged)
     Q_PROPERTY(QString  rtspVideoSource         READ rtspVideoSource        CONSTANT)

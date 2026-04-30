@@ -26,9 +26,11 @@ VideoStreamControl::VideoStreamControl()
     _resolutionSwitchPending = false;
     _currentHdmiInput = 0;  // Default to HDMI 1
     _currentResolution = 1;  // Default to 1080p
+    _currentActiveSource = _videoSettings->herelinkActiveSource()->rawValue().toUInt();
 
     connect(_videoSettings->cameraId(), &Fact::rawValueChanged, this, &VideoStreamControl::_cameraIdChanged);
     connect(_videoSettings->resolution(), &Fact::rawValueChanged, this, &VideoStreamControl::_resolutionChanged);
+    connect(_videoSettings->herelinkActiveSource(), &Fact::rawValueChanged, this, &VideoStreamControl::_activeSourceChanged);
     //connect(&_infoRequestTimer, &QTimer::timeout, this, &VideoStreamControl::_requestVideoStreamInfo);
     //_infoRequestTimer.setInterval(1000);
 }
@@ -59,6 +61,36 @@ void VideoStreamControl::_cameraIdChanged()
 {
     qCDebug(VideoStreamControlLog) << "Camera ID changed to:" << _videoSettings->cameraId()->rawValue().toUInt();
     _setCameraIdLockUi(true);
+}
+
+void VideoStreamControl::_activeSourceChanged()
+{
+    uint32_t source = _videoSettings->herelinkActiveSource()->rawValue().toUInt();
+    qCDebug(VideoStreamControlLog) << "Active source changed to:" << source
+                                   << "(0=HDMI1, 1=HDMI2, 2=RTSP1, 3=RTSP2)";
+
+    if (source == _currentActiveSource) {
+        return;
+    }
+    _currentActiveSource = source;
+    emit currentActiveSourceChanged();
+
+    if (source < 2) {
+        // HDMI 1 or HDMI 2 — drive the existing cameraId path
+        uint32_t newCameraId = source;
+        if (newCameraId != _videoSettings->cameraId()->rawValue().toUInt()) {
+            // Cascades to _cameraIdChanged → _setCameraIdLockUi which sends VIDEO_START_STREAMING
+            _videoSettings->cameraId()->setRawValue(newCameraId);
+        } else {
+            // Coming back from RTSP with the same HDMI as before — cameraId hasn't changed
+            // so _cameraIdChanged won't fire. Re-send VIDEO_START_STREAMING in case the
+            // air unit's stream stopped while we were on RTSP.
+            _startVideoStreaming();
+        }
+    } else {
+        // RTSP 1 or RTSP 2 — VideoManager handles the URI swap based on herelinkActiveSource.
+        qCDebug(VideoStreamControlLog) << "RTSP source selected, no MAVLink HDMI command sent";
+    }
 }
 
 void VideoStreamControl::_requestVideoStreamInfo()

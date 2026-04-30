@@ -28,6 +28,9 @@ public:
     Q_PROPERTY(uint8_t currentResolution READ currentResolution NOTIFY currentResolutionChanged)
     uint8_t currentResolution() { return _currentResolution; }
 
+    Q_PROPERTY(uint8_t currentActiveSource READ currentActiveSource NOTIFY currentActiveSourceChanged)
+    uint8_t currentActiveSource() { return _currentActiveSource; }
+
 signals:
     void settingInProgressChanged();
     void videoNeedsReset();
@@ -35,10 +38,12 @@ signals:
     void currentHdmiInputChanged();
     void cameraInfoReceivedChanged();
     void currentResolutionChanged();
+    void currentActiveSourceChanged();
 
 private slots:
     void _mavlinkMessageReceived(LinkInterface *link, mavlink_message_t message);
     void _cameraIdChanged();
+    void _activeSourceChanged();
     void _resolutionChanged();
     void _requestVideoStreamInfo();
 
@@ -56,6 +61,7 @@ private:
     bool _resolutionSwitchPending;  // Suppress encoder resets during resolution change
     uint8_t _currentHdmiInput;
     uint8_t _currentResolution;
+    uint8_t _currentActiveSource;  // 0=HDMI1, 1=HDMI2, 2=RTSP1, 3=RTSP2
 
     void _handleHeartbeatInfo(LinkInterface* link, mavlink_message_t& message);
     void _handleVideoStreamInformation(mavlink_message_t& message);

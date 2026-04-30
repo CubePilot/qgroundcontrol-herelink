@@ -96,6 +96,12 @@ DECLARE_SETTINGSFACT(VideoSettings, disableWhenDisarmed)
 DECLARE_SETTINGSFACT(VideoSettings, cameraId)
 // Herelink resolution switching
 DECLARE_SETTINGSFACT(VideoSettings, resolution)
+// Herelink multi-source (HDMI 1/2 + RTSP 1/2) switching
+DECLARE_SETTINGSFACT(VideoSettings, herelinkHdmi1Enabled)
+DECLARE_SETTINGSFACT(VideoSettings, herelinkHdmi2Enabled)
+DECLARE_SETTINGSFACT(VideoSettings, herelinkRtsp1Url)
+DECLARE_SETTINGSFACT(VideoSettings, herelinkRtsp2Url)
+DECLARE_SETTINGSFACT(VideoSettings, herelinkActiveSource)
 
 DECLARE_SETTINGSFACT_NO_FUNC(VideoSettings, videoSource)
 {

@@ -375,14 +375,14 @@ Rectangle {
                         }
 
                         QGCLabel {
-                            text:               qsTr("HDMI Input")
+                            text:               qsTr("Video Source")
                             visible:            QGroundControl.corePlugin.isHerelink
                             onVisibleChanged:   gridLayout.dynamicRows += visible ? 1 : -1
                         }
 
                         QGCLabel {
                             text:               qsTr("Resolution")
-                            visible:            QGroundControl.corePlugin.isHerelink
+                            visible:            QGroundControl.corePlugin.isHerelink && _videoStreamSettings.herelinkActiveSource.rawValue < 2
                             onVisibleChanged:   gridLayout.dynamicRows += visible ? 1 : -1
                         }
 
@@ -472,27 +472,48 @@ Rectangle {
                             spacing: ScreenTools.defaultFontPixelWidth / 2
                             visible: QGroundControl.corePlugin.isHerelink
 
+                            property var _streamControl: QGroundControl.videoManager.videoStreamControl
+
                             QGCButton {
                                 text: qsTr("HDMI 1")
-                                enabled: QGroundControl.videoManager.videoStreamControl.cameraInfoReceived && !QGroundControl.videoManager.videoStreamControl.settingInProgress && QGroundControl.videoManager.videoStreamControl.currentHdmiInput !== 0
+                                visible: _videoStreamSettings.herelinkHdmi1Enabled.rawValue
+                                enabled: parent._streamControl.cameraInfoReceived && !parent._streamControl.settingInProgress && parent._streamControl.currentActiveSource !== 0
                                 onClicked: {
-                                    console.log("HDMI 1 button clicked")
-                                    _videoStreamSettings.cameraId.rawValue = 0
+                                    _videoStreamSettings.herelinkActiveSource.rawValue = 0
                                 }
                             }
 
                             QGCButton {
                                 text: qsTr("HDMI 2")
-                                enabled: QGroundControl.videoManager.videoStreamControl.cameraInfoReceived && !QGroundControl.videoManager.videoStreamControl.settingInProgress && QGroundControl.videoManager.videoStreamControl.currentHdmiInput !== 1
+                                visible: _videoStreamSettings.herelinkHdmi2Enabled.rawValue
+                                enabled: parent._streamControl.cameraInfoReceived && !parent._streamControl.settingInProgress && parent._streamControl.currentActiveSource !== 1
                                 onClicked: {
-                                    _videoStreamSettings.cameraId.rawValue = 1
+                                    _videoStreamSettings.herelinkActiveSource.rawValue = 1
+                                }
+                            }
+
+                            QGCButton {
+                                text: qsTr("RTSP 1")
+                                visible: _videoStreamSettings.herelinkRtsp1Url.rawValue.length > 0
+                                enabled: parent._streamControl.currentActiveSource !== 2
+                                onClicked: {
+                                    _videoStreamSettings.herelinkActiveSource.rawValue = 2
+                                }
+                            }
+
+                            QGCButton {
+                                text: qsTr("RTSP 2")
+                                visible: _videoStreamSettings.herelinkRtsp2Url.rawValue.length > 0
+                                enabled: parent._streamControl.currentActiveSource !== 3
+                                onClicked: {
+                                    _videoStreamSettings.herelinkActiveSource.rawValue = 3
                                 }
                             }
                         }
 
                         Row {
                             spacing: ScreenTools.defaultFontPixelWidth / 2
-                            visible: QGroundControl.corePlugin.isHerelink
+                            visible: QGroundControl.corePlugin.isHerelink && _videoStreamSettings.herelinkActiveSource.rawValue < 2
 
                             QGCComboBox {
                                 model:              [ qsTr("720p"), qsTr("1080p") ]
