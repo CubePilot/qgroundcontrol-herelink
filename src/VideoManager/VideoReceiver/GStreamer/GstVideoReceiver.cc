@@ -747,6 +747,12 @@ GstElement *GstVideoReceiver::_makeSource(const QString &input)
             g_object_set(source,
                          "location", input.toUtf8().constData(),
                          "latency", 25,
+                         // Cap the internal rtpjitterbuffer at `latency` and drop instead of
+                         // letting it grow. Without this, jitterbuffer latency is a floor that
+                         // only ever increases under sender/receiver clock skew, which on some
+                         // air unit firmware revisions (different RTC behaviour) causes video
+                         // lag to accumulate monotonically over time.
+                         "drop-on-latency", TRUE,
                          "protocols", 1,                  // UDP only (GST_RTSP_LOWER_TRANS_UDP)
                          "udp-timeout", G_GUINT64_CONSTANT(10000000), // 10 seconds (15000000 microseconds)
                          nullptr);
