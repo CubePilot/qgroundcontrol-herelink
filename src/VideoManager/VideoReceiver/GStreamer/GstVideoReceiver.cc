@@ -110,6 +110,16 @@ void GstVideoReceiver::start(uint32_t timeout)
             break;
         }
 
+        // Live decode path: keep this queue from becoming a second place lag can
+        // accumulate. By default a queue is non-leaky and holds up to 1s, so if
+        // the decoder ever stalls it back-pressures and adds latency. Cap it at
+        // 200ms and leak the oldest buffer on overflow (drop, don't block) so the
+        // newest frames always win and worst-case added latency stays bounded.
+        g_object_set(decoderQueue,
+                     "leaky", 2,                         // GST_QUEUE_LEAK_DOWNSTREAM (drop oldest)
+                     "max-size-time", 200 * GST_MSECOND,
+                     nullptr);
+
         _decoderValve = gst_element_factory_make("valve", nullptr);
         if (!_decoderValve)  {
             qCCritical(GstVideoReceiverLog) << "gst_element_factory_make('valve') failed";
