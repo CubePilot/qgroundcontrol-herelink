@@ -118,6 +118,30 @@ void QGCPositionManager::setNmeaSourceDevice(QIODevice *device)
     _setPositionSource(QGCPositionManager::NmeaGPS);
 }
 
+void QGCPositionManager::resetNmeaSourceDevice()
+{
+    if (!_nmeaSource) {
+        return;
+    }
+
+    const bool wasCurrent = (_currentSource == _nmeaSource);
+
+    _nmeaSource->stopUpdates();
+    (void) disconnect(_nmeaSource);
+    if (wasCurrent) {
+        // Clear so _setPositionSource() doesn't try to touch the source we're about to delete
+        _currentSource = nullptr;
+    }
+
+    delete _nmeaSource;
+    _nmeaSource = nullptr;
+
+    if (wasCurrent) {
+        // Fall back to the platform's default position source (e.g. the integrated Android GPS)
+        _setPositionSource(QGCPositionManager::InternalGPS);
+    }
+}
+
 void QGCPositionManager::_positionUpdated(const QGeoPositionInfo &update)
 {
     _geoPositionInfo = update;
