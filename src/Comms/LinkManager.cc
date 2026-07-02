@@ -526,6 +526,17 @@ void LinkManager::_updateAutoConnectLinks()
 #endif
     } else {
         _nmeaSocket->close();
+#ifndef QGC_NO_SERIAL_LINK
+        // NMEA was switched off (e.g. back to "Disabled"): also tear down any serial NMEA port
+        if (_nmeaPort) {
+            _nmeaPort->close();
+            delete _nmeaPort;
+            _nmeaPort = nullptr;
+            _nmeaDeviceName = "";
+        }
+#endif
+        // Revert QGCPositionManager to the integrated GPS if it was using an NMEA source
+        QGCPositionManager::instance()->resetNmeaSourceDevice();
     }
 
 #ifndef QGC_NO_SERIAL_LINK
