@@ -35,7 +35,10 @@ bool isInternetAvailable()
 
     const QNetworkInformation::Reachability reachability = QNetworkInformation::instance()->reachability();
 
-    return (reachability == QNetworkInformation::Reachability::Online);
+    // Treat only a definite disconnect as offline. On some platforms (e.g. Qt 6.6.x
+    // on Android) reachability stays Unknown for a connection established before the
+    // app started, which would otherwise wrongly block all map tile fetches.
+    return (reachability != QNetworkInformation::Reachability::Disconnected);
 }
 
 bool isNetworkEthernet()
