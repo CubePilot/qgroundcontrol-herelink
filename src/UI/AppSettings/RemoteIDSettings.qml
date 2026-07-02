@@ -495,6 +495,7 @@ SettingsPage {
                     fact:                       _fact
                     textField.maximumLength:    20
                     enabled:                    locationTypeFact.rawValue === RemoteIDSettings.LocationType.FIXED
+                    visible:                    locationTypeFact.rawValue === RemoteIDSettings.LocationType.FIXED
                     Layout.fillWidth:           true
                     textFieldPreferredWidth:    textFieldWidth
 
@@ -506,6 +507,7 @@ SettingsPage {
                     fact:                       _fact
                     textField.maximumLength:    20
                     enabled:                    locationTypeFact.rawValue === RemoteIDSettings.LocationType.FIXED
+                    visible:                    locationTypeFact.rawValue === RemoteIDSettings.LocationType.FIXED
                     Layout.fillWidth:           true
                     textFieldPreferredWidth:    textFieldWidth
 
@@ -517,10 +519,39 @@ SettingsPage {
                     fact:                       _fact
                     textField.maximumLength:    20
                     enabled:                    locationTypeFact.rawValue === RemoteIDSettings.LocationType.FIXED
+                    visible:                    locationTypeFact.rawValue === RemoteIDSettings.LocationType.FIXED
                     Layout.fillWidth:           true
                     textFieldPreferredWidth:    textFieldWidth
 
                     property Fact _fact: remoteIDSettings.altitudeFixed
+                }
+
+                // Live position actually being broadcast when not using a fixed location
+                // (Live GNSS uses the GCS position source, e.g. the integrated Android GPS)
+                GridLayout {
+                    Layout.fillWidth:   true
+                    visible:            locationTypeFact.rawValue !== RemoteIDSettings.LocationType.FIXED
+                    columns:            2
+                    columnSpacing:      ScreenTools.defaultFontPixelWidth
+                    rowSpacing:         ScreenTools.defaultFontPixelHeight / 2
+
+                    QGCLabel { text: qsTr("Current Latitude") }
+                    QGCLabel {
+                        Layout.fillWidth:   true
+                        text:               gcsPosition.isValid ? gcsPosition.latitude.toFixed(7) : qsTr("Waiting for GPS...")
+                    }
+
+                    QGCLabel { text: qsTr("Current Longitude") }
+                    QGCLabel {
+                        Layout.fillWidth:   true
+                        text:               gcsPosition.isValid ? gcsPosition.longitude.toFixed(7) : qsTr("Waiting for GPS...")
+                    }
+
+                    QGCLabel { text: qsTr("Current Altitude") }
+                    QGCLabel {
+                        Layout.fillWidth:   true
+                        text:               (gcsPosition.isValid && !isNaN(gcsPosition.altitude)) ? (gcsPosition.altitude.toFixed(1) + qsTr(" m")) : qsTr("N/A")
+                    }
                 }
 
                 GridLayout {
