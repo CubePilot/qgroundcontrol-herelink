@@ -295,33 +295,30 @@ void RemoteIDManager::_sendSystem()
         gcsPosition = QGCPositionManager::instance()->gcsPosition();
         geoPositionInfo = QGCPositionManager::instance()->geoPositionInfo();
 
-        // GPS position needs to be valid before checking other stuff
-        if (geoPositionInfo.isValid()) {
-            // If we dont have altitude for FAA then the GPS data is no good
-            if ((_settings->region()->rawValue().toInt() == Region::FAA) && !(gcsPosition.altitude() >= 0) && _gcsGPSGood) {
-                _gcsGPSGood = false;
-                emit gcsGPSGoodChanged();
-                qCDebug(RemoteIDManagerLog) << "GCS GPS data error (no altitude): Altitude data is mandatory for GCS GPS data in FAA regions.";
-                return;
-            }
+        // Determine GPS health deterministically from the current data every cycle. The
+        // previous code flipped _gcsGPSGood relative to its prior value across separate
+        // checks, which made it oscillate green/red at the send rate (e.g. in FAA when the
+        // altitude was momentarily missing).
+        bool good = true;
+        const char* reason = nullptr;
+        if (!geoPositionInfo.isValid()) {
+            good = false;
+            reason = "GCS GPS data is not valid.";
+        } else if ((_settings->region()->rawValue().toInt() == Region::FAA) && !(gcsPosition.altitude() >= 0)) {
+            // FAA mandates an operator altitude
+            good = false;
+            reason = "GCS GPS data error (no altitude): Altitude data is mandatory for GCS GPS data in FAA regions.";
+        } else if (_lastGeoPositionTimeStamp.msecsTo(QDateTime::currentDateTimeUtc()) > ALLOWED_GPS_DELAY) {
+            good = false;
+            reason = "GCS GPS data is older than 5 seconds";
+        }
 
-            // If the GPS data is older than ALLOWED_GPS_DELAY we cannot use this data
-            if (_lastGeoPositionTimeStamp.msecsTo(QDateTime::currentDateTime().currentDateTimeUtc()) > ALLOWED_GPS_DELAY) {
-                if (_gcsGPSGood) {
-                    _gcsGPSGood = false;
-                    emit gcsGPSGoodChanged();
-                    qCDebug(RemoteIDManagerLog) << "GCS GPS data is older than 5 seconds";
-                }
-            } else {
-                if (!_gcsGPSGood) {
-                    _gcsGPSGood = true;
-                    emit gcsGPSGoodChanged();
-                }
-            }
-        } else {
-            _gcsGPSGood = false;
+        if (good != _gcsGPSGood) {
+            _gcsGPSGood = good;
             emit gcsGPSGoodChanged();
-            qCDebug(RemoteIDManagerLog) << "GCS GPS data is not valid.";
+            if (reason) {
+                qCDebug(RemoteIDManagerLog) << reason;
+            }
         }
 
     }
